@@ -96,7 +96,9 @@ BLOCKS_SCHEMA = pa.schema([
     ("mediantime", pa.int64()),
     ("version", pa.int64()),
     ("bits", pa.string()),
-    ("difficulty", pa.float64()),
+    # OJO: NO es el campo 'difficulty' del nodo, es bits_to_difficulty(bits). El valor exacto
+    # de Core (el que usa OBM, Apendice A.6) esta en difficulty_epochs.parquet. Ver F3.
+    ("difficulty_from_bits", pa.float64()),
     ("chainwork", pa.string()),
     ("size", pa.int32()),
     ("weight", pa.int32()),
@@ -315,14 +317,16 @@ def process_block(blk: Dict[str, Any]):
     bits = blk.get("bits")
     if bits is None:
         raise ValueError(f"bloque {height} sin campo 'bits'")
-    difficulty = bits_to_difficulty(bits)
+    # F3: el campo 'difficulty' del nodo difiere de esto en ~47% de los bloques (1 ULP). Se
+    # guarda bajo un nombre que diga su origen para que nadie lo confunda con el de Core.
+    difficulty_from_bits = bits_to_difficulty(bits)
 
     blocks.append({
         "height": height, "hash": bh,
         "time": safe_int(blk.get("time")),
         "mediantime": safe_int(blk.get("mediantime")),
         "version": safe_int(blk.get("version")),
-        "bits": bits, "difficulty": difficulty,
+        "bits": bits, "difficulty_from_bits": difficulty_from_bits,
         "chainwork": blk.get("chainwork"),
         "size": safe_int(blk.get("size")),
         "weight": safe_int(blk.get("weight")),
@@ -400,14 +404,15 @@ def _validate_written_file(path: str, table: str):
     t = pq.read_table(path)
     if table == "blocks":
         bits_col = t["bits"].to_pylist()
-        diff_col = t["difficulty"].to_pylist()
+        diff_col = t["difficulty_from_bits"].to_pylist()
         height_col = t["height"].to_pylist()
         for h, b, d in zip(height_col, bits_col, diff_col):
             if b is None:
                 continue
             expected = bits_to_difficulty(b)
             if expected > 0 and abs(d - expected) / expected > 1e-12:
-                raise ValueError(f"difficulty mismatch at height {h}: {d} vs {expected}")
+                raise ValueError(
+                    f"difficulty_from_bits mismatch at height {h}: {d} vs {expected}")
     elif table == "inputs":
         for v in t["prev_vout"].to_pylist():
             if v is not None and not isinstance(v, int):
