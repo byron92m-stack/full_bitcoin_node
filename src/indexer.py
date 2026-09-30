@@ -23,7 +23,8 @@
 # v5 — parches de la revision:
 #   P1b. Nunca procesa la semana en curso del ETL (el drain final la deja a medias):
 #        exige que el ETL ya haya escrito una semana POSTERIOR.
-#   P2b. inserted via con.total_changes (no depende de executemany.rowcount).
+#   P2c. inserted via cursor.rowcount. NUNCA con.total_changes: sqlite3_total_changes()
+#        trunca a 32 bits y da la vuelta (bug real F5, corrompio utxo_count desde 2017-W13).
 #   P4b. CROSS JOIN para fijar el plan: un JOIN normal se invierte si hay ANALYZE
 #        (SCAN completo de live_outputs por bloque).
 #   P5.  weeks_done: progreso en la MISMA transaccion que los datos; la DB es la
@@ -278,12 +279,14 @@ def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
     reanudar se salta. Aqui se detecta y se aborta en vez de perderlo en silencio.
     """
     por_anio = {}
-    for y in sorted({w[:4] for w in done_weeks}):
-        p = os.path.join(CAPA2, f"daily_aggregates_{y}.parquet")
-        if os.path.exists(p):
-            por_anio[y] = set(pd.read_parquet(p, columns=["date"])["date"].astype(str))
-        else:
-            por_anio[y] = None
+
+    def dias_del_anio(y):
+        if y not in por_anio:
+            p = os.path.join(CAPA2, f"daily_aggregates_{y}.parquet")
+            por_anio[y] = (set(pd.read_parquet(p, columns=["date"])["date"].astype(str))
+                           if os.path.exists(p) else None)
+        return por_anio[y]
+
     faltan = []
     for w in sorted(done_weeks):
         try:
@@ -292,13 +295,14 @@ def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
             esperados = {utc_date_from_timestamp(int(x)) for x in t["time"].to_pylist()}
         except Exception:
             continue
-        presentes = por_anio.get(w[:4])
-        if presentes is None:
-            faltan.append((w, sorted(esperados)))
-        else:
-            f = sorted(esperados - presentes)
-            if f:
-                faltan.append((w, f))
+        # F8.6: cada dia se escribe en el parquet de SU anio, no en el de la semana. Una
+        # semana puede empezar o terminar en el anio contiguo (2009-W53 -> 2010-01-01..03
+        # vive en daily_aggregates_2010.parquet), asi que hay que buscar por el anio del
+        # propio dia. Buscarlo en el de w[:4] daba 13 abortos falsos por frontera de anio.
+        f = sorted(d for d in esperados
+                   if dias_del_anio(d[:4]) is None or d not in dias_del_anio(d[:4]))
+        if f:
+            faltan.append((w, f))
     return faltan
 
 

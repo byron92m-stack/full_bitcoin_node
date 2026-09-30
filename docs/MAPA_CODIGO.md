@@ -67,7 +67,8 @@ python3 src/exporters/graficos_capa3.py       # figuras (opcional)
 
 Scripts de una sola vez (ya ejecutados, se conservan como evidencia):
 `src/exporters/fix_difficulty_rpc.py`, `src/reparar_wrap_2017.py`,
-`src/exporters/reparar_semana_2022W06.py`.
+`src/exporters/reparar_semana_2022W06.py`,
+`src/exporters/reparar_utxo_eod_w06.py`.
 
 ## 3. Módulos
 
@@ -83,6 +84,7 @@ Scripts de una sola vez (ya ejecutados, se conservan como evidencia):
 | `src/exporters/comparar_capa3.py` | Comparador anterior (más simple) | capa3 + referencia | stdout | legacy útil |
 | `src/exporters/fix_difficulty_rpc.py` | Extrae las 481 épocas de dificultad desde el nodo | RPC | `capa1/difficulty_epochs.parquet` | aplicado |
 | `src/exporters/reparar_semana_2022W06.py` | Recomputa 2022-W06 desde capa1 (ventana de crash F7) | capa1 | parquet 2022 + `.bak_w06` | aplicado |
+| `src/exporters/reparar_utxo_eod_w06.py` | Corrige `utxo_eod_count` de 2022-W06 (incluye coinbase) sin re-escanear | capa1 semana | parquet 2022 + `.bak_utxo` | aplicado |
 | `src/exporters/graficos_capa3.py` | Figuras de presentación (dashboard + bandas) | capa3 | `capa3/graficos/*.png` | utilitario |
 
 ## 4. Invariantes que no se tocan

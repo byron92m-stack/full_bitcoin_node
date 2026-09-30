@@ -64,6 +64,10 @@ los días (redondeo float de OBM). Si sale otra cosa, **parar y avisar**.
 | Todo en la banda `10y_plus` | se pasaban SEGUNDOS a una función con fronteras en DÍAS | `get_age_band(age_seconds / SEGUNDOS_DIA)` |
 | Días con spent_value a 0 tras un re-particionado | fusión con `keep="last"` en fechas repartidas entre dos semanas | fusionar SUMANDO flujos |
 | `difficulty` con 1 ULP | recalculada desde `bits` (F3) | leer el campo del nodo |
+| Día fantasma y fechas corridas ~5 h en consultas DuckDB | `strftime(to_timestamp(t))` formatea en la zona de la SESIÓN | `SET TimeZone='UTC'` (F8.1) |
+| CDD con error de miles de sat-días en SQL | en DuckDB `/` es división REAL (HUGEINT→DOUBLE) | usar `//` y verificar en SQL (F8.3/F8.4) |
+| `utxo_eod_count` corto ~140-190/día | `n_creados` excluía las salidas coinbase | contarlas: son UTXO vivas (F8.5) |
+| 17.000 filas de bandas en una semana | se escribía una fila por edad, no por banda | `GROUP BY date, age_band` (F8.2) |
 
 ## Entorno
 - Python 3.14 · pandas 3.0.2 · pyarrow 23.0.1 · duckdb 1.5.2 · statsmodels · scipy · sklearn · matplotlib
@@ -71,7 +75,9 @@ los días (redondeo float de OBM). Si sale otra cosa, **parar y avisar**.
   Rearranque: `bitcoind -datadir=/media/SSD4T/bitcoin/.bitcoin -daemon`
 - Referencia oficial en `obm_reference/`: `metrics/` (23 CSV), `paper/` (el manuscrito),
   `tools/` (el código de los autores — útil para la auditoría).
-- **No hay git** en el proyecto.
+- Repo **git** inicializado. Se versiona el código y la documentación; **no** los datos
+  (`capa1/`, `capa2/`, `capa4/`, `capa3/*.csv`, `obm_reference/`, `state_*.json`, `*.bak_*`,
+  `tmp/`) ni los logs salvo `logs/evidencia/`. Ver `.gitignore`.
 - Los logs de `logs/evidencia/` son **prueba** de los hallazgos F4/F5: no borrar.
 
 ## Convenciones

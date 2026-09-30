@@ -182,3 +182,74 @@ los prevouts resueltos (join de `capa1/inputs` de la semana contra `capa1/output
 `age = t_spend − t_create` de las alturas respectivas, y `utxo_eod_count(d) = utxo_eod_count(fin de
 2022-W05) + Σ(creados − gastados) hasta d`. Escribir esas filas en
 `capa2/daily_aggregates_2022.parquet` y `age_band_aggregates_2022.parquet` deja capa3 completa.
+
+## F8 — Cuatro trampas silenciosas en el script de reparación (bug NUESTRO, corregido)
+
+Contexto: `src/exporters/reparar_semana_2022W06.py` (reparación de la ventana de crash F7)
+falló tres veces antes de producir datos válidos. Las cuatro causas son de NUESTRA
+implementación; ninguna involucra a OBM. Quedan documentadas porque son silenciosas y las
+cuatro se habrían propagado a capa 3.
+
+### F8.1 — `strftime(to_timestamp(t))` usa la zona horaria de la SESIÓN
+DuckDB formatea en la zona de la sesión, no en UTC. Con `America/Guayaquil` (UTC-5) cada
+día quedaba corrido 5 h y aparecía un día fantasma al inicio de la semana (2022-02-06 con
+127.914 gastos, que son los bloques de 02-07 entre 00:00 y 04:59 UTC), pisando además el
+02-06 correcto (826.967 gastos / 304.532.860.918.303 sats).
+Arreglo: `SET TimeZone='UTC'` al abrir la conexión.
+Repro: `SELECT strftime(to_timestamp(1644192614),'%Y-%m-%d')` → `2022-02-06` sin el SET,
+`2022-02-07` con él (y `datetime.fromtimestamp(ts, timezone.utc)` en Python coincide).
+
+### F8.2 — Bandas de edad sin agregar
+El bucle en Python recorría cada edad entera (0…4.500 días) y escribía una fila por edad:
+17.069 filas donde corresponden 84 (7 días × 12 bandas).
+Arreglo: agregar en SQL con `CASE` + `GROUP BY date, age_band`.
+
+### F8.3 — En DuckDB `/` es división REAL, no entera
+`CAST(value_sats AS HUGEINT)*age/86400` se ejecuta como `CAST(... AS DOUBLE)/86400` (lo
+delata el propio plan de DuckDB), así que el CDD se calculaba en coma flotante y dejaba de
+ser exacto: 950.272 sat-días de error en un test de 2 M filas, con sumas dependientes del
+orden de agrupación. Arreglo: `(CAST(value_sats AS HUGEINT)*age) // 86400`, la misma
+semántica que `divmod(value_sats*age_seconds, 86400)` del indexer.
+Lo detectó el assert del propio script: la suma por bandas y el agregado diario diferían
+en 14 sat-días; con `//` coinciden exactamente.
+
+### F8.4 — pandas convierte HUGEINT a float64
+Verificar los totales sumando en pandas pierde precisión (dtype `float64`). Arreglo:
+verificar en SQL (HUGEINT contra HUGEINT) sobre los DataFrames registrados en DuckDB.
+
+### F8.5 — `n_creados` excluía las salidas coinbase
+La condición `cb.txid IS NULL` (heredada del cálculo de fees) quitaba del conteo las
+salidas coinbase, que el indexer SÍ inserta como UTXO vivas (PASO B). Resultado:
+`utxo_eod_count` corto en ~1 salida por bloque (140-190/día, acumulativo). Se detectó
+comparando contra la referencia: el desfase diario era exactamente el número de bloques del
+día. Arreglo: contar toda salida que pase el filtro de gastabilidad, coinbase incluida.
+`src/exporters/reparar_utxo_eod_w06.py` aplica sólo esa columna sin repetir el escaneo de
+386 GB (idempotente).
+
+### Verificación final de 2022-W06 (7 días, contra `obm_reference/metrics`)
+```
+obm_spent_output_count_daily   0 diferencias
+obm_spent_value_btc_daily      0 diferencias
+obm_fees_btc_daily             0 diferencias
+obm_issuance_btc_daily         0 diferencias
+obm_utxo_eod_count_daily       -2 constante (F1: BIP30, compensado en capa 3)
+obm_cdd_btcxdays_daily         max 3,7e-09 BTC-días (residual float, rel. 1,9e-16)
+```
+Comprobación de integridad: el offset −2 se mantiene constante desde 2010-11-15 a lo largo
+de todo 2022, sin ningún escalón → la reparación no introdujo discontinuidad. Los 7 días
+están en el parquet (verificado con el guard corregido de F8.6).
+
+### F8.6 — El guard de cobertura buscaba el día en el año de la semana
+`check_parquet_cobertura()` (guard añadido para F7) resolvía cada día esperado contra
+`daily_aggregates_<año-de-la-semana>.parquet`. Pero cada día se escribe en el parquet de **su**
+año, y una semana ISO puede empezar o terminar en el año contiguo (F4): los días
+2010-01-01..03 de `2009-W53` viven en `daily_aggregates_2010.parquet`. Efecto: 13 abortos
+falsos por frontera de año (2009-W53, 2010-W52, 2011-W52, 2013-W01, 2014-W01, 2015-W01,
+2015-W53, 2016-W52, 2019-W01, 2020-W01, 2020-W53, 2021-W52, 2022-W52), que habrían
+bloqueado la reanudación de capa2 sin existir ningún hueco real.
+No lo había ejercitado ningún arranque anterior porque se añadió al código con el indexer ya
+en marcha (el proceso seguía con el módulo antiguo ya importado); se detectó al revisar el
+estado justo antes de reanudar.
+Arreglo: resolver cada día contra el parquet de su propio año. Verificación: 0 huecos sobre
+las 792 semanas de `weeks_done`, y test negativo con un parquet truncado (sin 2012-06-15) →
+el guard lo detecta.
