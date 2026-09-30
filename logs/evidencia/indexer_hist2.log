@@ -1,0 +1,1534 @@
+2026-09-25 13:30:16,123 | INFO | Reset completo solicitado.
+2026-09-25 13:30:16,123 | INFO | Reset completo ejecutado.
+2026-09-25 13:30:16,829 | INFO | Procesando 925 semanas
+2026-09-25 13:30:16,878 | INFO | Leyendo semana 2009-W01 de capa1...
+2026-09-25 13:30:16,885 | INFO |   UTXO count al inicio de la semana: 0
+2026-09-25 13:30:16,885 | INFO |   Semana 2009-W01 procesada: 1 días, 0 filas de bandas, UTXOs al final: 1
+2026-09-25 13:30:16,891 | INFO |   daily_aggregates_2009.parquet: 1 filas
+2026-09-25 13:30:16,891 | INFO | Leyendo semana 2009-W02 de capa1...
+2026-09-25 13:30:16,899 | INFO |   UTXO count al inicio de la semana: 1
+2026-09-25 13:30:16,900 | INFO |   Semana 2009-W02 procesada: 3 días, 0 filas de bandas, UTXOs al final: 169
+2026-09-25 13:30:16,911 | INFO |   daily_aggregates_2009.parquet: 4 filas
+2026-09-25 13:30:16,911 | INFO | Leyendo semana 2009-W03 de capa1...
+2026-09-25 13:30:16,928 | INFO |   UTXO count al inicio de la semana: 169
+2026-09-25 13:30:16,936 | INFO |   Semana 2009-W03 procesada: 7 días, 7 filas de bandas, UTXOs al final: 963
+2026-09-25 13:30:16,946 | INFO |   daily_aggregates_2009.parquet: 11 filas
+2026-09-25 13:30:16,949 | INFO |   age_band_aggregates_2009.parquet: 7 filas
+2026-09-25 13:30:16,949 | INFO | Leyendo semana 2009-W04 de capa1...
+2026-09-25 13:30:16,968 | INFO |   UTXO count al inicio de la semana: 963
+2026-09-25 13:30:16,976 | INFO |   Semana 2009-W04 procesada: 7 días, 9 filas de bandas, UTXOs al final: 1,814
+2026-09-25 13:30:16,987 | INFO |   daily_aggregates_2009.parquet: 18 filas
+2026-09-25 13:30:16,994 | INFO |   age_band_aggregates_2009.parquet: 16 filas
+2026-09-25 13:30:16,995 | INFO | Leyendo semana 2009-W05 de capa1...
+2026-09-25 13:30:17,012 | INFO |   UTXO count al inicio de la semana: 1,814
+2026-09-25 13:30:17,019 | INFO |   Semana 2009-W05 procesada: 7 días, 5 filas de bandas, UTXOs al final: 2,556
+2026-09-25 13:30:17,030 | INFO |   daily_aggregates_2009.parquet: 25 filas
+2026-09-25 13:30:17,038 | INFO |   age_band_aggregates_2009.parquet: 21 filas
+2026-09-25 13:30:17,038 | INFO | Leyendo semana 2009-W06 de capa1...
+2026-09-25 13:30:17,055 | INFO |   UTXO count al inicio de la semana: 2,556
+2026-09-25 13:30:17,063 | INFO |   Semana 2009-W06 procesada: 7 días, 8 filas de bandas, UTXOs al final: 3,444
+2026-09-25 13:30:17,074 | INFO |   daily_aggregates_2009.parquet: 32 filas
+2026-09-25 13:30:17,081 | INFO |   age_band_aggregates_2009.parquet: 29 filas
+2026-09-25 13:30:17,081 | INFO | Leyendo semana 2009-W07 de capa1...
+2026-09-25 13:30:17,100 | INFO |   UTXO count al inicio de la semana: 3,444
+2026-09-25 13:30:17,108 | INFO |   Semana 2009-W07 procesada: 7 días, 8 filas de bandas, UTXOs al final: 4,273
+2026-09-25 13:30:17,119 | INFO |   daily_aggregates_2009.parquet: 39 filas
+2026-09-25 13:30:17,126 | INFO |   age_band_aggregates_2009.parquet: 37 filas
+2026-09-25 13:30:17,127 | INFO | Leyendo semana 2009-W08 de capa1...
+2026-09-25 13:30:17,145 | INFO |   UTXO count al inicio de la semana: 4,273
+2026-09-25 13:30:17,153 | INFO |   Semana 2009-W08 procesada: 7 días, 7 filas de bandas, UTXOs al final: 5,060
+2026-09-25 13:30:17,164 | INFO |   daily_aggregates_2009.parquet: 46 filas
+2026-09-25 13:30:17,171 | INFO |   age_band_aggregates_2009.parquet: 44 filas
+2026-09-25 13:30:17,172 | INFO | Leyendo semana 2009-W09 de capa1...
+2026-09-25 13:30:17,186 | INFO |   UTXO count al inicio de la semana: 5,060
+2026-09-25 13:30:17,193 | INFO |   Semana 2009-W09 procesada: 7 días, 3 filas de bandas, UTXOs al final: 5,764
+2026-09-25 13:30:17,204 | INFO |   daily_aggregates_2009.parquet: 53 filas
+2026-09-25 13:30:17,211 | INFO |   age_band_aggregates_2009.parquet: 47 filas
+2026-09-25 13:30:17,211 | INFO | Leyendo semana 2009-W10 de capa1...
+2026-09-25 13:30:17,227 | INFO |   UTXO count al inicio de la semana: 5,764
+2026-09-25 13:30:17,236 | INFO |   Semana 2009-W10 procesada: 7 días, 8 filas de bandas, UTXOs al final: 6,476
+2026-09-25 13:30:17,247 | INFO |   daily_aggregates_2009.parquet: 60 filas
+2026-09-25 13:30:17,254 | INFO |   age_band_aggregates_2009.parquet: 55 filas
+2026-09-25 13:30:17,255 | INFO | Leyendo semana 2009-W11 de capa1...
+2026-09-25 13:30:17,271 | INFO |   UTXO count al inicio de la semana: 6,476
+2026-09-25 13:30:17,295 | INFO |   Semana 2009-W11 procesada: 7 días, 2 filas de bandas, UTXOs al final: 7,255
+2026-09-25 13:30:17,308 | INFO |   daily_aggregates_2009.parquet: 67 filas
+2026-09-25 13:30:17,315 | INFO |   age_band_aggregates_2009.parquet: 57 filas
+2026-09-25 13:30:17,316 | INFO | Leyendo semana 2009-W12 de capa1...
+2026-09-25 13:30:17,332 | INFO |   UTXO count al inicio de la semana: 7,255
+2026-09-25 13:30:17,341 | INFO |   Semana 2009-W12 procesada: 7 días, 7 filas de bandas, UTXOs al final: 7,934
+2026-09-25 13:30:17,352 | INFO |   daily_aggregates_2009.parquet: 74 filas
+2026-09-25 13:30:17,359 | INFO |   age_band_aggregates_2009.parquet: 64 filas
+2026-09-25 13:30:17,359 | INFO | Leyendo semana 2009-W13 de capa1...
+2026-09-25 13:30:17,376 | INFO |   UTXO count al inicio de la semana: 7,934
+2026-09-25 13:30:17,384 | INFO |   Semana 2009-W13 procesada: 7 días, 3 filas de bandas, UTXOs al final: 8,700
+2026-09-25 13:30:17,395 | INFO |   daily_aggregates_2009.parquet: 81 filas
+2026-09-25 13:30:17,403 | INFO |   age_band_aggregates_2009.parquet: 67 filas
+2026-09-25 13:30:17,403 | INFO | Leyendo semana 2009-W14 de capa1...
+2026-09-25 13:30:17,419 | INFO |   UTXO count al inicio de la semana: 8,700
+2026-09-25 13:30:17,427 | INFO |   Semana 2009-W14 procesada: 7 días, 4 filas de bandas, UTXOs al final: 9,472
+2026-09-25 13:30:17,439 | INFO |   daily_aggregates_2009.parquet: 88 filas
+2026-09-25 13:30:17,446 | INFO |   age_band_aggregates_2009.parquet: 71 filas
+2026-09-25 13:30:17,446 | INFO | Leyendo semana 2009-W15 de capa1...
+2026-09-25 13:30:17,461 | INFO |   UTXO count al inicio de la semana: 9,472
+2026-09-25 13:30:17,469 | INFO |   Semana 2009-W15 procesada: 7 días, 4 filas de bandas, UTXOs al final: 10,219
+2026-09-25 13:30:17,480 | INFO |   daily_aggregates_2009.parquet: 95 filas
+2026-09-25 13:30:17,487 | INFO |   age_band_aggregates_2009.parquet: 75 filas
+2026-09-25 13:30:17,487 | INFO | Leyendo semana 2009-W16 de capa1...
+2026-09-25 13:30:17,504 | INFO |   UTXO count al inicio de la semana: 10,219
+2026-09-25 13:30:17,530 | INFO |   Semana 2009-W16 procesada: 7 días, 6 filas de bandas, UTXOs al final: 11,046
+2026-09-25 13:30:17,542 | INFO |   daily_aggregates_2009.parquet: 102 filas
+2026-09-25 13:30:17,549 | INFO |   age_band_aggregates_2009.parquet: 81 filas
+2026-09-25 13:30:17,549 | INFO | Leyendo semana 2009-W17 de capa1...
+2026-09-25 13:30:17,566 | INFO |   UTXO count al inicio de la semana: 11,046
+2026-09-25 13:30:17,575 | INFO |   Semana 2009-W17 procesada: 7 días, 6 filas de bandas, UTXOs al final: 11,704
+2026-09-25 13:30:17,586 | INFO |   daily_aggregates_2009.parquet: 109 filas
+2026-09-25 13:30:17,593 | INFO |   age_band_aggregates_2009.parquet: 87 filas
+2026-09-25 13:30:17,593 | INFO | Leyendo semana 2009-W18 de capa1...
+2026-09-25 13:30:17,612 | INFO |   UTXO count al inicio de la semana: 11,704
+2026-09-25 13:30:17,620 | INFO |   Semana 2009-W18 procesada: 7 días, 7 filas de bandas, UTXOs al final: 12,508
+2026-09-25 13:30:17,631 | INFO |   daily_aggregates_2009.parquet: 116 filas
+2026-09-25 13:30:17,639 | INFO |   age_band_aggregates_2009.parquet: 94 filas
+2026-09-25 13:30:17,639 | INFO | Leyendo semana 2009-W19 de capa1...
+2026-09-25 13:30:17,654 | INFO |   UTXO count al inicio de la semana: 12,508
+2026-09-25 13:30:17,663 | INFO |   Semana 2009-W19 procesada: 7 días, 3 filas de bandas, UTXOs al final: 13,260
+2026-09-25 13:30:17,675 | INFO |   daily_aggregates_2009.parquet: 123 filas
+2026-09-25 13:30:17,682 | INFO |   age_band_aggregates_2009.parquet: 97 filas
+2026-09-25 13:30:17,683 | INFO | Leyendo semana 2009-W20 de capa1...
+2026-09-25 13:30:17,701 | INFO |   UTXO count al inicio de la semana: 13,260
+2026-09-25 13:30:17,730 | INFO |   Semana 2009-W20 procesada: 7 días, 7 filas de bandas, UTXOs al final: 14,135
+2026-09-25 13:30:17,743 | INFO |   daily_aggregates_2009.parquet: 130 filas
+2026-09-25 13:30:17,752 | INFO |   age_band_aggregates_2009.parquet: 104 filas
+2026-09-25 13:30:17,752 | INFO | Leyendo semana 2009-W21 de capa1...
+2026-09-25 13:30:17,767 | INFO |   UTXO count al inicio de la semana: 14,135
+2026-09-25 13:30:17,775 | INFO |   Semana 2009-W21 procesada: 7 días, 0 filas de bandas, UTXOs al final: 14,734
+2026-09-25 13:30:17,787 | INFO |   daily_aggregates_2009.parquet: 137 filas
+2026-09-25 13:30:17,788 | INFO | Leyendo semana 2009-W22 de capa1...
+2026-09-25 13:30:17,805 | INFO |   UTXO count al inicio de la semana: 14,734
+2026-09-25 13:30:17,813 | INFO |   Semana 2009-W22 procesada: 7 días, 2 filas de bandas, UTXOs al final: 15,434
+2026-09-25 13:30:17,824 | INFO |   daily_aggregates_2009.parquet: 144 filas
+2026-09-25 13:30:17,831 | INFO |   age_band_aggregates_2009.parquet: 106 filas
+2026-09-25 13:30:17,832 | INFO | Leyendo semana 2009-W23 de capa1...
+2026-09-25 13:30:17,842 | INFO |   UTXO count al inicio de la semana: 15,434
+2026-09-25 13:30:17,864 | INFO |   Semana 2009-W23 procesada: 7 días, 1 filas de bandas, UTXOs al final: 15,828
+2026-09-25 13:30:17,876 | INFO |   daily_aggregates_2009.parquet: 151 filas
+2026-09-25 13:30:17,882 | INFO |   age_band_aggregates_2009.parquet: 107 filas
+2026-09-25 13:30:17,883 | INFO | Leyendo semana 2009-W24 de capa1...
+2026-09-25 13:30:17,897 | INFO |   UTXO count al inicio de la semana: 15,828
+2026-09-25 13:30:17,905 | INFO |   Semana 2009-W24 procesada: 7 días, 0 filas de bandas, UTXOs al final: 16,408
+2026-09-25 13:30:17,916 | INFO |   daily_aggregates_2009.parquet: 158 filas
+2026-09-25 13:30:17,916 | INFO | Leyendo semana 2009-W25 de capa1...
+2026-09-25 13:30:17,929 | INFO |   UTXO count al inicio de la semana: 16,408
+2026-09-25 13:30:17,936 | INFO |   Semana 2009-W25 procesada: 7 días, 0 filas de bandas, UTXOs al final: 16,968
+2026-09-25 13:30:17,947 | INFO |   daily_aggregates_2009.parquet: 165 filas
+2026-09-25 13:30:17,948 | INFO | Leyendo semana 2009-W26 de capa1...
+2026-09-25 13:30:17,959 | INFO |   UTXO count al inicio de la semana: 16,968
+2026-09-25 13:30:17,984 | INFO |   Semana 2009-W26 procesada: 7 días, 7 filas de bandas, UTXOs al final: 17,426
+2026-09-25 13:30:17,996 | INFO |   daily_aggregates_2009.parquet: 172 filas
+2026-09-25 13:30:18,004 | INFO |   age_band_aggregates_2009.parquet: 114 filas
+2026-09-25 13:30:18,004 | INFO | Leyendo semana 2009-W27 de capa1...
+2026-09-25 13:30:18,017 | INFO |   UTXO count al inicio de la semana: 17,426
+2026-09-25 13:30:18,024 | INFO |   Semana 2009-W27 procesada: 7 días, 5 filas de bandas, UTXOs al final: 18,000
+2026-09-25 13:30:18,036 | INFO |   daily_aggregates_2009.parquet: 179 filas
+2026-09-25 13:30:18,043 | INFO |   age_band_aggregates_2009.parquet: 119 filas
+2026-09-25 13:30:18,043 | INFO | Leyendo semana 2009-W28 de capa1...
+2026-09-25 13:30:18,055 | INFO |   UTXO count al inicio de la semana: 18,000
+2026-09-25 13:30:18,061 | INFO |   Semana 2009-W28 procesada: 7 días, 0 filas de bandas, UTXOs al final: 18,554
+2026-09-25 13:30:18,072 | INFO |   daily_aggregates_2009.parquet: 186 filas
+2026-09-25 13:30:18,072 | INFO | Leyendo semana 2009-W29 de capa1...
+2026-09-25 13:30:18,082 | INFO |   UTXO count al inicio de la semana: 18,554
+2026-09-25 13:30:18,106 | INFO |   Semana 2009-W29 procesada: 7 días, 0 filas de bandas, UTXOs al final: 18,938
+2026-09-25 13:30:18,116 | INFO |   daily_aggregates_2009.parquet: 193 filas
+2026-09-25 13:30:18,117 | INFO | Leyendo semana 2009-W30 de capa1...
+2026-09-25 13:30:18,127 | INFO |   UTXO count al inicio de la semana: 18,938
+2026-09-25 13:30:18,135 | INFO |   Semana 2009-W30 procesada: 7 días, 3 filas de bandas, UTXOs al final: 19,233
+2026-09-25 13:30:18,145 | INFO |   daily_aggregates_2009.parquet: 200 filas
+2026-09-25 13:30:18,152 | INFO |   age_band_aggregates_2009.parquet: 122 filas
+2026-09-25 13:30:18,152 | INFO | Leyendo semana 2009-W31 de capa1...
+2026-09-25 13:30:18,160 | INFO |   UTXO count al inicio de la semana: 19,233
+2026-09-25 13:30:18,163 | INFO |   Semana 2009-W31 procesada: 7 días, 2 filas de bandas, UTXOs al final: 19,450
+2026-09-25 13:30:18,174 | INFO |   daily_aggregates_2009.parquet: 207 filas
+2026-09-25 13:30:18,181 | INFO |   age_band_aggregates_2009.parquet: 124 filas
+2026-09-25 13:30:18,181 | INFO | Leyendo semana 2009-W32 de capa1...
+2026-09-25 13:30:18,213 | INFO |   UTXO count al inicio de la semana: 19,450
+2026-09-25 13:30:18,239 | INFO |   Semana 2009-W32 procesada: 7 días, 3 filas de bandas, UTXOs al final: 19,872
+2026-09-25 13:30:18,251 | INFO |   daily_aggregates_2009.parquet: 214 filas
+2026-09-25 13:30:18,259 | INFO |   age_band_aggregates_2009.parquet: 127 filas
+2026-09-25 13:30:18,259 | INFO | Leyendo semana 2009-W33 de capa1...
+2026-09-25 13:30:18,270 | INFO |   UTXO count al inicio de la semana: 19,872
+2026-09-25 13:30:18,276 | INFO |   Semana 2009-W33 procesada: 7 días, 0 filas de bandas, UTXOs al final: 20,273
+2026-09-25 13:30:18,287 | INFO |   daily_aggregates_2009.parquet: 221 filas
+2026-09-25 13:30:18,288 | INFO | Leyendo semana 2009-W34 de capa1...
+2026-09-25 13:30:18,294 | INFO |   UTXO count al inicio de la semana: 20,273
+2026-09-25 13:30:18,296 | INFO |   Semana 2009-W34 procesada: 7 días, 0 filas de bandas, UTXOs al final: 20,376
+2026-09-25 13:30:18,306 | INFO |   daily_aggregates_2009.parquet: 228 filas
+2026-09-25 13:30:18,307 | INFO | Leyendo semana 2009-W35 de capa1...
+2026-09-25 13:30:18,317 | INFO |   UTXO count al inicio de la semana: 20,376
+2026-09-25 13:30:18,322 | INFO |   Semana 2009-W35 procesada: 7 días, 3 filas de bandas, UTXOs al final: 20,725
+2026-09-25 13:30:18,333 | INFO |   daily_aggregates_2009.parquet: 235 filas
+2026-09-25 13:30:18,341 | INFO |   age_band_aggregates_2009.parquet: 130 filas
+2026-09-25 13:30:18,341 | INFO | Leyendo semana 2009-W36 de capa1...
+2026-09-25 13:30:18,353 | INFO |   UTXO count al inicio de la semana: 20,725
+2026-09-25 13:30:18,380 | INFO |   Semana 2009-W36 procesada: 7 días, 2 filas de bandas, UTXOs al final: 21,206
+2026-09-25 13:30:18,392 | INFO |   daily_aggregates_2009.parquet: 242 filas
+2026-09-25 13:30:18,400 | INFO |   age_band_aggregates_2009.parquet: 132 filas
+2026-09-25 13:30:18,400 | INFO | Leyendo semana 2009-W37 de capa1...
+2026-09-25 13:30:18,412 | INFO |   UTXO count al inicio de la semana: 21,206
+2026-09-25 13:30:18,419 | INFO |   Semana 2009-W37 procesada: 7 días, 1 filas de bandas, UTXOs al final: 21,673
+2026-09-25 13:30:18,430 | INFO |   daily_aggregates_2009.parquet: 249 filas
+2026-09-25 13:30:18,438 | INFO |   age_band_aggregates_2009.parquet: 133 filas
+2026-09-25 13:30:18,438 | INFO | Leyendo semana 2009-W38 de capa1...
+2026-09-25 13:30:18,450 | INFO |   UTXO count al inicio de la semana: 21,673
+2026-09-25 13:30:18,456 | INFO |   Semana 2009-W38 procesada: 7 días, 3 filas de bandas, UTXOs al final: 22,078
+2026-09-25 13:30:18,467 | INFO |   daily_aggregates_2009.parquet: 256 filas
+2026-09-25 13:30:18,475 | INFO |   age_band_aggregates_2009.parquet: 136 filas
+2026-09-25 13:30:18,475 | INFO | Leyendo semana 2009-W39 de capa1...
+2026-09-25 13:30:18,488 | INFO |   UTXO count al inicio de la semana: 22,078
+2026-09-25 13:30:18,515 | INFO |   Semana 2009-W39 procesada: 7 días, 5 filas de bandas, UTXOs al final: 22,498
+2026-09-25 13:30:18,527 | INFO |   daily_aggregates_2009.parquet: 263 filas
+2026-09-25 13:30:18,536 | INFO |   age_band_aggregates_2009.parquet: 141 filas
+2026-09-25 13:30:18,536 | INFO | Leyendo semana 2009-W40 de capa1...
+2026-09-25 13:30:18,548 | INFO |   UTXO count al inicio de la semana: 22,498
+2026-09-25 13:30:18,556 | INFO |   Semana 2009-W40 procesada: 7 días, 3 filas de bandas, UTXOs al final: 22,971
+2026-09-25 13:30:18,566 | INFO |   daily_aggregates_2009.parquet: 270 filas
+2026-09-25 13:30:18,574 | INFO |   age_band_aggregates_2009.parquet: 144 filas
+2026-09-25 13:30:18,574 | INFO | Leyendo semana 2009-W41 de capa1...
+2026-09-25 13:30:18,585 | INFO |   UTXO count al inicio de la semana: 22,971
+2026-09-25 13:30:18,591 | INFO |   Semana 2009-W41 procesada: 7 días, 2 filas de bandas, UTXOs al final: 23,416
+2026-09-25 13:30:18,602 | INFO |   daily_aggregates_2009.parquet: 277 filas
+2026-09-25 13:30:18,609 | INFO |   age_band_aggregates_2009.parquet: 146 filas
+2026-09-25 13:30:18,609 | INFO | Leyendo semana 2009-W42 de capa1...
+2026-09-25 13:30:18,621 | INFO |   UTXO count al inicio de la semana: 23,416
+2026-09-25 13:30:18,649 | INFO |   Semana 2009-W42 procesada: 7 días, 8 filas de bandas, UTXOs al final: 23,703
+2026-09-25 13:30:18,661 | INFO |   daily_aggregates_2009.parquet: 284 filas
+2026-09-25 13:30:18,668 | INFO |   age_band_aggregates_2009.parquet: 154 filas
+2026-09-25 13:30:18,669 | INFO | Leyendo semana 2009-W43 de capa1...
+2026-09-25 13:30:18,682 | INFO |   UTXO count al inicio de la semana: 23,703
+2026-09-25 13:30:18,691 | INFO |   Semana 2009-W43 procesada: 7 días, 7 filas de bandas, UTXOs al final: 24,146
+2026-09-25 13:30:18,702 | INFO |   daily_aggregates_2009.parquet: 291 filas
+2026-09-25 13:30:18,709 | INFO |   age_band_aggregates_2009.parquet: 161 filas
+2026-09-25 13:30:18,710 | INFO | Leyendo semana 2009-W44 de capa1...
+2026-09-25 13:30:18,720 | INFO |   UTXO count al inicio de la semana: 24,146
+2026-09-25 13:30:18,725 | INFO |   Semana 2009-W44 procesada: 7 días, 3 filas de bandas, UTXOs al final: 24,470
+2026-09-25 13:30:18,735 | INFO |   daily_aggregates_2009.parquet: 298 filas
+2026-09-25 13:30:18,742 | INFO |   age_band_aggregates_2009.parquet: 164 filas
+2026-09-25 13:30:18,743 | INFO | Leyendo semana 2009-W45 de capa1...
+2026-09-25 13:30:18,753 | INFO |   UTXO count al inicio de la semana: 24,470
+2026-09-25 13:30:18,781 | INFO |   Semana 2009-W45 procesada: 7 días, 2 filas de bandas, UTXOs al final: 24,848
+2026-09-25 13:30:18,793 | INFO |   daily_aggregates_2009.parquet: 305 filas
+2026-09-25 13:30:18,801 | INFO |   age_band_aggregates_2009.parquet: 166 filas
+2026-09-25 13:30:18,802 | INFO | Leyendo semana 2009-W46 de capa1...
+2026-09-25 13:30:18,815 | INFO |   UTXO count al inicio de la semana: 24,848
+2026-09-25 13:30:18,822 | INFO |   Semana 2009-W46 procesada: 7 días, 5 filas de bandas, UTXOs al final: 25,325
+2026-09-25 13:30:18,834 | INFO |   daily_aggregates_2009.parquet: 312 filas
+2026-09-25 13:30:18,842 | INFO |   age_band_aggregates_2009.parquet: 171 filas
+2026-09-25 13:30:18,843 | INFO | Leyendo semana 2009-W47 de capa1...
+2026-09-25 13:30:18,856 | INFO |   UTXO count al inicio de la semana: 25,325
+2026-09-25 13:30:18,864 | INFO |   Semana 2009-W47 procesada: 7 días, 3 filas de bandas, UTXOs al final: 25,839
+2026-09-25 13:30:18,875 | INFO |   daily_aggregates_2009.parquet: 319 filas
+2026-09-25 13:30:18,882 | INFO |   age_band_aggregates_2009.parquet: 174 filas
+2026-09-25 13:30:18,882 | INFO | Leyendo semana 2009-W48 de capa1...
+2026-09-25 13:30:18,894 | INFO |   UTXO count al inicio de la semana: 25,839
+2026-09-25 13:30:18,927 | INFO |   Semana 2009-W48 procesada: 7 días, 0 filas de bandas, UTXOs al final: 26,407
+2026-09-25 13:30:18,939 | INFO |   daily_aggregates_2009.parquet: 326 filas
+2026-09-25 13:30:18,940 | INFO | Leyendo semana 2009-W49 de capa1...
+2026-09-25 13:30:18,952 | INFO |   UTXO count al inicio de la semana: 26,407
+2026-09-25 13:30:18,961 | INFO |   Semana 2009-W49 procesada: 7 días, 9 filas de bandas, UTXOs al final: 26,758
+2026-09-25 13:30:18,972 | INFO |   daily_aggregates_2009.parquet: 333 filas
+2026-09-25 13:30:18,979 | INFO |   age_band_aggregates_2009.parquet: 183 filas
+2026-09-25 13:30:18,979 | INFO | Leyendo semana 2009-W50 de capa1...
+2026-09-25 13:30:18,994 | INFO |   UTXO count al inicio de la semana: 26,758
+2026-09-25 13:30:19,026 | INFO |   Semana 2009-W50 procesada: 7 días, 5 filas de bandas, UTXOs al final: 27,412
+2026-09-25 13:30:19,039 | INFO |   daily_aggregates_2009.parquet: 340 filas
+2026-09-25 13:30:19,046 | INFO |   age_band_aggregates_2009.parquet: 188 filas
+2026-09-25 13:30:19,046 | INFO | Leyendo semana 2009-W51 de capa1...
+2026-09-25 13:30:19,068 | INFO |   UTXO count al inicio de la semana: 27,412
+2026-09-25 13:30:19,083 | INFO |   Semana 2009-W51 procesada: 7 días, 9 filas de bandas, UTXOs al final: 28,175
+2026-09-25 13:30:19,095 | INFO |   daily_aggregates_2009.parquet: 347 filas
+2026-09-25 13:30:19,102 | INFO |   age_band_aggregates_2009.parquet: 197 filas
+2026-09-25 13:30:19,103 | INFO | Leyendo semana 2009-W52 de capa1...
+2026-09-25 13:30:19,123 | INFO |   UTXO count al inicio de la semana: 28,175
+2026-09-25 13:30:19,159 | INFO |   Semana 2009-W52 procesada: 7 días, 4 filas de bandas, UTXOs al final: 29,307
+2026-09-25 13:30:19,173 | INFO |   daily_aggregates_2009.parquet: 354 filas
+2026-09-25 13:30:19,180 | INFO |   age_band_aggregates_2009.parquet: 201 filas
+2026-09-25 13:30:19,181 | INFO | Leyendo semana 2009-W53 de capa1...
+2026-09-25 13:30:19,199 | INFO |   UTXO count al inicio de la semana: 29,307
+2026-09-25 13:30:19,213 | INFO |   Semana 2009-W53 procesada: 7 días, 1 filas de bandas, UTXOs al final: 30,338
+2026-09-25 13:30:19,225 | INFO |   daily_aggregates_2009.parquet: 358 filas
+2026-09-25 13:30:19,229 | INFO |   daily_aggregates_2010.parquet: 3 filas
+2026-09-25 13:30:19,232 | INFO |   age_band_aggregates_2010.parquet: 1 filas
+2026-09-25 13:30:19,232 | INFO | Leyendo semana 2010-W01 de capa1...
+2026-09-25 13:30:19,253 | INFO |   UTXO count al inicio de la semana: 30,338
+2026-09-25 13:30:19,293 | INFO |   Semana 2010-W01 procesada: 7 días, 2 filas de bandas, UTXOs al final: 31,449
+2026-09-25 13:30:19,306 | INFO |   daily_aggregates_2010.parquet: 10 filas
+2026-09-25 13:30:19,313 | INFO |   age_band_aggregates_2010.parquet: 3 filas
+2026-09-25 13:30:19,313 | INFO | Leyendo semana 2010-W02 de capa1...
+2026-09-25 13:30:19,334 | INFO |   UTXO count al inicio de la semana: 31,449
+2026-09-25 13:30:19,349 | INFO |   Semana 2010-W02 procesada: 7 días, 10 filas de bandas, UTXOs al final: 32,246
+2026-09-25 13:30:19,361 | INFO |   daily_aggregates_2010.parquet: 17 filas
+2026-09-25 13:30:19,369 | INFO |   age_band_aggregates_2010.parquet: 13 filas
+2026-09-25 13:30:19,370 | INFO | Leyendo semana 2010-W03 de capa1...
+2026-09-25 13:30:19,390 | INFO |   UTXO count al inicio de la semana: 32,246
+2026-09-25 13:30:19,429 | INFO |   Semana 2010-W03 procesada: 7 días, 7 filas de bandas, UTXOs al final: 33,273
+2026-09-25 13:30:19,443 | INFO |   daily_aggregates_2010.parquet: 24 filas
+2026-09-25 13:30:19,450 | INFO |   age_band_aggregates_2010.parquet: 20 filas
+2026-09-25 13:30:19,450 | INFO | Leyendo semana 2010-W04 de capa1...
+2026-09-25 13:30:19,475 | INFO |   UTXO count al inicio de la semana: 33,273
+2026-09-25 13:30:19,492 | INFO |   Semana 2010-W04 procesada: 7 días, 15 filas de bandas, UTXOs al final: 34,426
+2026-09-25 13:30:19,504 | INFO |   daily_aggregates_2010.parquet: 31 filas
+2026-09-25 13:30:19,511 | INFO |   age_band_aggregates_2010.parquet: 35 filas
+2026-09-25 13:30:19,512 | INFO | Leyendo semana 2010-W05 de capa1...
+2026-09-25 13:30:19,539 | INFO |   UTXO count al inicio de la semana: 34,426
+2026-09-25 13:30:19,604 | INFO |   Semana 2010-W05 procesada: 7 días, 17 filas de bandas, UTXOs al final: 35,562
+2026-09-25 13:30:19,616 | INFO |   daily_aggregates_2010.parquet: 38 filas
+2026-09-25 13:30:19,623 | INFO |   age_band_aggregates_2010.parquet: 52 filas
+2026-09-25 13:30:19,624 | INFO | Leyendo semana 2010-W06 de capa1...
+2026-09-25 13:30:19,651 | INFO |   UTXO count al inicio de la semana: 35,562
+2026-09-25 13:30:19,673 | INFO |   Semana 2010-W06 procesada: 7 días, 25 filas de bandas, UTXOs al final: 35,556
+2026-09-25 13:30:19,685 | INFO |   daily_aggregates_2010.parquet: 45 filas
+2026-09-25 13:30:19,692 | INFO |   age_band_aggregates_2010.parquet: 77 filas
+2026-09-25 13:30:19,693 | INFO | Leyendo semana 2010-W07 de capa1...
+2026-09-25 13:30:19,719 | INFO |   UTXO count al inicio de la semana: 35,556
+2026-09-25 13:30:19,767 | INFO |   Semana 2010-W07 procesada: 7 días, 20 filas de bandas, UTXOs al final: 36,716
+2026-09-25 13:30:19,780 | INFO |   daily_aggregates_2010.parquet: 52 filas
+2026-09-25 13:30:19,787 | INFO |   age_band_aggregates_2010.parquet: 97 filas
+2026-09-25 13:30:19,788 | INFO | Leyendo semana 2010-W08 de capa1...
+2026-09-25 13:30:19,813 | INFO |   UTXO count al inicio de la semana: 36,716
+2026-09-25 13:30:19,833 | INFO |   Semana 2010-W08 procesada: 7 días, 21 filas de bandas, UTXOs al final: 37,427
+2026-09-25 13:30:19,846 | INFO |   daily_aggregates_2010.parquet: 59 filas
+2026-09-25 13:30:19,853 | INFO |   age_band_aggregates_2010.parquet: 118 filas
+2026-09-25 13:30:19,853 | INFO | Leyendo semana 2010-W09 de capa1...
+2026-09-25 13:30:19,880 | INFO |   UTXO count al inicio de la semana: 37,427
+2026-09-25 13:30:19,929 | INFO |   Semana 2010-W09 procesada: 7 días, 22 filas de bandas, UTXOs al final: 37,921
+2026-09-25 13:30:19,942 | INFO |   daily_aggregates_2010.parquet: 66 filas
+2026-09-25 13:30:19,949 | INFO |   age_band_aggregates_2010.parquet: 140 filas
+2026-09-25 13:30:19,949 | INFO | Leyendo semana 2010-W10 de capa1...
+2026-09-25 13:30:19,969 | INFO |   UTXO count al inicio de la semana: 37,921
+2026-09-25 13:30:19,985 | INFO |   Semana 2010-W10 procesada: 7 días, 18 filas de bandas, UTXOs al final: 38,492
+2026-09-25 13:30:19,996 | INFO |   daily_aggregates_2010.parquet: 73 filas
+2026-09-25 13:30:20,004 | INFO |   age_band_aggregates_2010.parquet: 158 filas
+2026-09-25 13:30:20,005 | INFO | Leyendo semana 2010-W11 de capa1...
+2026-09-25 13:30:20,025 | INFO |   UTXO count al inicio de la semana: 38,492
+2026-09-25 13:30:20,071 | INFO |   Semana 2010-W11 procesada: 7 días, 22 filas de bandas, UTXOs al final: 39,273
+2026-09-25 13:30:20,083 | INFO |   daily_aggregates_2010.parquet: 80 filas
+2026-09-25 13:30:20,090 | INFO |   age_band_aggregates_2010.parquet: 180 filas
+2026-09-25 13:30:20,091 | INFO | Leyendo semana 2010-W12 de capa1...
+2026-09-25 13:30:20,117 | INFO |   UTXO count al inicio de la semana: 39,273
+2026-09-25 13:30:20,137 | INFO |   Semana 2010-W12 procesada: 7 días, 29 filas de bandas, UTXOs al final: 40,045
+2026-09-25 13:30:20,149 | INFO |   daily_aggregates_2010.parquet: 87 filas
+2026-09-25 13:30:20,156 | INFO |   age_band_aggregates_2010.parquet: 209 filas
+2026-09-25 13:30:20,157 | INFO | Leyendo semana 2010-W13 de capa1...
+2026-09-25 13:30:20,180 | INFO |   UTXO count al inicio de la semana: 40,045
+2026-09-25 13:30:20,228 | INFO |   Semana 2010-W13 procesada: 7 días, 24 filas de bandas, UTXOs al final: 41,135
+2026-09-25 13:30:20,241 | INFO |   daily_aggregates_2010.parquet: 94 filas
+2026-09-25 13:30:20,248 | INFO |   age_band_aggregates_2010.parquet: 233 filas
+2026-09-25 13:30:20,249 | INFO | Leyendo semana 2010-W14 de capa1...
+2026-09-25 13:30:20,277 | INFO |   UTXO count al inicio de la semana: 41,135
+2026-09-25 13:30:20,325 | INFO |   Semana 2010-W14 procesada: 7 días, 35 filas de bandas, UTXOs al final: 41,717
+2026-09-25 13:30:20,338 | INFO |   daily_aggregates_2010.parquet: 101 filas
+2026-09-25 13:30:20,345 | INFO |   age_band_aggregates_2010.parquet: 268 filas
+2026-09-25 13:30:20,345 | INFO | Leyendo semana 2010-W15 de capa1...
+2026-09-25 13:30:20,418 | INFO |   UTXO count al inicio de la semana: 41,717
+2026-09-25 13:30:20,497 | INFO |   Semana 2010-W15 procesada: 7 días, 32 filas de bandas, UTXOs al final: 44,998
+2026-09-25 13:30:20,514 | INFO |   daily_aggregates_2010.parquet: 108 filas
+2026-09-25 13:30:20,521 | INFO |   age_band_aggregates_2010.parquet: 300 filas
+2026-09-25 13:30:20,522 | INFO | Leyendo semana 2010-W16 de capa1...
+2026-09-25 13:30:20,565 | INFO |   UTXO count al inicio de la semana: 44,998
+2026-09-25 13:30:20,618 | INFO |   Semana 2010-W16 procesada: 7 días, 32 filas de bandas, UTXOs al final: 45,491
+2026-09-25 13:30:20,631 | INFO |   daily_aggregates_2010.parquet: 115 filas
+2026-09-25 13:30:20,639 | INFO |   age_band_aggregates_2010.parquet: 332 filas
+2026-09-25 13:30:20,639 | INFO | Leyendo semana 2010-W17 de capa1...
+2026-09-25 13:30:20,662 | INFO |   UTXO count al inicio de la semana: 45,491
+2026-09-25 13:30:20,682 | INFO |   Semana 2010-W17 procesada: 7 días, 26 filas de bandas, UTXOs al final: 46,416
+2026-09-25 13:30:20,694 | INFO |   daily_aggregates_2010.parquet: 122 filas
+2026-09-25 13:30:20,702 | INFO |   age_band_aggregates_2010.parquet: 358 filas
+2026-09-25 13:30:20,703 | INFO | Leyendo semana 2010-W18 de capa1...
+2026-09-25 13:30:20,728 | INFO |   UTXO count al inicio de la semana: 46,416
+2026-09-25 13:30:20,785 | INFO |   Semana 2010-W18 procesada: 7 días, 28 filas de bandas, UTXOs al final: 46,402
+2026-09-25 13:30:20,798 | INFO |   daily_aggregates_2010.parquet: 129 filas
+2026-09-25 13:30:20,806 | INFO |   age_band_aggregates_2010.parquet: 386 filas
+2026-09-25 13:30:20,806 | INFO | Leyendo semana 2010-W19 de capa1...
+2026-09-25 13:30:20,829 | INFO |   UTXO count al inicio de la semana: 46,402
+2026-09-25 13:30:20,883 | INFO |   Semana 2010-W19 procesada: 7 días, 31 filas de bandas, UTXOs al final: 44,973
+2026-09-25 13:30:20,895 | INFO |   daily_aggregates_2010.parquet: 136 filas
+2026-09-25 13:30:20,903 | INFO |   age_band_aggregates_2010.parquet: 417 filas
+2026-09-25 13:30:20,903 | INFO | Leyendo semana 2010-W20 de capa1...
+2026-09-25 13:30:20,931 | INFO |   UTXO count al inicio de la semana: 44,973
+2026-09-25 13:30:20,984 | INFO |   Semana 2010-W20 procesada: 7 días, 30 filas de bandas, UTXOs al final: 45,501
+2026-09-25 13:30:20,997 | INFO |   daily_aggregates_2010.parquet: 143 filas
+2026-09-25 13:30:21,005 | INFO |   age_band_aggregates_2010.parquet: 447 filas
+2026-09-25 13:30:21,005 | INFO | Leyendo semana 2010-W21 de capa1...
+2026-09-25 13:30:21,034 | INFO |   UTXO count al inicio de la semana: 45,501
+2026-09-25 13:30:21,087 | INFO |   Semana 2010-W21 procesada: 7 días, 29 filas de bandas, UTXOs al final: 46,363
+2026-09-25 13:30:21,099 | INFO |   daily_aggregates_2010.parquet: 150 filas
+2026-09-25 13:30:21,107 | INFO |   age_band_aggregates_2010.parquet: 476 filas
+2026-09-25 13:30:21,108 | INFO | Leyendo semana 2010-W22 de capa1...
+2026-09-25 13:30:21,130 | INFO |   UTXO count al inicio de la semana: 46,363
+2026-09-25 13:30:21,151 | INFO |   Semana 2010-W22 procesada: 7 días, 25 filas de bandas, UTXOs al final: 46,991
+2026-09-25 13:30:21,163 | INFO |   daily_aggregates_2010.parquet: 157 filas
+2026-09-25 13:30:21,172 | INFO |   age_band_aggregates_2010.parquet: 501 filas
+2026-09-25 13:30:21,172 | INFO | Leyendo semana 2010-W23 de capa1...
+2026-09-25 13:30:21,197 | INFO |   UTXO count al inicio de la semana: 46,991
+2026-09-25 13:30:21,254 | INFO |   Semana 2010-W23 procesada: 7 días, 29 filas de bandas, UTXOs al final: 47,536
+2026-09-25 13:30:21,268 | INFO |   daily_aggregates_2010.parquet: 164 filas
+2026-09-25 13:30:21,277 | INFO |   age_band_aggregates_2010.parquet: 530 filas
+2026-09-25 13:30:21,277 | INFO | Leyendo semana 2010-W24 de capa1...
+2026-09-25 13:30:21,305 | INFO |   UTXO count al inicio de la semana: 47,536
+2026-09-25 13:30:21,356 | INFO |   Semana 2010-W24 procesada: 8 días, 32 filas de bandas, UTXOs al final: 48,116
+2026-09-25 13:30:21,370 | INFO |   daily_aggregates_2010.parquet: 171 filas
+2026-09-25 13:30:21,378 | INFO |   age_band_aggregates_2010.parquet: 562 filas
+2026-09-25 13:30:21,378 | INFO | Leyendo semana 2010-W25 de capa1...
+2026-09-25 13:30:21,405 | INFO |   UTXO count al inicio de la semana: 48,116
+2026-09-25 13:30:21,456 | INFO |   Semana 2010-W25 procesada: 7 días, 24 filas de bandas, UTXOs al final: 48,979
+2026-09-25 13:30:21,469 | INFO |   daily_aggregates_2010.parquet: 178 filas
+2026-09-25 13:30:21,477 | INFO |   age_band_aggregates_2010.parquet: 586 filas
+2026-09-25 13:30:21,478 | INFO | Leyendo semana 2010-W26 de capa1...
+2026-09-25 13:30:21,511 | INFO |   UTXO count al inicio de la semana: 48,979
+2026-09-25 13:30:21,574 | INFO |   Semana 2010-W26 procesada: 7 días, 30 filas de bandas, UTXOs al final: 48,388
+2026-09-25 13:30:21,587 | INFO |   daily_aggregates_2010.parquet: 185 filas
+2026-09-25 13:30:21,595 | INFO |   age_band_aggregates_2010.parquet: 616 filas
+2026-09-25 13:30:21,595 | INFO | Leyendo semana 2010-W27 de capa1...
+2026-09-25 13:30:21,624 | INFO |   UTXO count al inicio de la semana: 48,388
+2026-09-25 13:30:21,680 | INFO |   Semana 2010-W27 procesada: 7 días, 33 filas de bandas, UTXOs al final: 49,168
+2026-09-25 13:30:21,693 | INFO |   daily_aggregates_2010.parquet: 192 filas
+2026-09-25 13:30:21,701 | INFO |   age_band_aggregates_2010.parquet: 649 filas
+2026-09-25 13:30:21,701 | INFO | Leyendo semana 2010-W28 de capa1...
+2026-09-25 13:30:21,886 | INFO |   UTXO count al inicio de la semana: 49,168
+2026-09-25 13:30:22,077 | INFO |   Semana 2010-W28 procesada: 7 días, 38 filas de bandas, UTXOs al final: 57,528
+2026-09-25 13:30:22,099 | INFO |   daily_aggregates_2010.parquet: 199 filas
+2026-09-25 13:30:22,107 | INFO |   age_band_aggregates_2010.parquet: 687 filas
+2026-09-25 13:30:22,108 | INFO | Leyendo semana 2010-W29 de capa1...
+2026-09-25 13:30:22,200 | INFO |   UTXO count al inicio de la semana: 57,528
+2026-09-25 13:30:22,301 | INFO |   Semana 2010-W29 procesada: 7 días, 38 filas de bandas, UTXOs al final: 58,635
+2026-09-25 13:30:22,318 | INFO |   daily_aggregates_2010.parquet: 206 filas
+2026-09-25 13:30:22,325 | INFO |   age_band_aggregates_2010.parquet: 725 filas
+2026-09-25 13:30:22,325 | INFO | Leyendo semana 2010-W30 de capa1...
+2026-09-25 13:30:22,398 | INFO |   UTXO count al inicio de la semana: 58,635
+2026-09-25 13:30:22,494 | INFO |   Semana 2010-W30 procesada: 7 días, 38 filas de bandas, UTXOs al final: 58,137
+2026-09-25 13:30:22,509 | INFO |   daily_aggregates_2010.parquet: 213 filas
+2026-09-25 13:30:22,517 | INFO |   age_band_aggregates_2010.parquet: 763 filas
+2026-09-25 13:30:22,518 | INFO | Leyendo semana 2010-W31 de capa1...
+2026-09-25 13:30:22,566 | INFO |   UTXO count al inicio de la semana: 58,137
+2026-09-25 13:30:22,644 | INFO |   Semana 2010-W31 procesada: 7 días, 38 filas de bandas, UTXOs al final: 58,925
+2026-09-25 13:30:22,658 | INFO |   daily_aggregates_2010.parquet: 220 filas
+2026-09-25 13:30:22,666 | INFO |   age_band_aggregates_2010.parquet: 801 filas
+2026-09-25 13:30:22,666 | INFO | Leyendo semana 2010-W32 de capa1...
+2026-09-25 13:30:22,713 | INFO |   UTXO count al inicio de la semana: 58,925
+2026-09-25 13:30:22,793 | INFO |   Semana 2010-W32 procesada: 7 días, 34 filas de bandas, UTXOs al final: 58,743
+2026-09-25 13:30:22,807 | INFO |   daily_aggregates_2010.parquet: 227 filas
+2026-09-25 13:30:22,815 | INFO |   age_band_aggregates_2010.parquet: 835 filas
+2026-09-25 13:30:22,815 | INFO | Leyendo semana 2010-W33 de capa1...
+2026-09-25 13:30:22,857 | INFO |   UTXO count al inicio de la semana: 58,743
+2026-09-25 13:30:22,933 | INFO |   Semana 2010-W33 procesada: 7 días, 34 filas de bandas, UTXOs al final: 58,624
+2026-09-25 13:30:22,947 | INFO |   daily_aggregates_2010.parquet: 234 filas
+2026-09-25 13:30:22,955 | INFO |   age_band_aggregates_2010.parquet: 869 filas
+2026-09-25 13:30:22,955 | INFO | Leyendo semana 2010-W34 de capa1...
+2026-09-25 13:30:22,995 | INFO |   UTXO count al inicio de la semana: 58,624
+2026-09-25 13:30:23,067 | INFO |   Semana 2010-W34 procesada: 7 días, 30 filas de bandas, UTXOs al final: 58,995
+2026-09-25 13:30:23,082 | INFO |   daily_aggregates_2010.parquet: 241 filas
+2026-09-25 13:30:23,090 | INFO |   age_band_aggregates_2010.parquet: 899 filas
+2026-09-25 13:30:23,090 | INFO | Leyendo semana 2010-W35 de capa1...
+2026-09-25 13:30:23,129 | INFO |   UTXO count al inicio de la semana: 58,995
+2026-09-25 13:30:23,203 | INFO |   Semana 2010-W35 procesada: 7 días, 37 filas de bandas, UTXOs al final: 59,247
+2026-09-25 13:30:23,218 | INFO |   daily_aggregates_2010.parquet: 248 filas
+2026-09-25 13:30:23,226 | INFO |   age_band_aggregates_2010.parquet: 936 filas
+2026-09-25 13:30:23,226 | INFO | Leyendo semana 2010-W36 de capa1...
+2026-09-25 13:30:23,262 | INFO |   UTXO count al inicio de la semana: 59,247
+2026-09-25 13:30:23,331 | INFO |   Semana 2010-W36 procesada: 7 días, 34 filas de bandas, UTXOs al final: 59,959
+2026-09-25 13:30:23,345 | INFO |   daily_aggregates_2010.parquet: 255 filas
+2026-09-25 13:30:23,353 | INFO |   age_band_aggregates_2010.parquet: 970 filas
+2026-09-25 13:30:23,353 | INFO | Leyendo semana 2010-W37 de capa1...
+2026-09-25 13:30:23,398 | INFO |   UTXO count al inicio de la semana: 59,959
+2026-09-25 13:30:23,477 | INFO |   Semana 2010-W37 procesada: 7 días, 37 filas de bandas, UTXOs al final: 60,284
+2026-09-25 13:30:23,491 | INFO |   daily_aggregates_2010.parquet: 262 filas
+2026-09-25 13:30:23,499 | INFO |   age_band_aggregates_2010.parquet: 1007 filas
+2026-09-25 13:30:23,500 | INFO | Leyendo semana 2010-W38 de capa1...
+2026-09-25 13:30:23,581 | INFO |   UTXO count al inicio de la semana: 60,284
+2026-09-25 13:30:23,669 | INFO |   Semana 2010-W38 procesada: 7 días, 34 filas de bandas, UTXOs al final: 61,034
+2026-09-25 13:30:23,685 | INFO |   daily_aggregates_2010.parquet: 269 filas
+2026-09-25 13:30:23,693 | INFO |   age_band_aggregates_2010.parquet: 1041 filas
+2026-09-25 13:30:23,693 | INFO | Leyendo semana 2010-W39 de capa1...
+2026-09-25 13:30:23,756 | INFO |   UTXO count al inicio de la semana: 61,034
+2026-09-25 13:30:23,851 | INFO |   Semana 2010-W39 procesada: 7 días, 37 filas de bandas, UTXOs al final: 60,561
+2026-09-25 13:30:23,867 | INFO |   daily_aggregates_2010.parquet: 276 filas
+2026-09-25 13:30:23,875 | INFO |   age_band_aggregates_2010.parquet: 1078 filas
+2026-09-25 13:30:23,875 | INFO | Leyendo semana 2010-W40 de capa1...
+2026-09-25 13:30:23,918 | INFO |   UTXO count al inicio de la semana: 60,561
+2026-09-25 13:30:23,994 | INFO |   Semana 2010-W40 procesada: 7 días, 38 filas de bandas, UTXOs al final: 60,748
+2026-09-25 13:30:24,008 | INFO |   daily_aggregates_2010.parquet: 283 filas
+2026-09-25 13:30:24,016 | INFO |   age_band_aggregates_2010.parquet: 1116 filas
+2026-09-25 13:30:24,017 | INFO | Leyendo semana 2010-W41 de capa1...
+2026-09-25 13:30:24,059 | INFO |   UTXO count al inicio de la semana: 60,748
+2026-09-25 13:30:24,136 | INFO |   Semana 2010-W41 procesada: 7 días, 42 filas de bandas, UTXOs al final: 61,034
+2026-09-25 13:30:24,152 | INFO |   daily_aggregates_2010.parquet: 290 filas
+2026-09-25 13:30:24,160 | INFO |   age_band_aggregates_2010.parquet: 1158 filas
+2026-09-25 13:30:24,160 | INFO | Leyendo semana 2010-W42 de capa1...
+2026-09-25 13:30:24,225 | INFO |   UTXO count al inicio de la semana: 61,034
+2026-09-25 13:30:24,318 | INFO |   Semana 2010-W42 procesada: 7 días, 34 filas de bandas, UTXOs al final: 62,129
+2026-09-25 13:30:24,333 | INFO |   daily_aggregates_2010.parquet: 297 filas
+2026-09-25 13:30:24,341 | INFO |   age_band_aggregates_2010.parquet: 1192 filas
+2026-09-25 13:30:24,342 | INFO | Leyendo semana 2010-W43 de capa1...
+2026-09-25 13:30:24,394 | INFO |   UTXO count al inicio de la semana: 62,129
+2026-09-25 13:30:24,479 | INFO |   Semana 2010-W43 procesada: 7 días, 39 filas de bandas, UTXOs al final: 62,753
+2026-09-25 13:30:24,494 | INFO |   daily_aggregates_2010.parquet: 304 filas
+2026-09-25 13:30:24,501 | INFO |   age_band_aggregates_2010.parquet: 1231 filas
+2026-09-25 13:30:24,502 | INFO | Leyendo semana 2010-W44 de capa1...
+2026-09-25 13:30:24,545 | INFO |   UTXO count al inicio de la semana: 62,753
+2026-09-25 13:30:24,642 | INFO |   Semana 2010-W44 procesada: 7 días, 37 filas de bandas, UTXOs al final: 63,335
+2026-09-25 13:30:24,657 | INFO |   daily_aggregates_2010.parquet: 311 filas
+2026-09-25 13:30:24,664 | INFO |   age_band_aggregates_2010.parquet: 1268 filas
+2026-09-25 13:30:24,665 | INFO | Leyendo semana 2010-W45 de capa1...
+2026-09-25 13:30:24,712 | INFO |   UTXO count al inicio de la semana: 63,335
+2026-09-25 13:30:24,794 | INFO |   Semana 2010-W45 procesada: 7 días, 39 filas de bandas, UTXOs al final: 63,228
+2026-09-25 13:30:24,809 | INFO |   daily_aggregates_2010.parquet: 318 filas
+2026-09-25 13:30:24,818 | INFO |   age_band_aggregates_2010.parquet: 1307 filas
+2026-09-25 13:30:24,818 | INFO | Leyendo semana 2010-W46 de capa1...
+2026-09-25 13:30:25,327 | INFO |   UTXO count al inicio de la semana: 63,228
+2026-09-25 13:30:25,671 | INFO |   Semana 2010-W46 procesada: 7 días, 40 filas de bandas, UTXOs al final: 67,581
+2026-09-25 13:30:25,709 | INFO |   daily_aggregates_2010.parquet: 325 filas
+2026-09-25 13:30:25,718 | INFO |   age_band_aggregates_2010.parquet: 1347 filas
+2026-09-25 13:30:25,719 | INFO | Leyendo semana 2010-W47 de capa1...
+2026-09-25 13:30:25,872 | INFO |   UTXO count al inicio de la semana: 67,581
+2026-09-25 13:30:26,030 | INFO |   Semana 2010-W47 procesada: 7 días, 43 filas de bandas, UTXOs al final: 65,356
+2026-09-25 13:30:26,050 | INFO |   daily_aggregates_2010.parquet: 332 filas
+2026-09-25 13:30:26,058 | INFO |   age_band_aggregates_2010.parquet: 1390 filas
+2026-09-25 13:30:26,058 | INFO | Leyendo semana 2010-W48 de capa1...
+2026-09-25 13:30:26,106 | INFO |   UTXO count al inicio de la semana: 65,356
+2026-09-25 13:30:26,192 | INFO |   Semana 2010-W48 procesada: 7 días, 38 filas de bandas, UTXOs al final: 66,146
+2026-09-25 13:30:26,207 | INFO |   daily_aggregates_2010.parquet: 339 filas
+2026-09-25 13:30:26,215 | INFO |   age_band_aggregates_2010.parquet: 1428 filas
+2026-09-25 13:30:26,216 | INFO | Leyendo semana 2010-W49 de capa1...
+2026-09-25 13:30:26,269 | INFO |   UTXO count al inicio de la semana: 66,146
+2026-09-25 13:30:26,360 | INFO |   Semana 2010-W49 procesada: 7 días, 41 filas de bandas, UTXOs al final: 67,811
+2026-09-25 13:30:26,374 | INFO |   daily_aggregates_2010.parquet: 346 filas
+2026-09-25 13:30:26,383 | INFO |   age_band_aggregates_2010.parquet: 1469 filas
+2026-09-25 13:30:26,384 | INFO | Leyendo semana 2010-W50 de capa1...
+2026-09-25 13:30:26,443 | INFO |   UTXO count al inicio de la semana: 67,811
+2026-09-25 13:30:26,541 | INFO |   Semana 2010-W50 procesada: 7 días, 37 filas de bandas, UTXOs al final: 68,782
+2026-09-25 13:30:26,558 | INFO |   daily_aggregates_2010.parquet: 353 filas
+2026-09-25 13:30:26,565 | INFO |   age_band_aggregates_2010.parquet: 1506 filas
+2026-09-25 13:30:26,566 | INFO | Leyendo semana 2010-W51 de capa1...
+2026-09-25 13:30:26,634 | INFO |   UTXO count al inicio de la semana: 68,782
+2026-09-25 13:30:26,733 | INFO |   Semana 2010-W51 procesada: 7 días, 40 filas de bandas, UTXOs al final: 71,354
+2026-09-25 13:30:26,748 | INFO |   daily_aggregates_2010.parquet: 360 filas
+2026-09-25 13:30:26,756 | INFO |   age_band_aggregates_2010.parquet: 1546 filas
+2026-09-25 13:30:26,757 | INFO | Leyendo semana 2010-W52 de capa1...
+2026-09-25 13:30:26,817 | INFO |   UTXO count al inicio de la semana: 71,354
+2026-09-25 13:30:26,914 | INFO |   Semana 2010-W52 procesada: 7 días, 38 filas de bandas, UTXOs al final: 72,906
+2026-09-25 13:30:26,924 | INFO |   daily_aggregates_2011.parquet: 2 filas
+2026-09-25 13:30:26,927 | INFO |   age_band_aggregates_2011.parquet: 12 filas
+2026-09-25 13:30:26,937 | INFO |   daily_aggregates_2010.parquet: 365 filas
+2026-09-25 13:30:26,944 | INFO |   age_band_aggregates_2010.parquet: 1572 filas
+2026-09-25 13:30:26,945 | INFO | Leyendo semana 2011-W01 de capa1...
+2026-09-25 13:30:27,060 | INFO |   UTXO count al inicio de la semana: 72,906
+2026-09-25 13:30:27,190 | INFO |   Semana 2011-W01 procesada: 7 días, 43 filas de bandas, UTXOs al final: 75,105
+2026-09-25 13:30:27,206 | INFO |   daily_aggregates_2011.parquet: 9 filas
+2026-09-25 13:30:27,213 | INFO |   age_band_aggregates_2011.parquet: 55 filas
+2026-09-25 13:30:27,214 | INFO | Leyendo semana 2011-W02 de capa1...
+2026-09-25 13:30:27,322 | INFO |   UTXO count al inicio de la semana: 75,105
+2026-09-25 13:30:27,461 | INFO |   Semana 2011-W02 procesada: 7 días, 41 filas de bandas, UTXOs al final: 77,492
+2026-09-25 13:30:27,478 | INFO |   daily_aggregates_2011.parquet: 16 filas
+2026-09-25 13:30:27,486 | INFO |   age_band_aggregates_2011.parquet: 96 filas
+2026-09-25 13:30:27,487 | INFO | Leyendo semana 2011-W03 de capa1...
+2026-09-25 13:30:27,593 | INFO |   UTXO count al inicio de la semana: 77,492
+2026-09-25 13:30:27,733 | INFO |   Semana 2011-W03 procesada: 7 días, 41 filas de bandas, UTXOs al final: 80,025
+2026-09-25 13:30:27,751 | INFO |   daily_aggregates_2011.parquet: 23 filas
+2026-09-25 13:30:27,758 | INFO |   age_band_aggregates_2011.parquet: 137 filas
+2026-09-25 13:30:27,758 | INFO | Leyendo semana 2011-W04 de capa1...
+2026-09-25 13:30:27,888 | INFO |   UTXO count al inicio de la semana: 80,025
+2026-09-25 13:30:28,065 | INFO |   Semana 2011-W04 procesada: 7 días, 40 filas de bandas, UTXOs al final: 82,829
+2026-09-25 13:30:28,084 | INFO |   daily_aggregates_2011.parquet: 30 filas
+2026-09-25 13:30:28,091 | INFO |   age_band_aggregates_2011.parquet: 177 filas
+2026-09-25 13:30:28,092 | INFO | Leyendo semana 2011-W05 de capa1...
+2026-09-25 13:30:28,214 | INFO |   UTXO count al inicio de la semana: 82,829
+2026-09-25 13:30:28,354 | INFO |   Semana 2011-W05 procesada: 7 días, 43 filas de bandas, UTXOs al final: 84,394
+2026-09-25 13:30:28,371 | INFO |   daily_aggregates_2011.parquet: 37 filas
+2026-09-25 13:30:28,378 | INFO |   age_band_aggregates_2011.parquet: 220 filas
+2026-09-25 13:30:28,379 | INFO | Leyendo semana 2011-W06 de capa1...
+2026-09-25 13:30:28,531 | INFO |   UTXO count al inicio de la semana: 84,394
+2026-09-25 13:30:28,712 | INFO |   Semana 2011-W06 procesada: 7 días, 45 filas de bandas, UTXOs al final: 89,606
+2026-09-25 13:30:28,733 | INFO |   daily_aggregates_2011.parquet: 44 filas
+2026-09-25 13:30:28,740 | INFO |   age_band_aggregates_2011.parquet: 265 filas
+2026-09-25 13:30:28,741 | INFO | Leyendo semana 2011-W07 de capa1...
+2026-09-25 13:30:28,932 | INFO |   UTXO count al inicio de la semana: 89,606
+2026-09-25 13:30:29,148 | INFO |   Semana 2011-W07 procesada: 7 días, 45 filas de bandas, UTXOs al final: 95,373
+2026-09-25 13:30:29,171 | INFO |   daily_aggregates_2011.parquet: 51 filas
+2026-09-25 13:30:29,178 | INFO |   age_band_aggregates_2011.parquet: 310 filas
+2026-09-25 13:30:29,179 | INFO | Leyendo semana 2011-W08 de capa1...
+2026-09-25 13:30:29,401 | INFO |   UTXO count al inicio de la semana: 95,373
+2026-09-25 13:30:29,627 | INFO |   Semana 2011-W08 procesada: 7 días, 46 filas de bandas, UTXOs al final: 102,683
+2026-09-25 13:30:29,650 | INFO |   daily_aggregates_2011.parquet: 58 filas
+2026-09-25 13:30:29,658 | INFO |   age_band_aggregates_2011.parquet: 356 filas
+2026-09-25 13:30:29,658 | INFO | Leyendo semana 2011-W09 de capa1...
+2026-09-25 13:30:29,875 | INFO |   UTXO count al inicio de la semana: 102,683
+2026-09-25 13:30:30,121 | INFO |   Semana 2011-W09 procesada: 7 días, 45 filas de bandas, UTXOs al final: 108,679
+2026-09-25 13:30:30,145 | INFO |   daily_aggregates_2011.parquet: 65 filas
+2026-09-25 13:30:30,153 | INFO |   age_band_aggregates_2011.parquet: 401 filas
+2026-09-25 13:30:30,154 | INFO | Leyendo semana 2011-W10 de capa1...
+2026-09-25 13:30:30,375 | INFO |   UTXO count al inicio de la semana: 108,679
+2026-09-25 13:30:30,608 | INFO |   Semana 2011-W10 procesada: 7 días, 46 filas de bandas, UTXOs al final: 113,561
+2026-09-25 13:30:30,634 | INFO |   daily_aggregates_2011.parquet: 72 filas
+2026-09-25 13:30:30,642 | INFO |   age_band_aggregates_2011.parquet: 447 filas
+2026-09-25 13:30:30,642 | INFO | Leyendo semana 2011-W11 de capa1...
+2026-09-25 13:30:30,967 | INFO |   UTXO count al inicio de la semana: 113,561
+2026-09-25 13:30:31,253 | INFO |   Semana 2011-W11 procesada: 7 días, 41 filas de bandas, UTXOs al final: 116,963
+2026-09-25 13:30:31,282 | INFO |   daily_aggregates_2011.parquet: 79 filas
+2026-09-25 13:30:31,289 | INFO |   age_band_aggregates_2011.parquet: 488 filas
+2026-09-25 13:30:31,290 | INFO | Leyendo semana 2011-W12 de capa1...
+2026-09-25 13:30:31,596 | INFO |   UTXO count al inicio de la semana: 116,963
+2026-09-25 13:30:31,907 | INFO |   Semana 2011-W12 procesada: 7 días, 48 filas de bandas, UTXOs al final: 126,085
+2026-09-25 13:30:31,938 | INFO |   daily_aggregates_2011.parquet: 86 filas
+2026-09-25 13:30:31,945 | INFO |   age_band_aggregates_2011.parquet: 536 filas
+2026-09-25 13:30:31,946 | INFO | Leyendo semana 2011-W13 de capa1...
+2026-09-25 13:30:32,193 | INFO |   UTXO count al inicio de la semana: 126,085
+2026-09-25 13:30:32,474 | INFO |   Semana 2011-W13 procesada: 7 días, 46 filas de bandas, UTXOs al final: 134,459
+2026-09-25 13:30:32,499 | INFO |   daily_aggregates_2011.parquet: 93 filas
+2026-09-25 13:30:32,507 | INFO |   age_band_aggregates_2011.parquet: 582 filas
+2026-09-25 13:30:32,507 | INFO | Leyendo semana 2011-W14 de capa1...
+2026-09-25 13:30:32,708 | INFO |   UTXO count al inicio de la semana: 134,459
+2026-09-25 13:30:32,966 | INFO |   Semana 2011-W14 procesada: 7 días, 46 filas de bandas, UTXOs al final: 142,083
+2026-09-25 13:30:32,989 | INFO |   daily_aggregates_2011.parquet: 100 filas
+2026-09-25 13:30:32,997 | INFO |   age_band_aggregates_2011.parquet: 628 filas
+2026-09-25 13:30:32,998 | INFO | Leyendo semana 2011-W15 de capa1...
+2026-09-25 13:30:33,278 | INFO |   UTXO count al inicio de la semana: 142,083
+2026-09-25 13:30:33,589 | INFO |   Semana 2011-W15 procesada: 7 días, 49 filas de bandas, UTXOs al final: 145,267
+2026-09-25 13:30:33,615 | INFO |   daily_aggregates_2011.parquet: 107 filas
+2026-09-25 13:30:33,623 | INFO |   age_band_aggregates_2011.parquet: 677 filas
+2026-09-25 13:30:33,623 | INFO | Leyendo semana 2011-W16 de capa1...
+2026-09-25 13:30:33,895 | INFO |   UTXO count al inicio de la semana: 145,267
+2026-09-25 13:30:34,224 | INFO |   Semana 2011-W16 procesada: 7 días, 47 filas de bandas, UTXOs al final: 150,753
+2026-09-25 13:30:34,252 | INFO |   daily_aggregates_2011.parquet: 114 filas
+2026-09-25 13:30:34,261 | INFO |   age_band_aggregates_2011.parquet: 724 filas
+2026-09-25 13:30:34,261 | INFO | Leyendo semana 2011-W17 de capa1...
+2026-09-25 13:30:34,689 | INFO |   UTXO count al inicio de la semana: 150,753
+2026-09-25 13:30:35,127 | INFO |   Semana 2011-W17 procesada: 7 días, 49 filas de bandas, UTXOs al final: 156,312
+2026-09-25 13:30:35,160 | INFO |   daily_aggregates_2011.parquet: 121 filas
+2026-09-25 13:30:35,168 | INFO |   age_band_aggregates_2011.parquet: 773 filas
+2026-09-25 13:30:35,169 | INFO | Leyendo semana 2011-W18 de capa1...
+2026-09-25 13:30:35,549 | INFO |   UTXO count al inicio de la semana: 156,312
+2026-09-25 13:30:35,949 | INFO |   Semana 2011-W18 procesada: 7 días, 49 filas de bandas, UTXOs al final: 166,475
+2026-09-25 13:30:35,983 | INFO |   daily_aggregates_2011.parquet: 128 filas
+2026-09-25 13:30:35,991 | INFO |   age_band_aggregates_2011.parquet: 822 filas
+2026-09-25 13:30:35,991 | INFO | Leyendo semana 2011-W19 de capa1...
+2026-09-25 13:30:36,455 | INFO |   UTXO count al inicio de la semana: 166,475
+2026-09-25 13:30:36,978 | INFO |   Semana 2011-W19 procesada: 7 días, 49 filas de bandas, UTXOs al final: 174,705
+2026-09-25 13:30:37,015 | INFO |   daily_aggregates_2011.parquet: 135 filas
+2026-09-25 13:30:37,023 | INFO |   age_band_aggregates_2011.parquet: 871 filas
+2026-09-25 13:30:37,023 | INFO | Leyendo semana 2011-W20 de capa1...
+2026-09-25 13:30:37,651 | INFO |   UTXO count al inicio de la semana: 174,705
+2026-09-25 13:30:38,269 | INFO |   Semana 2011-W20 procesada: 7 días, 50 filas de bandas, UTXOs al final: 199,827
+2026-09-25 13:30:38,313 | INFO |   daily_aggregates_2011.parquet: 142 filas
+2026-09-25 13:30:38,321 | INFO |   age_band_aggregates_2011.parquet: 921 filas
+2026-09-25 13:30:38,321 | INFO | Leyendo semana 2011-W21 de capa1...
+2026-09-25 13:30:39,012 | INFO |   UTXO count al inicio de la semana: 199,827
+2026-09-25 13:30:39,730 | INFO |   Semana 2011-W21 procesada: 7 días, 48 filas de bandas, UTXOs al final: 225,836
+2026-09-25 13:30:39,779 | INFO |   daily_aggregates_2011.parquet: 149 filas
+2026-09-25 13:30:39,786 | INFO |   age_band_aggregates_2011.parquet: 969 filas
+2026-09-25 13:30:39,787 | INFO | Leyendo semana 2011-W22 de capa1...
+2026-09-25 13:30:40,696 | INFO |   UTXO count al inicio de la semana: 225,836
+2026-09-25 13:30:41,583 | INFO |   Semana 2011-W22 procesada: 7 días, 52 filas de bandas, UTXOs al final: 248,076
+2026-09-25 13:30:41,639 | INFO |   daily_aggregates_2011.parquet: 156 filas
+2026-09-25 13:30:41,647 | INFO |   age_band_aggregates_2011.parquet: 1021 filas
+2026-09-25 13:30:41,647 | INFO | Leyendo semana 2011-W23 de capa1...
+2026-09-25 13:30:43,161 | INFO |   UTXO count al inicio de la semana: 248,076
+2026-09-25 13:30:44,414 | INFO |   Semana 2011-W23 procesada: 7 días, 56 filas de bandas, UTXOs al final: 278,974
+2026-09-25 13:30:44,493 | INFO |   daily_aggregates_2011.parquet: 163 filas
+2026-09-25 13:30:44,501 | INFO |   age_band_aggregates_2011.parquet: 1077 filas
+2026-09-25 13:30:44,502 | INFO | Leyendo semana 2011-W24 de capa1...
+2026-09-25 13:30:46,205 | INFO |   UTXO count al inicio de la semana: 278,974
+2026-09-25 13:30:47,632 | INFO |   Semana 2011-W24 procesada: 7 días, 55 filas de bandas, UTXOs al final: 331,901
+2026-09-25 13:30:47,720 | INFO |   daily_aggregates_2011.parquet: 170 filas
+2026-09-25 13:30:47,728 | INFO |   age_band_aggregates_2011.parquet: 1132 filas
+2026-09-25 13:30:47,729 | INFO | Leyendo semana 2011-W25 de capa1...
+2026-09-25 13:30:49,065 | INFO |   UTXO count al inicio de la semana: 331,901
+2026-09-25 13:30:50,315 | INFO |   Semana 2011-W25 procesada: 7 días, 52 filas de bandas, UTXOs al final: 394,883
+2026-09-25 13:30:50,395 | INFO |   daily_aggregates_2011.parquet: 177 filas
+2026-09-25 13:30:50,403 | INFO |   age_band_aggregates_2011.parquet: 1184 filas
+2026-09-25 13:30:50,404 | INFO | Leyendo semana 2011-W26 de capa1...
+2026-09-25 13:30:51,998 | INFO |   UTXO count al inicio de la semana: 394,883
+2026-09-25 13:30:53,316 | INFO |   Semana 2011-W26 procesada: 7 días, 53 filas de bandas, UTXOs al final: 464,282
+2026-09-25 13:30:53,396 | INFO |   daily_aggregates_2011.parquet: 184 filas
+2026-09-25 13:30:53,404 | INFO |   age_band_aggregates_2011.parquet: 1237 filas
+2026-09-25 13:30:53,405 | INFO | Leyendo semana 2011-W27 de capa1...
+2026-09-25 13:30:54,652 | INFO |   UTXO count al inicio de la semana: 464,282
+2026-09-25 13:30:55,931 | INFO |   Semana 2011-W27 procesada: 7 días, 51 filas de bandas, UTXOs al final: 521,575
+2026-09-25 13:30:56,004 | INFO |   daily_aggregates_2011.parquet: 191 filas
+2026-09-25 13:30:56,012 | INFO |   age_band_aggregates_2011.parquet: 1288 filas
+2026-09-25 13:30:56,012 | INFO | Leyendo semana 2011-W28 de capa1...
+2026-09-25 13:30:57,352 | INFO |   UTXO count al inicio de la semana: 521,575
+2026-09-25 13:30:59,355 | INFO |   Semana 2011-W28 procesada: 7 días, 51 filas de bandas, UTXOs al final: 595,956
+2026-09-25 13:30:59,428 | INFO |   daily_aggregates_2011.parquet: 198 filas
+2026-09-25 13:30:59,435 | INFO |   age_band_aggregates_2011.parquet: 1339 filas
+2026-09-25 13:30:59,436 | INFO | Leyendo semana 2011-W29 de capa1...
+2026-09-25 13:31:00,696 | INFO |   UTXO count al inicio de la semana: 595,956
+2026-09-25 13:31:02,108 | INFO |   Semana 2011-W29 procesada: 7 días, 51 filas de bandas, UTXOs al final: 650,106
+2026-09-25 13:31:02,178 | INFO |   daily_aggregates_2011.parquet: 205 filas
+2026-09-25 13:31:02,186 | INFO |   age_band_aggregates_2011.parquet: 1390 filas
+2026-09-25 13:31:02,187 | INFO | Leyendo semana 2011-W30 de capa1...
+2026-09-25 13:31:03,354 | INFO |   UTXO count al inicio de la semana: 650,106
+2026-09-25 13:31:04,826 | INFO |   Semana 2011-W30 procesada: 7 días, 51 filas de bandas, UTXOs al final: 714,504
+2026-09-25 13:31:04,896 | INFO |   daily_aggregates_2011.parquet: 212 filas
+2026-09-25 13:31:04,903 | INFO |   age_band_aggregates_2011.parquet: 1441 filas
+2026-09-25 13:31:04,904 | INFO | Leyendo semana 2011-W31 de capa1...
+2026-09-25 13:31:05,987 | INFO |   UTXO count al inicio de la semana: 714,504
+2026-09-25 13:31:07,472 | INFO |   Semana 2011-W31 procesada: 7 días, 48 filas de bandas, UTXOs al final: 754,701
+2026-09-25 13:31:07,545 | INFO |   daily_aggregates_2011.parquet: 219 filas
+2026-09-25 13:31:07,553 | INFO |   age_band_aggregates_2011.parquet: 1489 filas
+2026-09-25 13:31:07,554 | INFO | Leyendo semana 2011-W32 de capa1...
+2026-09-25 13:31:08,648 | INFO |   UTXO count al inicio de la semana: 754,701
+2026-09-25 13:31:10,200 | INFO |   Semana 2011-W32 procesada: 7 días, 47 filas de bandas, UTXOs al final: 791,162
+2026-09-25 13:31:10,263 | INFO |   daily_aggregates_2011.parquet: 226 filas
+2026-09-25 13:31:10,272 | INFO |   age_band_aggregates_2011.parquet: 1536 filas
+2026-09-25 13:31:10,273 | INFO | Leyendo semana 2011-W33 de capa1...
+2026-09-25 13:31:11,395 | INFO |   UTXO count al inicio de la semana: 791,162
+2026-09-25 13:31:13,011 | INFO |   Semana 2011-W33 procesada: 7 días, 51 filas de bandas, UTXOs al final: 834,338
+2026-09-25 13:31:13,076 | INFO |   daily_aggregates_2011.parquet: 233 filas
+2026-09-25 13:31:13,084 | INFO |   age_band_aggregates_2011.parquet: 1587 filas
+2026-09-25 13:31:13,085 | INFO | Leyendo semana 2011-W34 de capa1...
+2026-09-25 13:31:14,167 | INFO |   UTXO count al inicio de la semana: 834,338
+2026-09-25 13:31:15,732 | INFO |   Semana 2011-W34 procesada: 7 días, 51 filas de bandas, UTXOs al final: 889,957
+2026-09-25 13:31:15,796 | INFO |   daily_aggregates_2011.parquet: 240 filas
+2026-09-25 13:31:15,804 | INFO |   age_band_aggregates_2011.parquet: 1638 filas
+2026-09-25 13:31:15,805 | INFO | Leyendo semana 2011-W35 de capa1...
+2026-09-25 13:31:17,011 | INFO |   UTXO count al inicio de la semana: 889,957
+2026-09-25 13:31:18,702 | INFO |   Semana 2011-W35 procesada: 7 días, 49 filas de bandas, UTXOs al final: 988,006
+2026-09-25 13:31:18,771 | INFO |   daily_aggregates_2011.parquet: 247 filas
+2026-09-25 13:31:18,779 | INFO |   age_band_aggregates_2011.parquet: 1687 filas
+2026-09-25 13:31:18,780 | INFO | Leyendo semana 2011-W36 de capa1...
+2026-09-25 13:31:19,739 | INFO |   UTXO count al inicio de la semana: 988,006
+2026-09-25 13:31:21,349 | INFO |   Semana 2011-W36 procesada: 7 días, 52 filas de bandas, UTXOs al final: 1,004,292
+2026-09-25 13:31:21,406 | INFO |   daily_aggregates_2011.parquet: 254 filas
+2026-09-25 13:31:21,414 | INFO |   age_band_aggregates_2011.parquet: 1739 filas
+2026-09-25 13:31:21,415 | INFO | Leyendo semana 2011-W37 de capa1...
+2026-09-25 13:31:22,189 | INFO |   UTXO count al inicio de la semana: 1,004,292
+2026-09-25 13:31:23,691 | INFO |   Semana 2011-W37 procesada: 7 días, 52 filas de bandas, UTXOs al final: 1,023,015
+2026-09-25 13:31:23,744 | INFO |   daily_aggregates_2011.parquet: 261 filas
+2026-09-25 13:31:23,751 | INFO |   age_band_aggregates_2011.parquet: 1791 filas
+2026-09-25 13:31:23,752 | INFO | Leyendo semana 2011-W38 de capa1...
+2026-09-25 13:31:24,723 | INFO |   UTXO count al inicio de la semana: 1,023,015
+2026-09-25 13:31:26,364 | INFO |   Semana 2011-W38 procesada: 7 días, 48 filas de bandas, UTXOs al final: 1,061,780
+2026-09-25 13:31:26,423 | INFO |   daily_aggregates_2011.parquet: 268 filas
+2026-09-25 13:31:26,433 | INFO |   age_band_aggregates_2011.parquet: 1839 filas
+2026-09-25 13:31:26,433 | INFO | Leyendo semana 2011-W39 de capa1...
+2026-09-25 13:31:27,129 | INFO |   UTXO count al inicio de la semana: 1,061,780
+2026-09-25 13:31:28,598 | INFO |   Semana 2011-W39 procesada: 7 días, 46 filas de bandas, UTXOs al final: 1,089,719
+2026-09-25 13:31:28,649 | INFO |   daily_aggregates_2011.parquet: 275 filas
+2026-09-25 13:31:28,657 | INFO |   age_band_aggregates_2011.parquet: 1885 filas
+2026-09-25 13:31:28,658 | INFO | Leyendo semana 2011-W40 de capa1...
+2026-09-25 13:31:29,431 | INFO |   UTXO count al inicio de la semana: 1,089,719
+2026-09-25 13:31:30,978 | INFO |   Semana 2011-W40 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,105,897
+2026-09-25 13:31:31,025 | INFO |   daily_aggregates_2011.parquet: 282 filas
+2026-09-25 13:31:31,033 | INFO |   age_band_aggregates_2011.parquet: 1935 filas
+2026-09-25 13:31:31,034 | INFO | Leyendo semana 2011-W41 de capa1...
+2026-09-25 13:31:31,727 | INFO |   UTXO count al inicio de la semana: 1,105,897
+2026-09-25 13:31:33,084 | INFO |   Semana 2011-W41 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,119,852
+2026-09-25 13:31:33,133 | INFO |   daily_aggregates_2011.parquet: 289 filas
+2026-09-25 13:31:33,141 | INFO |   age_band_aggregates_2011.parquet: 1984 filas
+2026-09-25 13:31:33,141 | INFO | Leyendo semana 2011-W42 de capa1...
+2026-09-25 13:31:33,762 | INFO |   UTXO count al inicio de la semana: 1,119,852
+2026-09-25 13:31:34,992 | INFO |   Semana 2011-W42 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,135,823
+2026-09-25 13:31:35,037 | INFO |   daily_aggregates_2011.parquet: 296 filas
+2026-09-25 13:31:35,044 | INFO |   age_band_aggregates_2011.parquet: 2034 filas
+2026-09-25 13:31:35,045 | INFO | Leyendo semana 2011-W43 de capa1...
+2026-09-25 13:31:35,747 | INFO |   UTXO count al inicio de la semana: 1,135,823
+2026-09-25 13:31:36,965 | INFO |   Semana 2011-W43 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,151,217
+2026-09-25 13:31:37,011 | INFO |   daily_aggregates_2011.parquet: 303 filas
+2026-09-25 13:31:37,020 | INFO |   age_band_aggregates_2011.parquet: 2084 filas
+2026-09-25 13:31:37,020 | INFO | Leyendo semana 2011-W44 de capa1...
+2026-09-25 13:31:37,699 | INFO |   UTXO count al inicio de la semana: 1,151,217
+2026-09-25 13:31:38,979 | INFO |   Semana 2011-W44 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,167,333
+2026-09-25 13:31:39,027 | INFO |   daily_aggregates_2011.parquet: 310 filas
+2026-09-25 13:31:39,035 | INFO |   age_band_aggregates_2011.parquet: 2133 filas
+2026-09-25 13:31:39,036 | INFO | Leyendo semana 2011-W45 de capa1...
+2026-09-25 13:31:39,733 | INFO |   UTXO count al inicio de la semana: 1,167,333
+2026-09-25 13:31:41,039 | INFO |   Semana 2011-W45 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,182,487
+2026-09-25 13:31:41,088 | INFO |   daily_aggregates_2011.parquet: 317 filas
+2026-09-25 13:31:41,096 | INFO |   age_band_aggregates_2011.parquet: 2182 filas
+2026-09-25 13:31:41,097 | INFO | Leyendo semana 2011-W46 de capa1...
+2026-09-25 13:31:41,832 | INFO |   UTXO count al inicio de la semana: 1,182,487
+2026-09-25 13:31:43,147 | INFO |   Semana 2011-W46 procesada: 7 días, 53 filas de bandas, UTXOs al final: 1,195,324
+2026-09-25 13:31:43,194 | INFO |   daily_aggregates_2011.parquet: 324 filas
+2026-09-25 13:31:43,202 | INFO |   age_band_aggregates_2011.parquet: 2235 filas
+2026-09-25 13:31:43,203 | INFO | Leyendo semana 2011-W47 de capa1...
+2026-09-25 13:31:43,839 | INFO |   UTXO count al inicio de la semana: 1,195,324
+2026-09-25 13:31:45,081 | INFO |   Semana 2011-W47 procesada: 7 días, 51 filas de bandas, UTXOs al final: 1,209,441
+2026-09-25 13:31:45,126 | INFO |   daily_aggregates_2011.parquet: 331 filas
+2026-09-25 13:31:45,135 | INFO |   age_band_aggregates_2011.parquet: 2286 filas
+2026-09-25 13:31:45,136 | INFO | Leyendo semana 2011-W48 de capa1...
+2026-09-25 13:31:45,896 | INFO |   UTXO count al inicio de la semana: 1,209,441
+2026-09-25 13:31:47,331 | INFO |   Semana 2011-W48 procesada: 7 días, 54 filas de bandas, UTXOs al final: 1,219,533
+2026-09-25 13:31:47,382 | INFO |   daily_aggregates_2011.parquet: 338 filas
+2026-09-25 13:31:47,390 | INFO |   age_band_aggregates_2011.parquet: 2340 filas
+2026-09-25 13:31:47,391 | INFO | Leyendo semana 2011-W49 de capa1...
+2026-09-25 13:31:48,176 | INFO |   UTXO count al inicio de la semana: 1,219,533
+2026-09-25 13:31:49,588 | INFO |   Semana 2011-W49 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,232,658
+2026-09-25 13:31:49,638 | INFO |   daily_aggregates_2011.parquet: 345 filas
+2026-09-25 13:31:49,646 | INFO |   age_band_aggregates_2011.parquet: 2389 filas
+2026-09-25 13:31:49,647 | INFO | Leyendo semana 2011-W50 de capa1...
+2026-09-25 13:31:50,278 | INFO |   UTXO count al inicio de la semana: 1,232,658
+2026-09-25 13:31:51,587 | INFO |   Semana 2011-W50 procesada: 7 días, 48 filas de bandas, UTXOs al final: 1,244,776
+2026-09-25 13:31:51,636 | INFO |   daily_aggregates_2011.parquet: 352 filas
+2026-09-25 13:31:51,643 | INFO |   age_band_aggregates_2011.parquet: 2437 filas
+2026-09-25 13:31:51,644 | INFO | Leyendo semana 2011-W51 de capa1...
+2026-09-25 13:31:52,411 | INFO |   UTXO count al inicio de la semana: 1,244,776
+2026-09-25 13:31:53,795 | INFO |   Semana 2011-W51 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,256,432
+2026-09-25 13:31:53,845 | INFO |   daily_aggregates_2011.parquet: 359 filas
+2026-09-25 13:31:53,854 | INFO |   age_band_aggregates_2011.parquet: 2487 filas
+2026-09-25 13:31:53,855 | INFO | Leyendo semana 2011-W52 de capa1...
+2026-09-25 13:31:54,520 | INFO |   UTXO count al inicio de la semana: 1,256,432
+2026-09-25 13:31:55,895 | INFO |   Semana 2011-W52 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,266,471
+2026-09-25 13:31:55,942 | INFO |   daily_aggregates_2011.parquet: 365 filas
+2026-09-25 13:31:55,950 | INFO |   age_band_aggregates_2011.parquet: 2530 filas
+2026-09-25 13:31:55,955 | INFO |   daily_aggregates_2012.parquet: 1 filas
+2026-09-25 13:31:55,958 | INFO |   age_band_aggregates_2012.parquet: 7 filas
+2026-09-25 13:31:55,959 | INFO | Leyendo semana 2012-W01 de capa1...
+2026-09-25 13:31:56,774 | INFO |   UTXO count al inicio de la semana: 1,266,471
+2026-09-25 13:31:58,699 | INFO |   Semana 2012-W01 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,262,194
+2026-09-25 13:31:58,755 | INFO |   daily_aggregates_2012.parquet: 8 filas
+2026-09-25 13:31:58,763 | INFO |   age_band_aggregates_2012.parquet: 57 filas
+2026-09-25 13:31:58,764 | INFO | Leyendo semana 2012-W02 de capa1...
+2026-09-25 13:31:59,656 | INFO |   UTXO count al inicio de la semana: 1,262,194
+2026-09-25 13:32:01,492 | INFO |   Semana 2012-W02 procesada: 7 días, 48 filas de bandas, UTXOs al final: 1,261,564
+2026-09-25 13:32:01,551 | INFO |   daily_aggregates_2012.parquet: 15 filas
+2026-09-25 13:32:01,558 | INFO |   age_band_aggregates_2012.parquet: 105 filas
+2026-09-25 13:32:01,558 | INFO | Leyendo semana 2012-W03 de capa1...
+2026-09-25 13:32:02,429 | INFO |   UTXO count al inicio de la semana: 1,261,564
+2026-09-25 13:32:04,230 | INFO |   Semana 2012-W03 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,275,168
+2026-09-25 13:32:04,287 | INFO |   daily_aggregates_2012.parquet: 22 filas
+2026-09-25 13:32:04,294 | INFO |   age_band_aggregates_2012.parquet: 154 filas
+2026-09-25 13:32:04,294 | INFO | Leyendo semana 2012-W04 de capa1...
+2026-09-25 13:32:05,223 | INFO |   UTXO count al inicio de la semana: 1,275,168
+2026-09-25 13:32:07,095 | INFO |   Semana 2012-W04 procesada: 7 días, 48 filas de bandas, UTXOs al final: 1,289,909
+2026-09-25 13:32:07,151 | INFO |   daily_aggregates_2012.parquet: 29 filas
+2026-09-25 13:32:07,158 | INFO |   age_band_aggregates_2012.parquet: 202 filas
+2026-09-25 13:32:07,159 | INFO | Leyendo semana 2012-W05 de capa1...
+2026-09-25 13:32:08,025 | INFO |   UTXO count al inicio de la semana: 1,289,909
+2026-09-25 13:32:09,981 | INFO |   Semana 2012-W05 procesada: 7 días, 46 filas de bandas, UTXOs al final: 1,307,405
+2026-09-25 13:32:10,039 | INFO |   daily_aggregates_2012.parquet: 36 filas
+2026-09-25 13:32:10,046 | INFO |   age_band_aggregates_2012.parquet: 248 filas
+2026-09-25 13:32:10,047 | INFO | Leyendo semana 2012-W06 de capa1...
+2026-09-25 13:32:10,989 | INFO |   UTXO count al inicio de la semana: 1,307,405
+2026-09-25 13:32:12,886 | INFO |   Semana 2012-W06 procesada: 7 días, 47 filas de bandas, UTXOs al final: 1,326,298
+2026-09-25 13:32:12,944 | INFO |   daily_aggregates_2012.parquet: 43 filas
+2026-09-25 13:32:12,951 | INFO |   age_band_aggregates_2012.parquet: 295 filas
+2026-09-25 13:32:12,952 | INFO | Leyendo semana 2012-W07 de capa1...
+2026-09-25 13:32:14,005 | INFO |   UTXO count al inicio de la semana: 1,326,298
+2026-09-25 13:32:16,055 | INFO |   Semana 2012-W07 procesada: 7 días, 51 filas de bandas, UTXOs al final: 1,347,264
+2026-09-25 13:32:16,118 | INFO |   daily_aggregates_2012.parquet: 50 filas
+2026-09-25 13:32:16,125 | INFO |   age_band_aggregates_2012.parquet: 346 filas
+2026-09-25 13:32:16,126 | INFO | Leyendo semana 2012-W08 de capa1...
+2026-09-25 13:32:17,059 | INFO |   UTXO count al inicio de la semana: 1,347,264
+2026-09-25 13:32:18,996 | INFO |   Semana 2012-W08 procesada: 7 días, 48 filas de bandas, UTXOs al final: 1,366,724
+2026-09-25 13:32:19,054 | INFO |   daily_aggregates_2012.parquet: 57 filas
+2026-09-25 13:32:19,061 | INFO |   age_band_aggregates_2012.parquet: 394 filas
+2026-09-25 13:32:19,062 | INFO | Leyendo semana 2012-W09 de capa1...
+2026-09-25 13:32:19,922 | INFO |   UTXO count al inicio de la semana: 1,366,724
+2026-09-25 13:32:21,918 | INFO |   Semana 2012-W09 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,387,509
+2026-09-25 13:32:21,980 | INFO |   daily_aggregates_2012.parquet: 64 filas
+2026-09-25 13:32:21,987 | INFO |   age_band_aggregates_2012.parquet: 443 filas
+2026-09-25 13:32:21,988 | INFO | Leyendo semana 2012-W10 de capa1...
+2026-09-25 13:32:22,876 | INFO |   UTXO count al inicio de la semana: 1,387,509
+2026-09-25 13:32:24,872 | INFO |   Semana 2012-W10 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,406,270
+2026-09-25 13:32:24,930 | INFO |   daily_aggregates_2012.parquet: 71 filas
+2026-09-25 13:32:24,937 | INFO |   age_band_aggregates_2012.parquet: 493 filas
+2026-09-25 13:32:24,938 | INFO | Leyendo semana 2012-W11 de capa1...
+2026-09-25 13:32:25,884 | INFO |   UTXO count al inicio de la semana: 1,406,270
+2026-09-25 13:32:27,912 | INFO |   Semana 2012-W11 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,423,663
+2026-09-25 13:32:27,971 | INFO |   daily_aggregates_2012.parquet: 78 filas
+2026-09-25 13:32:27,978 | INFO |   age_band_aggregates_2012.parquet: 542 filas
+2026-09-25 13:32:27,979 | INFO | Leyendo semana 2012-W12 de capa1...
+2026-09-25 13:32:28,799 | INFO |   UTXO count al inicio de la semana: 1,423,663
+2026-09-25 13:32:30,758 | INFO |   Semana 2012-W12 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,445,503
+2026-09-25 13:32:30,813 | INFO |   daily_aggregates_2012.parquet: 85 filas
+2026-09-25 13:32:30,821 | INFO |   age_band_aggregates_2012.parquet: 591 filas
+2026-09-25 13:32:30,822 | INFO | Leyendo semana 2012-W13 de capa1...
+2026-09-25 13:32:31,704 | INFO |   UTXO count al inicio de la semana: 1,445,503
+2026-09-25 13:32:33,569 | INFO |   Semana 2012-W13 procesada: 7 días, 47 filas de bandas, UTXOs al final: 1,467,531
+2026-09-25 13:32:33,628 | INFO |   daily_aggregates_2012.parquet: 92 filas
+2026-09-25 13:32:33,636 | INFO |   age_band_aggregates_2012.parquet: 638 filas
+2026-09-25 13:32:33,637 | INFO | Leyendo semana 2012-W14 de capa1...
+2026-09-25 13:32:34,565 | INFO |   UTXO count al inicio de la semana: 1,467,531
+2026-09-25 13:32:36,304 | INFO |   Semana 2012-W14 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,478,295
+2026-09-25 13:32:36,360 | INFO |   daily_aggregates_2012.parquet: 99 filas
+2026-09-25 13:32:36,368 | INFO |   age_band_aggregates_2012.parquet: 688 filas
+2026-09-25 13:32:36,369 | INFO | Leyendo semana 2012-W15 de capa1...
+2026-09-25 13:32:37,417 | INFO |   UTXO count al inicio de la semana: 1,478,295
+2026-09-25 13:32:39,253 | INFO |   Semana 2012-W15 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,499,347
+2026-09-25 13:32:39,313 | INFO |   daily_aggregates_2012.parquet: 106 filas
+2026-09-25 13:32:39,320 | INFO |   age_band_aggregates_2012.parquet: 738 filas
+2026-09-25 13:32:39,321 | INFO | Leyendo semana 2012-W16 de capa1...
+2026-09-25 13:32:40,430 | INFO |   UTXO count al inicio de la semana: 1,499,347
+2026-09-25 13:32:42,383 | INFO |   Semana 2012-W16 procesada: 7 días, 51 filas de bandas, UTXOs al final: 1,507,068
+2026-09-25 13:32:42,448 | INFO |   daily_aggregates_2012.parquet: 113 filas
+2026-09-25 13:32:42,455 | INFO |   age_band_aggregates_2012.parquet: 789 filas
+2026-09-25 13:32:42,456 | INFO | Leyendo semana 2012-W17 de capa1...
+2026-09-25 13:32:43,531 | INFO |   UTXO count al inicio de la semana: 1,507,068
+2026-09-25 13:32:45,415 | INFO |   Semana 2012-W17 procesada: 7 días, 48 filas de bandas, UTXOs al final: 1,529,493
+2026-09-25 13:32:45,479 | INFO |   daily_aggregates_2012.parquet: 120 filas
+2026-09-25 13:32:45,486 | INFO |   age_band_aggregates_2012.parquet: 837 filas
+2026-09-25 13:32:45,487 | INFO | Leyendo semana 2012-W18 de capa1...
+2026-09-25 13:32:47,178 | INFO |   UTXO count al inicio de la semana: 1,529,493
+2026-09-25 13:32:49,478 | INFO |   Semana 2012-W18 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,549,400
+2026-09-25 13:32:49,566 | INFO |   daily_aggregates_2012.parquet: 127 filas
+2026-09-25 13:32:49,573 | INFO |   age_band_aggregates_2012.parquet: 887 filas
+2026-09-25 13:32:49,574 | INFO | Leyendo semana 2012-W19 de capa1...
+2026-09-25 13:32:51,993 | INFO |   UTXO count al inicio de la semana: 1,549,400
+2026-09-25 13:32:54,731 | INFO |   Semana 2012-W19 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,567,320
+2026-09-25 13:32:54,850 | INFO |   daily_aggregates_2012.parquet: 134 filas
+2026-09-25 13:32:54,858 | INFO |   age_band_aggregates_2012.parquet: 936 filas
+2026-09-25 13:32:54,859 | INFO | Leyendo semana 2012-W20 de capa1...
+2026-09-25 13:32:58,792 | INFO |   UTXO count al inicio de la semana: 1,567,320
+2026-09-25 13:33:02,399 | INFO |   Semana 2012-W20 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,585,864
+2026-09-25 13:33:02,592 | INFO |   daily_aggregates_2012.parquet: 141 filas
+2026-09-25 13:33:02,600 | INFO |   age_band_aggregates_2012.parquet: 986 filas
+2026-09-25 13:33:02,601 | INFO | Leyendo semana 2012-W21 de capa1...
+2026-09-25 13:33:06,568 | INFO |   UTXO count al inicio de la semana: 1,585,864
+2026-09-25 13:33:10,308 | INFO |   Semana 2012-W21 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,611,106
+2026-09-25 13:33:10,493 | INFO |   daily_aggregates_2012.parquet: 148 filas
+2026-09-25 13:33:10,501 | INFO |   age_band_aggregates_2012.parquet: 1036 filas
+2026-09-25 13:33:10,502 | INFO | Leyendo semana 2012-W22 de capa1...
+2026-09-25 13:33:14,494 | INFO |   UTXO count al inicio de la semana: 1,611,106
+2026-09-25 13:33:18,910 | INFO |   Semana 2012-W22 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,633,724
+2026-09-25 13:33:19,093 | INFO |   daily_aggregates_2012.parquet: 155 filas
+2026-09-25 13:33:19,101 | INFO |   age_band_aggregates_2012.parquet: 1086 filas
+2026-09-25 13:33:19,101 | INFO | Leyendo semana 2012-W23 de capa1...
+2026-09-25 13:33:24,262 | INFO |   UTXO count al inicio de la semana: 1,633,724
+2026-09-25 13:33:29,141 | INFO |   Semana 2012-W23 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,655,589
+2026-09-25 13:33:29,371 | INFO |   daily_aggregates_2012.parquet: 162 filas
+2026-09-25 13:33:29,379 | INFO |   age_band_aggregates_2012.parquet: 1136 filas
+2026-09-25 13:33:29,380 | INFO | Leyendo semana 2012-W24 de capa1...
+2026-09-25 13:33:36,596 | INFO |   UTXO count al inicio de la semana: 1,655,589
+2026-09-25 13:33:43,004 | INFO |   Semana 2012-W24 procesada: 7 días, 51 filas de bandas, UTXOs al final: 1,691,524
+2026-09-25 13:33:43,320 | INFO |   daily_aggregates_2012.parquet: 169 filas
+2026-09-25 13:33:43,328 | INFO |   age_band_aggregates_2012.parquet: 1187 filas
+2026-09-25 13:33:43,329 | INFO | Leyendo semana 2012-W25 de capa1...
+2026-09-25 13:33:47,937 | INFO |   UTXO count al inicio de la semana: 1,691,524
+2026-09-25 13:33:52,616 | INFO |   Semana 2012-W25 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,717,668
+2026-09-25 13:33:52,821 | INFO |   daily_aggregates_2012.parquet: 176 filas
+2026-09-25 13:33:52,829 | INFO |   age_band_aggregates_2012.parquet: 1236 filas
+2026-09-25 13:33:52,830 | INFO | Leyendo semana 2012-W26 de capa1...
+2026-09-25 13:33:56,698 | INFO |   UTXO count al inicio de la semana: 1,717,668
+2026-09-25 13:34:00,954 | INFO |   Semana 2012-W26 procesada: 7 días, 49 filas de bandas, UTXOs al final: 1,760,181
+2026-09-25 13:34:01,132 | INFO |   daily_aggregates_2012.parquet: 183 filas
+2026-09-25 13:34:01,140 | INFO |   age_band_aggregates_2012.parquet: 1285 filas
+2026-09-25 13:34:01,141 | INFO | Leyendo semana 2012-W27 de capa1...
+2026-09-25 13:34:04,778 | INFO |   UTXO count al inicio de la semana: 1,760,181
+2026-09-25 13:34:08,791 | INFO |   Semana 2012-W27 procesada: 7 días, 50 filas de bandas, UTXOs al final: 1,797,998
+2026-09-25 13:34:08,959 | INFO |   daily_aggregates_2012.parquet: 190 filas
+2026-09-25 13:34:08,966 | INFO |   age_band_aggregates_2012.parquet: 1335 filas
+2026-09-25 13:34:08,967 | INFO | Leyendo semana 2012-W28 de capa1...
+2026-09-25 13:34:13,270 | INFO |   UTXO count al inicio de la semana: 1,797,998
+2026-09-25 13:34:17,560 | INFO |   Semana 2012-W28 procesada: 7 días, 53 filas de bandas, UTXOs al final: 1,825,566
+2026-09-25 13:34:17,752 | INFO |   daily_aggregates_2012.parquet: 197 filas
+2026-09-25 13:34:17,760 | INFO |   age_band_aggregates_2012.parquet: 1388 filas
+2026-09-25 13:34:17,760 | INFO | Leyendo semana 2012-W29 de capa1...
+2026-09-25 13:34:23,096 | INFO |   UTXO count al inicio de la semana: 1,825,566
+2026-09-25 13:34:28,355 | INFO |   Semana 2012-W29 procesada: 7 días, 51 filas de bandas, UTXOs al final: 1,852,114
+2026-09-25 13:34:28,587 | INFO |   daily_aggregates_2012.parquet: 204 filas
+2026-09-25 13:34:28,595 | INFO |   age_band_aggregates_2012.parquet: 1439 filas
+2026-09-25 13:34:28,596 | INFO | Leyendo semana 2012-W30 de capa1...
+2026-09-25 13:34:33,331 | INFO |   UTXO count al inicio de la semana: 1,852,114
+2026-09-25 13:34:37,648 | INFO |   Semana 2012-W30 procesada: 7 días, 53 filas de bandas, UTXOs al final: 1,904,638
+2026-09-25 13:34:37,848 | INFO |   daily_aggregates_2012.parquet: 211 filas
+2026-09-25 13:34:37,855 | INFO |   age_band_aggregates_2012.parquet: 1492 filas
+2026-09-25 13:34:37,856 | INFO | Leyendo semana 2012-W31 de capa1...
+2026-09-25 13:34:42,588 | INFO |   UTXO count al inicio de la semana: 1,904,638
+2026-09-25 13:34:47,128 | INFO |   Semana 2012-W31 procesada: 7 días, 54 filas de bandas, UTXOs al final: 1,933,453
+2026-09-25 13:34:47,340 | INFO |   daily_aggregates_2012.parquet: 218 filas
+2026-09-25 13:34:47,347 | INFO |   age_band_aggregates_2012.parquet: 1546 filas
+2026-09-25 13:34:47,349 | INFO | Leyendo semana 2012-W32 de capa1...
+2026-09-25 13:34:52,266 | INFO |   UTXO count al inicio de la semana: 1,933,453
+2026-09-25 13:34:56,838 | INFO |   Semana 2012-W32 procesada: 7 días, 55 filas de bandas, UTXOs al final: 1,999,329
+2026-09-25 13:34:57,050 | INFO |   daily_aggregates_2012.parquet: 225 filas
+2026-09-25 13:34:57,058 | INFO |   age_band_aggregates_2012.parquet: 1601 filas
+2026-09-25 13:34:57,058 | INFO | Leyendo semana 2012-W33 de capa1...
+2026-09-25 13:35:03,690 | INFO |   UTXO count al inicio de la semana: 1,999,329
+2026-09-25 13:35:09,591 | INFO |   Semana 2012-W33 procesada: 7 días, 55 filas de bandas, UTXOs al final: 2,038,694
+2026-09-25 13:35:09,872 | INFO |   daily_aggregates_2012.parquet: 232 filas
+2026-09-25 13:35:09,880 | INFO |   age_band_aggregates_2012.parquet: 1656 filas
+2026-09-25 13:35:09,881 | INFO | Leyendo semana 2012-W34 de capa1...
+2026-09-25 13:35:14,969 | INFO |   UTXO count al inicio de la semana: 2,038,694
+2026-09-25 13:35:20,301 | INFO |   Semana 2012-W34 procesada: 7 días, 52 filas de bandas, UTXOs al final: 2,098,753
+2026-09-25 13:35:20,520 | INFO |   daily_aggregates_2012.parquet: 239 filas
+2026-09-25 13:35:20,529 | INFO |   age_band_aggregates_2012.parquet: 1708 filas
+2026-09-25 13:35:20,530 | INFO | Leyendo semana 2012-W35 de capa1...
+2026-09-25 13:35:25,854 | INFO |   UTXO count al inicio de la semana: 2,098,753
+2026-09-25 13:35:31,365 | INFO |   Semana 2012-W35 procesada: 7 días, 53 filas de bandas, UTXOs al final: 2,161,989
+2026-09-25 13:35:31,586 | INFO |   daily_aggregates_2012.parquet: 246 filas
+2026-09-25 13:35:31,594 | INFO |   age_band_aggregates_2012.parquet: 1761 filas
+2026-09-25 13:35:31,595 | INFO | Leyendo semana 2012-W36 de capa1...
+2026-09-25 13:35:37,346 | INFO |   UTXO count al inicio de la semana: 2,161,989
+2026-09-25 13:35:43,428 | INFO |   Semana 2012-W36 procesada: 7 días, 53 filas de bandas, UTXOs al final: 2,207,809
+2026-09-25 13:35:43,656 | INFO |   daily_aggregates_2012.parquet: 253 filas
+2026-09-25 13:35:43,664 | INFO |   age_band_aggregates_2012.parquet: 1814 filas
+2026-09-25 13:35:43,665 | INFO | Leyendo semana 2012-W37 de capa1...
+2026-09-25 13:35:48,782 | INFO |   UTXO count al inicio de la semana: 2,207,809
+2026-09-25 13:35:54,193 | INFO |   Semana 2012-W37 procesada: 7 días, 56 filas de bandas, UTXOs al final: 2,270,916
+2026-09-25 13:35:54,406 | INFO |   daily_aggregates_2012.parquet: 260 filas
+2026-09-25 13:35:54,414 | INFO |   age_band_aggregates_2012.parquet: 1870 filas
+2026-09-25 13:35:54,415 | INFO | Leyendo semana 2012-W38 de capa1...
+2026-09-25 13:35:58,852 | INFO |   UTXO count al inicio de la semana: 2,270,916
+2026-09-25 13:36:04,093 | INFO |   Semana 2012-W38 procesada: 7 días, 55 filas de bandas, UTXOs al final: 2,329,108
+2026-09-25 13:36:04,297 | INFO |   daily_aggregates_2012.parquet: 267 filas
+2026-09-25 13:36:04,305 | INFO |   age_band_aggregates_2012.parquet: 1925 filas
+2026-09-25 13:36:04,306 | INFO | Leyendo semana 2012-W39 de capa1...
+2026-09-25 13:36:08,667 | INFO |   UTXO count al inicio de la semana: 2,329,108
+2026-09-25 13:36:13,620 | INFO |   Semana 2012-W39 procesada: 7 días, 55 filas de bandas, UTXOs al final: 2,396,229
+2026-09-25 13:36:13,815 | INFO |   daily_aggregates_2012.parquet: 274 filas
+2026-09-25 13:36:13,823 | INFO |   age_band_aggregates_2012.parquet: 1980 filas
+2026-09-25 13:36:13,824 | INFO | Leyendo semana 2012-W40 de capa1...
+2026-09-25 13:36:19,255 | INFO |   UTXO count al inicio de la semana: 2,396,229
+2026-09-25 13:36:24,666 | INFO |   Semana 2012-W40 procesada: 7 días, 51 filas de bandas, UTXOs al final: 2,444,828
+2026-09-25 13:36:24,893 | INFO |   daily_aggregates_2012.parquet: 281 filas
+2026-09-25 13:36:24,901 | INFO |   age_band_aggregates_2012.parquet: 2031 filas
+2026-09-25 13:36:24,902 | INFO | Leyendo semana 2012-W41 de capa1...
+2026-09-25 13:36:30,211 | INFO |   UTXO count al inicio de la semana: 2,444,828
+2026-09-25 13:36:35,527 | INFO |   Semana 2012-W41 procesada: 7 días, 52 filas de bandas, UTXOs al final: 2,536,583
+2026-09-25 13:36:35,755 | INFO |   daily_aggregates_2012.parquet: 288 filas
+2026-09-25 13:36:35,763 | INFO |   age_band_aggregates_2012.parquet: 2083 filas
+2026-09-25 13:36:35,764 | INFO | Leyendo semana 2012-W42 de capa1...
+2026-09-25 13:36:41,151 | INFO |   UTXO count al inicio de la semana: 2,536,583
+2026-09-25 13:36:46,729 | INFO |   Semana 2012-W42 procesada: 7 días, 54 filas de bandas, UTXOs al final: 2,608,014
+2026-09-25 13:36:46,960 | INFO |   daily_aggregates_2012.parquet: 295 filas
+2026-09-25 13:36:46,968 | INFO |   age_band_aggregates_2012.parquet: 2137 filas
+2026-09-25 13:36:46,969 | INFO | Leyendo semana 2012-W43 de capa1...
+2026-09-25 13:36:51,533 | INFO |   UTXO count al inicio de la semana: 2,608,014
+2026-09-25 13:36:56,582 | INFO |   Semana 2012-W43 procesada: 7 días, 54 filas de bandas, UTXOs al final: 2,669,591
+2026-09-25 13:36:56,787 | INFO |   daily_aggregates_2012.parquet: 302 filas
+2026-09-25 13:36:56,795 | INFO |   age_band_aggregates_2012.parquet: 2191 filas
+2026-09-25 13:36:56,795 | INFO | Leyendo semana 2012-W44 de capa1...
+2026-09-25 13:37:00,884 | INFO |   UTXO count al inicio de la semana: 2,669,591
+2026-09-25 13:37:06,056 | INFO |   Semana 2012-W44 procesada: 7 días, 52 filas de bandas, UTXOs al final: 2,721,627
+2026-09-25 13:37:06,249 | INFO |   daily_aggregates_2012.parquet: 309 filas
+2026-09-25 13:37:06,257 | INFO |   age_band_aggregates_2012.parquet: 2243 filas
+2026-09-25 13:37:06,258 | INFO | Leyendo semana 2012-W45 de capa1...
+2026-09-25 13:37:11,264 | INFO |   UTXO count al inicio de la semana: 2,721,627
+2026-09-25 13:37:17,177 | INFO |   Semana 2012-W45 procesada: 7 días, 54 filas de bandas, UTXOs al final: 2,785,263
+2026-09-25 13:37:17,390 | INFO |   daily_aggregates_2012.parquet: 316 filas
+2026-09-25 13:37:17,398 | INFO |   age_band_aggregates_2012.parquet: 2297 filas
+2026-09-25 13:37:17,399 | INFO | Leyendo semana 2012-W46 de capa1...
+2026-09-25 13:37:22,918 | INFO |   UTXO count al inicio de la semana: 2,785,263
+2026-09-25 13:37:29,245 | INFO |   Semana 2012-W46 procesada: 7 días, 53 filas de bandas, UTXOs al final: 2,881,813
+2026-09-25 13:37:29,474 | INFO |   daily_aggregates_2012.parquet: 323 filas
+2026-09-25 13:37:29,483 | INFO |   age_band_aggregates_2012.parquet: 2350 filas
+2026-09-25 13:37:29,484 | INFO | Leyendo semana 2012-W47 de capa1...
+2026-09-25 13:37:35,301 | INFO |   UTXO count al inicio de la semana: 2,881,813
+2026-09-25 13:37:41,953 | INFO |   Semana 2012-W47 procesada: 7 días, 55 filas de bandas, UTXOs al final: 2,938,788
+2026-09-25 13:37:42,191 | INFO |   daily_aggregates_2012.parquet: 330 filas
+2026-09-25 13:37:42,199 | INFO |   age_band_aggregates_2012.parquet: 2405 filas
+2026-09-25 13:37:42,200 | INFO | Leyendo semana 2012-W48 de capa1...
+2026-09-25 13:37:47,509 | INFO |   UTXO count al inicio de la semana: 2,938,788
+2026-09-25 13:37:53,471 | INFO |   Semana 2012-W48 procesada: 7 días, 55 filas de bandas, UTXOs al final: 2,992,949
+2026-09-25 13:37:53,688 | INFO |   daily_aggregates_2012.parquet: 337 filas
+2026-09-25 13:37:53,697 | INFO |   age_band_aggregates_2012.parquet: 2460 filas
+2026-09-25 13:37:53,698 | INFO | Leyendo semana 2012-W49 de capa1...
+2026-09-25 13:37:58,948 | INFO |   UTXO count al inicio de la semana: 2,992,949
+2026-09-25 13:38:04,665 | INFO |   Semana 2012-W49 procesada: 7 días, 54 filas de bandas, UTXOs al final: 3,026,009
+2026-09-25 13:38:04,887 | INFO |   daily_aggregates_2012.parquet: 344 filas
+2026-09-25 13:38:04,896 | INFO |   age_band_aggregates_2012.parquet: 2514 filas
+2026-09-25 13:38:04,897 | INFO | Leyendo semana 2012-W50 de capa1...
+2026-09-25 13:38:10,876 | INFO |   UTXO count al inicio de la semana: 3,026,009
+2026-09-25 13:38:17,113 | INFO |   Semana 2012-W50 procesada: 7 días, 54 filas de bandas, UTXOs al final: 3,089,404
+2026-09-25 13:38:17,371 | INFO |   daily_aggregates_2012.parquet: 351 filas
+2026-09-25 13:38:17,381 | INFO |   age_band_aggregates_2012.parquet: 2568 filas
+2026-09-25 13:38:17,382 | INFO | Leyendo semana 2012-W51 de capa1...
+2026-09-25 13:38:24,368 | INFO |   UTXO count al inicio de la semana: 3,089,404
+2026-09-25 13:38:31,147 | INFO |   Semana 2012-W51 procesada: 7 días, 55 filas de bandas, UTXOs al final: 3,167,381
+2026-09-25 13:38:31,433 | INFO |   daily_aggregates_2012.parquet: 358 filas
+2026-09-25 13:38:31,442 | INFO |   age_band_aggregates_2012.parquet: 2623 filas
+2026-09-25 13:38:31,443 | INFO | Leyendo semana 2012-W52 de capa1...
+2026-09-25 13:38:37,961 | INFO |   UTXO count al inicio de la semana: 3,167,381
+2026-09-25 13:38:44,863 | INFO |   Semana 2012-W52 procesada: 7 días, 53 filas de bandas, UTXOs al final: 3,225,230
+2026-09-25 13:38:45,137 | INFO |   daily_aggregates_2012.parquet: 365 filas
+2026-09-25 13:38:45,146 | INFO |   age_band_aggregates_2012.parquet: 2676 filas
+2026-09-25 13:38:45,147 | INFO | Leyendo semana 2013-W01 de capa1...
+2026-09-25 13:38:51,599 | INFO |   UTXO count al inicio de la semana: 3,225,230
+2026-09-25 13:38:58,818 | INFO |   Semana 2013-W01 procesada: 7 días, 54 filas de bandas, UTXOs al final: 3,317,903
+2026-09-25 13:38:59,069 | INFO |   daily_aggregates_2013.parquet: 6 filas
+2026-09-25 13:38:59,072 | INFO |   age_band_aggregates_2013.parquet: 46 filas
+2026-09-25 13:38:59,083 | INFO |   daily_aggregates_2012.parquet: 366 filas
+2026-09-25 13:38:59,092 | INFO |   age_band_aggregates_2012.parquet: 2684 filas
+2026-09-25 13:38:59,093 | INFO | Leyendo semana 2013-W02 de capa1...
+2026-09-25 13:39:06,600 | INFO |   UTXO count al inicio de la semana: 3,317,903
+2026-09-25 13:39:14,870 | INFO |   Semana 2013-W02 procesada: 7 días, 54 filas de bandas, UTXOs al final: 3,374,750
+2026-09-25 13:39:15,192 | INFO |   daily_aggregates_2013.parquet: 13 filas
+2026-09-25 13:39:15,199 | INFO |   age_band_aggregates_2013.parquet: 100 filas
+2026-09-25 13:39:15,200 | INFO | Leyendo semana 2013-W03 de capa1...
+2026-09-25 13:39:22,820 | INFO |   UTXO count al inicio de la semana: 3,374,750
+2026-09-25 13:39:31,355 | INFO |   Semana 2013-W03 procesada: 7 días, 55 filas de bandas, UTXOs al final: 3,437,072
+2026-09-25 13:39:31,681 | INFO |   daily_aggregates_2013.parquet: 20 filas
+2026-09-25 13:39:31,688 | INFO |   age_band_aggregates_2013.parquet: 155 filas
+2026-09-25 13:39:31,689 | INFO | Leyendo semana 2013-W04 de capa1...
+2026-09-25 13:39:39,444 | INFO |   UTXO count al inicio de la semana: 3,437,072
+2026-09-25 13:39:47,552 | INFO |   Semana 2013-W04 procesada: 7 días, 54 filas de bandas, UTXOs al final: 3,472,008
+2026-09-25 13:39:47,886 | INFO |   daily_aggregates_2013.parquet: 27 filas
+2026-09-25 13:39:47,894 | INFO |   age_band_aggregates_2013.parquet: 209 filas
+2026-09-25 13:39:47,895 | INFO | Leyendo semana 2013-W05 de capa1...
+2026-09-25 13:39:56,968 | INFO |   UTXO count al inicio de la semana: 3,472,008
+2026-09-25 13:40:05,468 | INFO |   Semana 2013-W05 procesada: 7 días, 58 filas de bandas, UTXOs al final: 3,531,768
+2026-09-25 13:40:05,840 | INFO |   daily_aggregates_2013.parquet: 34 filas
+2026-09-25 13:40:05,847 | INFO |   age_band_aggregates_2013.parquet: 267 filas
+2026-09-25 13:40:05,848 | INFO | Leyendo semana 2013-W06 de capa1...
+2026-09-25 13:40:14,810 | INFO |   UTXO count al inicio de la semana: 3,531,768
+2026-09-25 13:40:23,404 | INFO |   Semana 2013-W06 procesada: 7 días, 58 filas de bandas, UTXOs al final: 3,602,461
+2026-09-25 13:40:23,782 | INFO |   daily_aggregates_2013.parquet: 41 filas
+2026-09-25 13:40:23,789 | INFO |   age_band_aggregates_2013.parquet: 325 filas
+2026-09-25 13:40:23,790 | INFO | Leyendo semana 2013-W07 de capa1...
+2026-09-25 13:40:33,068 | INFO |   UTXO count al inicio de la semana: 3,602,461
+2026-09-25 13:40:41,787 | INFO |   Semana 2013-W07 procesada: 7 días, 58 filas de bandas, UTXOs al final: 3,652,280
+2026-09-25 13:40:42,174 | INFO |   daily_aggregates_2013.parquet: 48 filas
+2026-09-25 13:40:42,181 | INFO |   age_band_aggregates_2013.parquet: 383 filas
+2026-09-25 13:40:42,182 | INFO | Leyendo semana 2013-W08 de capa1...
+2026-09-25 13:40:51,660 | INFO |   UTXO count al inicio de la semana: 3,652,280
+2026-09-25 13:41:01,593 | INFO |   Semana 2013-W08 procesada: 7 días, 59 filas de bandas, UTXOs al final: 3,717,405
+2026-09-25 13:41:02,029 | INFO |   daily_aggregates_2013.parquet: 55 filas
+2026-09-25 13:41:02,037 | INFO |   age_band_aggregates_2013.parquet: 442 filas
+2026-09-25 13:41:02,039 | INFO | Leyendo semana 2013-W09 de capa1...
+2026-09-25 13:41:12,474 | INFO |   UTXO count al inicio de la semana: 3,717,405
+2026-09-25 13:41:23,047 | INFO |   Semana 2013-W09 procesada: 7 días, 57 filas de bandas, UTXOs al final: 3,794,198
+2026-09-25 13:41:23,481 | INFO |   daily_aggregates_2013.parquet: 62 filas
+2026-09-25 13:41:23,488 | INFO |   age_band_aggregates_2013.parquet: 499 filas
+2026-09-25 13:41:23,490 | INFO | Leyendo semana 2013-W10 de capa1...
+2026-09-25 13:41:34,031 | INFO |   UTXO count al inicio de la semana: 3,794,198
+2026-09-25 13:41:45,045 | INFO |   Semana 2013-W10 procesada: 7 días, 58 filas de bandas, UTXOs al final: 3,835,122
+2026-09-25 13:41:45,552 | INFO |   daily_aggregates_2013.parquet: 69 filas
+2026-09-25 13:41:45,560 | INFO |   age_band_aggregates_2013.parquet: 557 filas
+2026-09-25 13:41:45,561 | INFO | Leyendo semana 2013-W11 de capa1...
+2026-09-25 13:41:54,346 | INFO |   UTXO count al inicio de la semana: 3,835,122
+2026-09-25 13:42:03,706 | INFO |   Semana 2013-W11 procesada: 7 días, 57 filas de bandas, UTXOs al final: 3,945,775
+2026-09-25 13:42:04,087 | INFO |   daily_aggregates_2013.parquet: 76 filas
+2026-09-25 13:42:04,095 | INFO |   age_band_aggregates_2013.parquet: 614 filas
+2026-09-25 13:42:04,096 | INFO | Leyendo semana 2013-W12 de capa1...
+2026-09-25 13:42:12,876 | INFO |   UTXO count al inicio de la semana: 3,945,775
+2026-09-25 13:42:22,444 | INFO |   Semana 2013-W12 procesada: 7 días, 57 filas de bandas, UTXOs al final: 4,022,877
+2026-09-25 13:42:22,860 | INFO |   daily_aggregates_2013.parquet: 83 filas
+2026-09-25 13:42:22,868 | INFO |   age_band_aggregates_2013.parquet: 671 filas
+2026-09-25 13:42:22,869 | INFO | Leyendo semana 2013-W13 de capa1...
+2026-09-25 13:42:32,667 | INFO |   UTXO count al inicio de la semana: 4,022,877
+2026-09-25 13:42:43,999 | INFO |   Semana 2013-W13 procesada: 7 días, 57 filas de bandas, UTXOs al final: 4,083,912
+2026-09-25 13:42:44,411 | INFO |   daily_aggregates_2013.parquet: 90 filas
+2026-09-25 13:42:44,419 | INFO |   age_band_aggregates_2013.parquet: 728 filas
+2026-09-25 13:42:44,420 | INFO | Leyendo semana 2013-W14 de capa1...
+2026-09-25 13:42:54,768 | INFO |   UTXO count al inicio de la semana: 4,083,912
+2026-09-25 13:43:06,118 | INFO |   Semana 2013-W14 procesada: 7 días, 59 filas de bandas, UTXOs al final: 4,276,059
+2026-09-25 13:43:06,558 | INFO |   daily_aggregates_2013.parquet: 97 filas
+2026-09-25 13:43:06,566 | INFO |   age_band_aggregates_2013.parquet: 787 filas
+2026-09-25 13:43:06,593 | INFO | Leyendo semana 2013-W15 de capa1...
+2026-09-25 13:43:16,866 | INFO |   UTXO count al inicio de la semana: 4,276,059
+2026-09-25 13:43:28,767 | INFO |   Semana 2013-W15 procesada: 7 días, 60 filas de bandas, UTXOs al final: 4,468,119
+2026-09-25 13:43:29,197 | INFO |   daily_aggregates_2013.parquet: 104 filas
+2026-09-25 13:43:29,205 | INFO |   age_band_aggregates_2013.parquet: 847 filas
+2026-09-25 13:43:29,217 | INFO | Leyendo semana 2013-W16 de capa1...
+2026-09-25 13:43:38,444 | INFO |   UTXO count al inicio de la semana: 4,468,119
+2026-09-25 13:43:49,366 | INFO |   Semana 2013-W16 procesada: 7 días, 60 filas de bandas, UTXOs al final: 4,718,530
+2026-09-25 13:43:49,762 | INFO |   daily_aggregates_2013.parquet: 111 filas
+2026-09-25 13:43:49,770 | INFO |   age_band_aggregates_2013.parquet: 907 filas
+2026-09-25 13:43:49,771 | INFO | Leyendo semana 2013-W17 de capa1...
+2026-09-25 13:43:59,211 | INFO |   UTXO count al inicio de la semana: 4,718,530
+2026-09-25 13:44:10,080 | INFO |   Semana 2013-W17 procesada: 7 días, 57 filas de bandas, UTXOs al final: 5,024,583
+2026-09-25 13:44:10,476 | INFO |   daily_aggregates_2013.parquet: 118 filas
+2026-09-25 13:44:10,483 | INFO |   age_band_aggregates_2013.parquet: 964 filas
+2026-09-25 13:44:10,484 | INFO | Leyendo semana 2013-W18 de capa1...
+2026-09-25 13:44:19,749 | INFO |   UTXO count al inicio de la semana: 5,024,583
+2026-09-25 13:44:30,301 | INFO |   Semana 2013-W18 procesada: 7 días, 59 filas de bandas, UTXOs al final: 5,290,850
+2026-09-25 13:44:30,680 | INFO |   daily_aggregates_2013.parquet: 125 filas
+2026-09-25 13:44:30,688 | INFO |   age_band_aggregates_2013.parquet: 1023 filas
+2026-09-25 13:44:30,689 | INFO | Leyendo semana 2013-W19 de capa1...
+2026-09-25 13:44:41,530 | INFO |   UTXO count al inicio de la semana: 5,290,850
+2026-09-25 13:44:53,853 | INFO |   Semana 2013-W19 procesada: 7 días, 60 filas de bandas, UTXOs al final: 5,630,979
+2026-09-25 13:44:54,300 | INFO |   daily_aggregates_2013.parquet: 132 filas
+2026-09-25 13:44:54,343 | INFO |   age_band_aggregates_2013.parquet: 1083 filas
+2026-09-25 13:44:54,344 | INFO | Leyendo semana 2013-W20 de capa1...
+2026-09-25 13:45:04,576 | INFO |   UTXO count al inicio de la semana: 5,630,979
+2026-09-25 13:45:16,926 | INFO |   Semana 2013-W20 procesada: 7 días, 61 filas de bandas, UTXOs al final: 5,877,384
+2026-09-25 13:45:17,345 | INFO |   daily_aggregates_2013.parquet: 139 filas
+2026-09-25 13:45:17,354 | INFO |   age_band_aggregates_2013.parquet: 1144 filas
+2026-09-25 13:45:17,359 | INFO | Leyendo semana 2013-W21 de capa1...
+2026-09-25 13:45:25,919 | INFO |   UTXO count al inicio de la semana: 5,877,384
+2026-09-25 13:45:37,710 | INFO |   Semana 2013-W21 procesada: 7 días, 59 filas de bandas, UTXOs al final: 6,064,370
+2026-09-25 13:45:38,083 | INFO |   daily_aggregates_2013.parquet: 146 filas
+2026-09-25 13:45:38,091 | INFO |   age_band_aggregates_2013.parquet: 1203 filas
+2026-09-25 13:45:38,092 | INFO | Leyendo semana 2013-W22 de capa1...
+2026-09-25 13:45:47,277 | INFO |   UTXO count al inicio de la semana: 6,064,370
+2026-09-25 13:45:58,947 | INFO |   Semana 2013-W22 procesada: 7 días, 57 filas de bandas, UTXOs al final: 6,191,446
+2026-09-25 13:45:59,329 | INFO |   daily_aggregates_2013.parquet: 153 filas
+2026-09-25 13:45:59,337 | INFO |   age_band_aggregates_2013.parquet: 1260 filas
+2026-09-25 13:45:59,338 | INFO | Leyendo semana 2013-W23 de capa1...
+2026-09-25 13:46:08,286 | INFO |   UTXO count al inicio de la semana: 6,191,446
+2026-09-25 13:46:19,323 | INFO |   Semana 2013-W23 procesada: 7 días, 56 filas de bandas, UTXOs al final: 6,287,241
+2026-09-25 13:46:19,686 | INFO |   daily_aggregates_2013.parquet: 160 filas
+2026-09-25 13:46:19,694 | INFO |   age_band_aggregates_2013.parquet: 1316 filas
+2026-09-25 13:46:19,695 | INFO | Leyendo semana 2013-W24 de capa1...
+2026-09-25 13:46:26,880 | INFO |   UTXO count al inicio de la semana: 6,287,241
+2026-09-25 13:46:36,520 | INFO |   Semana 2013-W24 procesada: 7 días, 56 filas de bandas, UTXOs al final: 6,364,618
+2026-09-25 13:46:36,819 | INFO |   daily_aggregates_2013.parquet: 167 filas
+2026-09-25 13:46:36,827 | INFO |   age_band_aggregates_2013.parquet: 1372 filas
+2026-09-25 13:46:36,828 | INFO | Leyendo semana 2013-W25 de capa1...
+2026-09-25 13:46:44,351 | INFO |   UTXO count al inicio de la semana: 6,364,618
+2026-09-25 13:46:55,612 | INFO |   Semana 2013-W25 procesada: 7 días, 56 filas de bandas, UTXOs al final: 6,411,268
+2026-09-25 13:46:55,917 | INFO |   daily_aggregates_2013.parquet: 174 filas
+2026-09-25 13:46:55,925 | INFO |   age_band_aggregates_2013.parquet: 1428 filas
+2026-09-25 13:46:55,955 | INFO | Leyendo semana 2013-W26 de capa1...
+2026-09-25 13:47:02,759 | INFO |   UTXO count al inicio de la semana: 6,411,268
+2026-09-25 13:47:13,105 | INFO |   Semana 2013-W26 procesada: 7 días, 57 filas de bandas, UTXOs al final: 6,480,485
+2026-09-25 13:47:13,395 | INFO |   daily_aggregates_2013.parquet: 181 filas
+2026-09-25 13:47:13,406 | INFO |   age_band_aggregates_2013.parquet: 1485 filas
+2026-09-25 13:47:13,408 | INFO | Leyendo semana 2013-W27 de capa1...
+2026-09-25 13:47:19,019 | INFO |   UTXO count al inicio de la semana: 6,480,485
+2026-09-25 13:47:28,620 | INFO |   Semana 2013-W27 procesada: 7 días, 56 filas de bandas, UTXOs al final: 6,539,895
+2026-09-25 13:47:28,863 | INFO |   daily_aggregates_2013.parquet: 188 filas
+2026-09-25 13:47:28,871 | INFO |   age_band_aggregates_2013.parquet: 1541 filas
+2026-09-25 13:47:28,876 | INFO | Leyendo semana 2013-W28 de capa1...
+2026-09-25 13:47:35,638 | INFO |   UTXO count al inicio de la semana: 6,539,895
+2026-09-25 13:47:46,630 | INFO |   Semana 2013-W28 procesada: 7 días, 57 filas de bandas, UTXOs al final: 6,629,624
+2026-09-25 13:47:46,912 | INFO |   daily_aggregates_2013.parquet: 195 filas
+2026-09-25 13:47:46,920 | INFO |   age_band_aggregates_2013.parquet: 1598 filas
+2026-09-25 13:47:46,932 | INFO | Leyendo semana 2013-W29 de capa1...
+2026-09-25 13:47:52,828 | INFO |   UTXO count al inicio de la semana: 6,629,624
+2026-09-25 13:48:02,600 | INFO |   Semana 2013-W29 procesada: 7 días, 57 filas de bandas, UTXOs al final: 6,696,460
+2026-09-25 13:48:02,853 | INFO |   daily_aggregates_2013.parquet: 202 filas
+2026-09-25 13:48:02,861 | INFO |   age_band_aggregates_2013.parquet: 1655 filas
+2026-09-25 13:48:02,862 | INFO | Leyendo semana 2013-W30 de capa1...
+2026-09-25 13:48:09,226 | INFO |   UTXO count al inicio de la semana: 6,696,460
+2026-09-25 13:48:18,541 | INFO |   Semana 2013-W30 procesada: 7 días, 61 filas de bandas, UTXOs al final: 6,743,391
+2026-09-25 13:48:18,799 | INFO |   daily_aggregates_2013.parquet: 209 filas
+2026-09-25 13:48:18,807 | INFO |   age_band_aggregates_2013.parquet: 1716 filas
+2026-09-25 13:48:18,808 | INFO | Leyendo semana 2013-W31 de capa1...
+2026-09-25 13:48:26,402 | INFO |   UTXO count al inicio de la semana: 6,743,391
+2026-09-25 13:48:37,423 | INFO |   Semana 2013-W31 procesada: 7 días, 59 filas de bandas, UTXOs al final: 6,801,159
+2026-09-25 13:48:37,742 | INFO |   daily_aggregates_2013.parquet: 216 filas
+2026-09-25 13:48:37,750 | INFO |   age_band_aggregates_2013.parquet: 1775 filas
+2026-09-25 13:48:37,751 | INFO | Leyendo semana 2013-W32 de capa1...
+2026-09-25 13:48:45,999 | INFO |   UTXO count al inicio de la semana: 6,801,159
+2026-09-25 13:48:57,903 | INFO |   Semana 2013-W32 procesada: 7 días, 59 filas de bandas, UTXOs al final: 6,853,778
+2026-09-25 13:48:58,302 | INFO |   daily_aggregates_2013.parquet: 223 filas
+2026-09-25 13:48:58,319 | INFO |   age_band_aggregates_2013.parquet: 1834 filas
+2026-09-25 13:48:58,320 | INFO | Leyendo semana 2013-W33 de capa1...
+2026-09-25 13:49:07,693 | INFO |   UTXO count al inicio de la semana: 6,853,778
+2026-09-25 13:49:21,119 | INFO |   Semana 2013-W33 procesada: 7 días, 58 filas de bandas, UTXOs al final: 6,857,688
+2026-09-25 13:49:21,498 | INFO |   daily_aggregates_2013.parquet: 230 filas
+2026-09-25 13:49:21,506 | INFO |   age_band_aggregates_2013.parquet: 1892 filas
+2026-09-25 13:49:21,507 | INFO | Leyendo semana 2013-W34 de capa1...
+2026-09-25 13:49:30,915 | INFO |   UTXO count al inicio de la semana: 6,857,688
+2026-09-25 13:49:44,340 | INFO |   Semana 2013-W34 procesada: 7 días, 59 filas de bandas, UTXOs al final: 6,881,344
+2026-09-25 13:49:44,778 | INFO |   daily_aggregates_2013.parquet: 237 filas
+2026-09-25 13:49:44,786 | INFO |   age_band_aggregates_2013.parquet: 1951 filas
+2026-09-25 13:49:44,787 | INFO | Leyendo semana 2013-W35 de capa1...
+2026-09-25 13:49:53,584 | INFO |   UTXO count al inicio de la semana: 6,881,344
+2026-09-25 13:50:05,602 | INFO |   Semana 2013-W35 procesada: 7 días, 62 filas de bandas, UTXOs al final: 6,945,361
+2026-09-25 13:50:05,978 | INFO |   daily_aggregates_2013.parquet: 244 filas
+2026-09-25 13:50:05,986 | INFO |   age_band_aggregates_2013.parquet: 2013 filas
+2026-09-25 13:50:05,987 | INFO | Leyendo semana 2013-W36 de capa1...
+2026-09-25 13:50:14,417 | INFO |   UTXO count al inicio de la semana: 6,945,361
+2026-09-25 13:50:26,445 | INFO |   Semana 2013-W36 procesada: 7 días, 56 filas de bandas, UTXOs al final: 6,990,437
+2026-09-25 13:50:26,850 | INFO |   daily_aggregates_2013.parquet: 251 filas
+2026-09-25 13:50:26,859 | INFO |   age_band_aggregates_2013.parquet: 2069 filas
+2026-09-25 13:50:26,898 | INFO | Leyendo semana 2013-W37 de capa1...
+2026-09-25 13:50:34,985 | INFO |   UTXO count al inicio de la semana: 6,990,437
+2026-09-25 13:50:46,883 | INFO |   Semana 2013-W37 procesada: 7 días, 58 filas de bandas, UTXOs al final: 7,043,964
+2026-09-25 13:50:47,225 | INFO |   daily_aggregates_2013.parquet: 258 filas
+2026-09-25 13:50:47,244 | INFO |   age_band_aggregates_2013.parquet: 2127 filas
+2026-09-25 13:50:47,245 | INFO | Leyendo semana 2013-W38 de capa1...
+2026-09-25 13:50:56,264 | INFO |   UTXO count al inicio de la semana: 7,043,964
+2026-09-25 13:51:09,962 | INFO |   Semana 2013-W38 procesada: 7 días, 60 filas de bandas, UTXOs al final: 7,107,061
+2026-09-25 13:51:10,340 | INFO |   daily_aggregates_2013.parquet: 265 filas
+2026-09-25 13:51:10,348 | INFO |   age_band_aggregates_2013.parquet: 2187 filas
+2026-09-25 13:51:10,361 | INFO | Leyendo semana 2013-W39 de capa1...
+2026-09-25 13:51:19,006 | INFO |   UTXO count al inicio de la semana: 7,107,061
+2026-09-25 13:51:30,992 | INFO |   Semana 2013-W39 procesada: 7 días, 60 filas de bandas, UTXOs al final: 7,173,604
+2026-09-25 13:51:31,346 | INFO |   daily_aggregates_2013.parquet: 272 filas
+2026-09-25 13:51:31,355 | INFO |   age_band_aggregates_2013.parquet: 2247 filas
+2026-09-25 13:51:31,356 | INFO | Leyendo semana 2013-W40 de capa1...
+2026-09-25 13:51:39,696 | INFO |   UTXO count al inicio de la semana: 7,173,604
+2026-09-25 13:51:51,260 | INFO |   Semana 2013-W40 procesada: 7 días, 60 filas de bandas, UTXOs al final: 7,226,693
+2026-09-25 13:51:51,615 | INFO |   daily_aggregates_2013.parquet: 279 filas
+2026-09-25 13:51:51,624 | INFO |   age_band_aggregates_2013.parquet: 2307 filas
+2026-09-25 13:51:51,625 | INFO | Leyendo semana 2013-W41 de capa1...
+2026-09-25 13:52:00,194 | INFO |   UTXO count al inicio de la semana: 7,226,693
+2026-09-25 13:52:12,439 | INFO |   Semana 2013-W41 procesada: 7 días, 61 filas de bandas, UTXOs al final: 7,294,181
+2026-09-25 13:52:12,788 | INFO |   daily_aggregates_2013.parquet: 286 filas
+2026-09-25 13:52:12,797 | INFO |   age_band_aggregates_2013.parquet: 2368 filas
+2026-09-25 13:52:12,830 | INFO | Leyendo semana 2013-W42 de capa1...
+2026-09-25 13:52:21,811 | INFO |   UTXO count al inicio de la semana: 7,294,181
+2026-09-25 13:52:34,689 | INFO |   Semana 2013-W42 procesada: 7 días, 62 filas de bandas, UTXOs al final: 7,332,016
+2026-09-25 13:52:35,061 | INFO |   daily_aggregates_2013.parquet: 293 filas
+2026-09-25 13:52:35,070 | INFO |   age_band_aggregates_2013.parquet: 2430 filas
+2026-09-25 13:52:35,071 | INFO | Leyendo semana 2013-W43 de capa1...
+2026-09-25 13:52:44,567 | INFO |   UTXO count al inicio de la semana: 7,332,016
+2026-09-25 13:52:58,970 | INFO |   Semana 2013-W43 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,345,992
+2026-09-25 13:52:59,372 | INFO |   daily_aggregates_2013.parquet: 300 filas
+2026-09-25 13:52:59,381 | INFO |   age_band_aggregates_2013.parquet: 2493 filas
+2026-09-25 13:52:59,382 | INFO | Leyendo semana 2013-W44 de capa1...
+2026-09-25 13:53:07,282 | INFO |   UTXO count al inicio de la semana: 7,345,992
+2026-09-25 13:53:19,056 | INFO |   Semana 2013-W44 procesada: 7 días, 62 filas de bandas, UTXOs al final: 7,392,488
+2026-09-25 13:53:19,393 | INFO |   daily_aggregates_2013.parquet: 307 filas
+2026-09-25 13:53:19,401 | INFO |   age_band_aggregates_2013.parquet: 2555 filas
+2026-09-25 13:53:19,402 | INFO | Leyendo semana 2013-W45 de capa1...
+2026-09-25 13:53:29,141 | INFO |   UTXO count al inicio de la semana: 7,392,488
+2026-09-25 13:53:42,420 | INFO |   Semana 2013-W45 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,387,492
+2026-09-25 13:53:42,877 | INFO |   daily_aggregates_2013.parquet: 314 filas
+2026-09-25 13:53:42,888 | INFO |   age_band_aggregates_2013.parquet: 2618 filas
+2026-09-25 13:53:42,889 | INFO | Leyendo semana 2013-W46 de capa1...
+2026-09-25 13:53:52,972 | INFO |   UTXO count al inicio de la semana: 7,387,492
+2026-09-25 13:54:06,909 | INFO |   Semana 2013-W46 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,489,095
+2026-09-25 13:54:07,366 | INFO |   daily_aggregates_2013.parquet: 321 filas
+2026-09-25 13:54:07,378 | INFO |   age_band_aggregates_2013.parquet: 2681 filas
+2026-09-25 13:54:07,379 | INFO | Leyendo semana 2013-W47 de capa1...
+2026-09-25 13:54:20,821 | INFO |   UTXO count al inicio de la semana: 7,489,095
+2026-09-25 13:54:38,651 | INFO |   Semana 2013-W47 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,476,586
+2026-09-25 13:54:39,200 | INFO |   daily_aggregates_2013.parquet: 328 filas
+2026-09-25 13:54:39,209 | INFO |   age_band_aggregates_2013.parquet: 2744 filas
+2026-09-25 13:54:39,210 | INFO | Leyendo semana 2013-W48 de capa1...
+2026-09-25 13:54:53,160 | INFO |   UTXO count al inicio de la semana: 7,476,586
+2026-09-25 13:55:10,647 | INFO |   Semana 2013-W48 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,569,741
+2026-09-25 13:55:11,354 | INFO |   daily_aggregates_2013.parquet: 335 filas
+2026-09-25 13:55:11,395 | INFO |   age_band_aggregates_2013.parquet: 2807 filas
+2026-09-25 13:55:11,396 | INFO | Leyendo semana 2013-W49 de capa1...
+2026-09-25 13:55:23,552 | INFO |   UTXO count al inicio de la semana: 7,569,741
+2026-09-25 13:55:41,943 | INFO |   Semana 2013-W49 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,704,648
+2026-09-25 13:55:42,438 | INFO |   daily_aggregates_2013.parquet: 342 filas
+2026-09-25 13:55:42,447 | INFO |   age_band_aggregates_2013.parquet: 2870 filas
+2026-09-25 13:55:42,448 | INFO | Leyendo semana 2013-W50 de capa1...
+2026-09-25 13:55:53,305 | INFO |   UTXO count al inicio de la semana: 7,704,648
+2026-09-25 13:56:08,785 | INFO |   Semana 2013-W50 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,778,637
+2026-09-25 13:56:09,223 | INFO |   daily_aggregates_2013.parquet: 349 filas
+2026-09-25 13:56:09,249 | INFO |   age_band_aggregates_2013.parquet: 2933 filas
+2026-09-25 13:56:09,250 | INFO | Leyendo semana 2013-W51 de capa1...
+2026-09-25 13:56:20,710 | INFO |   UTXO count al inicio de la semana: 7,778,637
+2026-09-25 13:56:36,523 | INFO |   Semana 2013-W51 procesada: 7 días, 63 filas de bandas, UTXOs al final: 7,897,641
+2026-09-25 13:56:36,996 | INFO |   daily_aggregates_2013.parquet: 356 filas
+2026-09-25 13:56:37,004 | INFO |   age_band_aggregates_2013.parquet: 2996 filas
+2026-09-25 13:56:37,005 | INFO | Leyendo semana 2013-W52 de capa1...
+2026-09-25 13:56:46,675 | INFO |   UTXO count al inicio de la semana: 7,897,641
+2026-09-25 13:57:00,602 | INFO |   Semana 2013-W52 procesada: 7 días, 61 filas de bandas, UTXOs al final: 8,015,354
+2026-09-25 13:57:01,006 | INFO |   daily_aggregates_2013.parquet: 363 filas
+2026-09-25 13:57:01,015 | INFO |   age_band_aggregates_2013.parquet: 3057 filas
+2026-09-25 13:57:01,016 | INFO | Leyendo semana 2014-W01 de capa1...
+2026-09-25 13:57:10,653 | INFO |   UTXO count al inicio de la semana: 8,015,354
+2026-09-25 13:57:26,174 | INFO |   Semana 2014-W01 procesada: 7 días, 63 filas de bandas, UTXOs al final: 8,132,163
+2026-09-25 13:57:26,567 | INFO |   daily_aggregates_2014.parquet: 5 filas
+2026-09-25 13:57:26,570 | INFO |   age_band_aggregates_2014.parquet: 45 filas
+2026-09-25 13:57:26,583 | INFO |   daily_aggregates_2013.parquet: 365 filas
+2026-09-25 13:57:26,592 | INFO |   age_band_aggregates_2013.parquet: 3075 filas
+2026-09-25 13:57:26,613 | INFO | Leyendo semana 2014-W02 de capa1...
+2026-09-25 13:57:37,554 | INFO |   UTXO count al inicio de la semana: 8,132,163
+2026-09-25 13:57:52,743 | INFO |   Semana 2014-W02 procesada: 7 días, 61 filas de bandas, UTXOs al final: 8,284,963
+2026-09-25 13:57:53,178 | INFO |   daily_aggregates_2014.parquet: 12 filas
+2026-09-25 13:57:53,185 | INFO |   age_band_aggregates_2014.parquet: 106 filas
+2026-09-25 13:57:53,186 | INFO | Leyendo semana 2014-W03 de capa1...
+2026-09-25 13:58:03,247 | INFO |   UTXO count al inicio de la semana: 8,284,963
+2026-09-25 13:58:17,743 | INFO |   Semana 2014-W03 procesada: 7 días, 63 filas de bandas, UTXOs al final: 8,457,974
+2026-09-25 13:58:18,151 | INFO |   daily_aggregates_2014.parquet: 19 filas
+2026-09-25 13:58:18,158 | INFO |   age_band_aggregates_2014.parquet: 169 filas
+2026-09-25 13:58:18,159 | INFO | Leyendo semana 2014-W04 de capa1...
+2026-09-25 13:58:29,580 | INFO |   UTXO count al inicio de la semana: 8,457,974
+2026-09-25 13:58:45,833 | INFO |   Semana 2014-W04 procesada: 7 días, 62 filas de bandas, UTXOs al final: 8,611,609
+2026-09-25 13:58:46,300 | INFO |   daily_aggregates_2014.parquet: 26 filas
+2026-09-25 13:58:46,308 | INFO |   age_band_aggregates_2014.parquet: 231 filas
+2026-09-25 13:58:46,309 | INFO | Leyendo semana 2014-W05 de capa1...
+2026-09-25 13:58:57,453 | INFO |   UTXO count al inicio de la semana: 8,611,609
+2026-09-25 13:59:13,190 | INFO |   Semana 2014-W05 procesada: 7 días, 63 filas de bandas, UTXOs al final: 8,806,394
+2026-09-25 13:59:13,648 | INFO |   daily_aggregates_2014.parquet: 33 filas
+2026-09-25 13:59:13,660 | INFO |   age_band_aggregates_2014.parquet: 294 filas
+2026-09-25 13:59:13,661 | INFO | Leyendo semana 2014-W06 de capa1...
+2026-09-25 13:59:26,187 | INFO |   UTXO count al inicio de la semana: 8,806,394
+2026-09-25 13:59:44,086 | INFO |   Semana 2014-W06 procesada: 7 días, 64 filas de bandas, UTXOs al final: 8,985,477
+2026-09-25 13:59:44,645 | INFO |   daily_aggregates_2014.parquet: 40 filas
+2026-09-25 13:59:44,656 | INFO |   age_band_aggregates_2014.parquet: 358 filas
+2026-09-25 13:59:44,657 | INFO | Leyendo semana 2014-W07 de capa1...
+2026-09-25 13:59:56,997 | INFO |   UTXO count al inicio de la semana: 8,985,477
+2026-09-25 14:00:14,176 | INFO |   Semana 2014-W07 procesada: 7 días, 63 filas de bandas, UTXOs al final: 9,041,761
+2026-09-25 14:00:14,672 | INFO |   daily_aggregates_2014.parquet: 47 filas
+2026-09-25 14:00:14,680 | INFO |   age_band_aggregates_2014.parquet: 421 filas
+2026-09-25 14:00:14,682 | INFO | Leyendo semana 2014-W08 de capa1...
+2026-09-25 14:00:27,275 | INFO |   UTXO count al inicio de la semana: 9,041,761
+2026-09-25 14:00:44,515 | INFO |   Semana 2014-W08 procesada: 7 días, 63 filas de bandas, UTXOs al final: 9,216,503
+2026-09-25 14:00:45,074 | INFO |   daily_aggregates_2014.parquet: 54 filas
+2026-09-25 14:00:45,085 | INFO |   age_band_aggregates_2014.parquet: 484 filas
+2026-09-25 14:00:45,086 | INFO | Leyendo semana 2014-W09 de capa1...
+2026-09-25 14:00:59,260 | INFO |   UTXO count al inicio de la semana: 9,216,503
+2026-09-25 14:01:17,949 | INFO |   Semana 2014-W09 procesada: 7 días, 63 filas de bandas, UTXOs al final: 9,373,459
+2026-09-25 14:01:18,540 | INFO |   daily_aggregates_2014.parquet: 61 filas
+2026-09-25 14:01:18,548 | INFO |   age_band_aggregates_2014.parquet: 547 filas
+2026-09-25 14:01:18,549 | INFO | Leyendo semana 2014-W10 de capa1...
+2026-09-25 14:01:32,831 | INFO |   UTXO count al inicio de la semana: 9,373,459
+2026-09-25 14:01:53,687 | INFO |   Semana 2014-W10 procesada: 7 días, 63 filas de bandas, UTXOs al final: 9,539,132
+2026-09-25 14:01:54,310 | INFO |   daily_aggregates_2014.parquet: 68 filas
+2026-09-25 14:01:54,333 | INFO |   age_band_aggregates_2014.parquet: 610 filas
+2026-09-25 14:01:54,334 | INFO | Leyendo semana 2014-W11 de capa1...
+2026-09-25 14:02:08,016 | INFO |   UTXO count al inicio de la semana: 9,539,132
+2026-09-25 14:02:28,779 | INFO |   Semana 2014-W11 procesada: 7 días, 62 filas de bandas, UTXOs al final: 9,677,730
+2026-09-25 14:02:29,328 | INFO |   daily_aggregates_2014.parquet: 75 filas
+2026-09-25 14:02:29,335 | INFO |   age_band_aggregates_2014.parquet: 672 filas
+2026-09-25 14:02:29,336 | INFO | Leyendo semana 2014-W12 de capa1...
+2026-09-25 14:02:40,971 | INFO |   UTXO count al inicio de la semana: 9,677,730
+2026-09-25 14:02:58,926 | INFO |   Semana 2014-W12 procesada: 7 días, 62 filas de bandas, UTXOs al final: 9,807,149
+2026-09-25 14:02:59,422 | INFO |   daily_aggregates_2014.parquet: 82 filas
+2026-09-25 14:02:59,430 | INFO |   age_band_aggregates_2014.parquet: 734 filas
+2026-09-25 14:02:59,431 | INFO | Leyendo semana 2014-W13 de capa1...
+2026-09-25 14:03:12,314 | INFO |   UTXO count al inicio de la semana: 9,807,149
+2026-09-25 14:03:30,058 | INFO |   Semana 2014-W13 procesada: 7 días, 63 filas de bandas, UTXOs al final: 10,009,904
+2026-09-25 14:03:30,586 | INFO |   daily_aggregates_2014.parquet: 89 filas
+2026-09-25 14:03:30,594 | INFO |   age_band_aggregates_2014.parquet: 797 filas
+2026-09-25 14:03:30,595 | INFO | Leyendo semana 2014-W14 de capa1...
+2026-09-25 14:03:43,059 | INFO |   UTXO count al inicio de la semana: 10,009,904
+2026-09-25 14:04:02,103 | INFO |   Semana 2014-W14 procesada: 8 días, 67 filas de bandas, UTXOs al final: 10,167,514
+2026-09-25 14:04:02,613 | INFO |   daily_aggregates_2014.parquet: 96 filas
+2026-09-25 14:04:02,621 | INFO |   age_band_aggregates_2014.parquet: 859 filas
+2026-09-25 14:04:02,622 | INFO | Leyendo semana 2014-W15 de capa1...
+2026-09-25 14:04:15,020 | INFO |   UTXO count al inicio de la semana: 10,167,514
+2026-09-25 14:04:33,336 | INFO |   Semana 2014-W15 procesada: 7 días, 62 filas de bandas, UTXOs al final: 10,321,460
+2026-09-25 14:04:33,840 | INFO |   daily_aggregates_2014.parquet: 103 filas
+2026-09-25 14:04:33,848 | INFO |   age_band_aggregates_2014.parquet: 921 filas
+2026-09-25 14:04:33,849 | INFO | Leyendo semana 2014-W16 de capa1...
+2026-09-25 14:04:46,437 | INFO |   UTXO count al inicio de la semana: 10,321,460
+2026-09-25 14:05:05,334 | INFO |   Semana 2014-W16 procesada: 7 días, 62 filas de bandas, UTXOs al final: 10,418,494
+2026-09-25 14:05:05,851 | INFO |   daily_aggregates_2014.parquet: 110 filas
+2026-09-25 14:05:05,859 | INFO |   age_band_aggregates_2014.parquet: 983 filas
+2026-09-25 14:05:05,860 | INFO | Leyendo semana 2014-W17 de capa1...
+2026-09-25 14:05:18,937 | INFO |   UTXO count al inicio de la semana: 10,418,494
+2026-09-25 14:05:39,372 | INFO |   Semana 2014-W17 procesada: 7 días, 61 filas de bandas, UTXOs al final: 10,583,083
+2026-09-25 14:05:39,901 | INFO |   daily_aggregates_2014.parquet: 117 filas
+2026-09-25 14:05:39,909 | INFO |   age_band_aggregates_2014.parquet: 1044 filas
+2026-09-25 14:05:39,910 | INFO | Leyendo semana 2014-W18 de capa1...
+2026-09-25 14:05:51,798 | INFO |   UTXO count al inicio de la semana: 10,583,083
+2026-09-25 14:06:09,551 | INFO |   Semana 2014-W18 procesada: 7 días, 63 filas de bandas, UTXOs al final: 10,755,560
+2026-09-25 14:06:10,038 | INFO |   daily_aggregates_2014.parquet: 124 filas
+2026-09-25 14:06:10,047 | INFO |   age_band_aggregates_2014.parquet: 1107 filas
+2026-09-25 14:06:10,048 | INFO | Leyendo semana 2014-W19 de capa1...
+2026-09-25 14:06:22,359 | INFO |   UTXO count al inicio de la semana: 10,755,560
+2026-09-25 14:06:41,571 | INFO |   Semana 2014-W19 procesada: 7 días, 62 filas de bandas, UTXOs al final: 10,933,373
+2026-09-25 14:06:42,130 | INFO |   daily_aggregates_2014.parquet: 131 filas
+2026-09-25 14:06:42,138 | INFO |   age_band_aggregates_2014.parquet: 1169 filas
+2026-09-25 14:06:42,139 | INFO | Leyendo semana 2014-W20 de capa1...
+2026-09-25 14:06:55,799 | INFO |   UTXO count al inicio de la semana: 10,933,373
+2026-09-25 14:07:17,577 | INFO |   Semana 2014-W20 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,035,404
+2026-09-25 14:07:18,209 | INFO |   daily_aggregates_2014.parquet: 138 filas
+2026-09-25 14:07:18,218 | INFO |   age_band_aggregates_2014.parquet: 1232 filas
+2026-09-25 14:07:18,219 | INFO | Leyendo semana 2014-W21 de capa1...
+2026-09-25 14:07:33,216 | INFO |   UTXO count al inicio de la semana: 11,035,404
+2026-09-25 14:07:58,392 | INFO |   Semana 2014-W21 procesada: 7 días, 62 filas de bandas, UTXOs al final: 11,100,328
+2026-09-25 14:07:58,975 | INFO |   daily_aggregates_2014.parquet: 145 filas
+2026-09-25 14:07:58,984 | INFO |   age_band_aggregates_2014.parquet: 1294 filas
+2026-09-25 14:07:58,985 | INFO | Leyendo semana 2014-W22 de capa1...
+2026-09-25 14:08:12,315 | INFO |   UTXO count al inicio de la semana: 11,100,328
+2026-09-25 14:08:36,725 | INFO |   Semana 2014-W22 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,189,546
+2026-09-25 14:08:37,345 | INFO |   daily_aggregates_2014.parquet: 152 filas
+2026-09-25 14:08:37,353 | INFO |   age_band_aggregates_2014.parquet: 1357 filas
+2026-09-25 14:08:37,355 | INFO | Leyendo semana 2014-W23 de capa1...
+2026-09-25 14:08:50,735 | INFO |   UTXO count al inicio de la semana: 11,189,546
+2026-09-25 14:09:13,716 | INFO |   Semana 2014-W23 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,314,052
+2026-09-25 14:09:14,336 | INFO |   daily_aggregates_2014.parquet: 159 filas
+2026-09-25 14:09:14,346 | INFO |   age_band_aggregates_2014.parquet: 1420 filas
+2026-09-25 14:09:14,347 | INFO | Leyendo semana 2014-W24 de capa1...
+2026-09-25 14:09:28,182 | INFO |   UTXO count al inicio de la semana: 11,314,052
+2026-09-25 14:09:49,538 | INFO |   Semana 2014-W24 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,461,140
+2026-09-25 14:09:50,090 | INFO |   daily_aggregates_2014.parquet: 166 filas
+2026-09-25 14:09:50,098 | INFO |   age_band_aggregates_2014.parquet: 1483 filas
+2026-09-25 14:09:50,100 | INFO | Leyendo semana 2014-W25 de capa1...
+2026-09-25 14:10:03,300 | INFO |   UTXO count al inicio de la semana: 11,461,140
+2026-09-25 14:10:23,654 | INFO |   Semana 2014-W25 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,633,659
+2026-09-25 14:10:24,236 | INFO |   daily_aggregates_2014.parquet: 173 filas
+2026-09-25 14:10:24,244 | INFO |   age_band_aggregates_2014.parquet: 1546 filas
+2026-09-25 14:10:24,246 | INFO | Leyendo semana 2014-W26 de capa1...
+2026-09-25 14:10:36,961 | INFO |   UTXO count al inicio de la semana: 11,633,659
+2026-09-25 14:10:58,390 | INFO |   Semana 2014-W26 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,805,734
+2026-09-25 14:10:58,943 | INFO |   daily_aggregates_2014.parquet: 180 filas
+2026-09-25 14:10:58,952 | INFO |   age_band_aggregates_2014.parquet: 1609 filas
+2026-09-25 14:10:58,953 | INFO | Leyendo semana 2014-W27 de capa1...
+2026-09-25 14:11:12,296 | INFO |   UTXO count al inicio de la semana: 11,805,734
+2026-09-25 14:11:36,264 | INFO |   Semana 2014-W27 procesada: 7 días, 63 filas de bandas, UTXOs al final: 11,938,936
+2026-09-25 14:11:36,893 | INFO |   daily_aggregates_2014.parquet: 187 filas
+2026-09-25 14:11:36,901 | INFO |   age_band_aggregates_2014.parquet: 1672 filas
+2026-09-25 14:11:36,902 | INFO | Leyendo semana 2014-W28 de capa1...
+2026-09-25 14:11:51,151 | INFO |   UTXO count al inicio de la semana: 11,938,936
+2026-09-25 14:12:15,157 | INFO |   Semana 2014-W28 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,119,054
+2026-09-25 14:12:15,792 | INFO |   daily_aggregates_2014.parquet: 194 filas
+2026-09-25 14:12:15,800 | INFO |   age_band_aggregates_2014.parquet: 1735 filas
+2026-09-25 14:12:15,801 | INFO | Leyendo semana 2014-W29 de capa1...
+2026-09-25 14:12:29,643 | INFO |   UTXO count al inicio de la semana: 12,119,054
+2026-09-25 14:12:53,828 | INFO |   Semana 2014-W29 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,272,673
+2026-09-25 14:12:54,403 | INFO |   daily_aggregates_2014.parquet: 201 filas
+2026-09-25 14:12:54,411 | INFO |   age_band_aggregates_2014.parquet: 1798 filas
+2026-09-25 14:12:54,412 | INFO | Leyendo semana 2014-W30 de capa1...
+2026-09-25 14:13:06,894 | INFO |   UTXO count al inicio de la semana: 12,272,673
+2026-09-25 14:13:30,297 | INFO |   Semana 2014-W30 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,424,021
+2026-09-25 14:13:30,882 | INFO |   daily_aggregates_2014.parquet: 208 filas
+2026-09-25 14:13:30,890 | INFO |   age_band_aggregates_2014.parquet: 1861 filas
+2026-09-25 14:13:30,905 | INFO | Leyendo semana 2014-W31 de capa1...
+2026-09-25 14:13:44,036 | INFO |   UTXO count al inicio de la semana: 12,424,021
+2026-09-25 14:14:07,306 | INFO |   Semana 2014-W31 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,581,990
+2026-09-25 14:14:07,993 | INFO |   daily_aggregates_2014.parquet: 215 filas
+2026-09-25 14:14:08,003 | INFO |   age_band_aggregates_2014.parquet: 1924 filas
+2026-09-25 14:14:08,005 | INFO | Leyendo semana 2014-W32 de capa1...
+2026-09-25 14:14:24,582 | INFO |   UTXO count al inicio de la semana: 12,581,990
+2026-09-25 14:14:53,628 | INFO |   Semana 2014-W32 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,706,610
+2026-09-25 14:14:54,231 | INFO |   daily_aggregates_2014.parquet: 222 filas
+2026-09-25 14:14:54,239 | INFO |   age_band_aggregates_2014.parquet: 1987 filas
+2026-09-25 14:14:54,262 | INFO | Leyendo semana 2014-W33 de capa1...
+2026-09-25 14:15:09,459 | INFO |   UTXO count al inicio de la semana: 12,706,610
+2026-09-25 14:15:37,800 | INFO |   Semana 2014-W33 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,775,783
+2026-09-25 14:15:38,459 | INFO |   daily_aggregates_2014.parquet: 229 filas
+2026-09-25 14:15:38,467 | INFO |   age_band_aggregates_2014.parquet: 2050 filas
+2026-09-25 14:15:38,468 | INFO | Leyendo semana 2014-W34 de capa1...
+2026-09-25 14:15:52,327 | INFO |   UTXO count al inicio de la semana: 12,775,783
+2026-09-25 14:16:17,581 | INFO |   Semana 2014-W34 procesada: 7 días, 63 filas de bandas, UTXOs al final: 12,964,917
+2026-09-25 14:16:18,168 | INFO |   daily_aggregates_2014.parquet: 236 filas
+2026-09-25 14:16:18,176 | INFO |   age_band_aggregates_2014.parquet: 2113 filas
+2026-09-25 14:16:18,178 | INFO | Leyendo semana 2014-W35 de capa1...
+2026-09-25 14:16:32,263 | INFO |   UTXO count al inicio de la semana: 12,964,917
+2026-09-25 14:16:58,411 | INFO |   Semana 2014-W35 procesada: 7 días, 63 filas de bandas, UTXOs al final: 13,129,421
+2026-09-25 14:16:59,000 | INFO |   daily_aggregates_2014.parquet: 243 filas
+2026-09-25 14:16:59,008 | INFO |   age_band_aggregates_2014.parquet: 2176 filas
+2026-09-25 14:16:59,009 | INFO | Leyendo semana 2014-W36 de capa1...
+2026-09-25 14:17:13,662 | INFO |   UTXO count al inicio de la semana: 13,129,421
+2026-09-25 14:17:42,161 | INFO |   Semana 2014-W36 procesada: 7 días, 63 filas de bandas, UTXOs al final: 13,345,521
+2026-09-25 14:17:42,894 | INFO |   daily_aggregates_2014.parquet: 250 filas
+2026-09-25 14:17:42,903 | INFO |   age_band_aggregates_2014.parquet: 2239 filas
+2026-09-25 14:17:42,904 | INFO | Leyendo semana 2014-W37 de capa1...
+2026-09-25 14:17:59,092 | INFO |   UTXO count al inicio de la semana: 13,345,521
+2026-09-25 14:18:29,155 | INFO |   Semana 2014-W37 procesada: 7 días, 63 filas de bandas, UTXOs al final: 13,458,510
+2026-09-25 14:18:29,845 | INFO |   daily_aggregates_2014.parquet: 257 filas
+2026-09-25 14:18:29,857 | INFO |   age_band_aggregates_2014.parquet: 2302 filas
+2026-09-25 14:18:29,858 | INFO | Leyendo semana 2014-W38 de capa1...
+2026-09-25 14:18:46,682 | INFO |   UTXO count al inicio de la semana: 13,458,510
+2026-09-25 14:19:17,481 | INFO |   Semana 2014-W38 procesada: 7 días, 63 filas de bandas, UTXOs al final: 13,587,981
+2026-09-25 14:19:18,199 | INFO |   daily_aggregates_2014.parquet: 264 filas
+2026-09-25 14:19:18,209 | INFO |   age_band_aggregates_2014.parquet: 2365 filas
+2026-09-25 14:19:18,211 | INFO | Leyendo semana 2014-W39 de capa1...
+2026-09-25 14:19:35,941 | INFO |   UTXO count al inicio de la semana: 13,587,981
+2026-09-25 14:20:09,572 | INFO |   Semana 2014-W39 procesada: 7 días, 64 filas de bandas, UTXOs al final: 13,801,787
+2026-09-25 14:20:10,353 | INFO |   daily_aggregates_2014.parquet: 271 filas
+2026-09-25 14:20:10,364 | INFO |   age_band_aggregates_2014.parquet: 2429 filas
+2026-09-25 14:20:10,366 | INFO | Leyendo semana 2014-W40 de capa1...
+2026-09-25 14:20:28,019 | INFO |   UTXO count al inicio de la semana: 13,801,787
+2026-09-25 14:20:59,893 | INFO |   Semana 2014-W40 procesada: 7 días, 63 filas de bandas, UTXOs al final: 14,048,167
+2026-09-25 14:21:00,700 | INFO |   daily_aggregates_2014.parquet: 278 filas
+2026-09-25 14:21:00,710 | INFO |   age_band_aggregates_2014.parquet: 2492 filas
+2026-09-25 14:21:00,712 | INFO | Leyendo semana 2014-W41 de capa1...
+2026-09-25 14:21:18,883 | INFO |   UTXO count al inicio de la semana: 14,048,167
+2026-09-25 14:21:51,144 | INFO |   Semana 2014-W41 procesada: 7 días, 63 filas de bandas, UTXOs al final: 14,210,563
+2026-09-25 14:21:51,950 | INFO |   daily_aggregates_2014.parquet: 285 filas
+2026-09-25 14:21:51,959 | INFO |   age_band_aggregates_2014.parquet: 2555 filas
+2026-09-25 14:21:51,960 | INFO | Leyendo semana 2014-W42 de capa1...
+2026-09-25 14:22:08,970 | INFO |   UTXO count al inicio de la semana: 14,210,563
+2026-09-25 14:22:41,124 | INFO |   Semana 2014-W42 procesada: 7 días, 66 filas de bandas, UTXOs al final: 14,361,964
+2026-09-25 14:22:41,919 | INFO |   daily_aggregates_2014.parquet: 292 filas
+2026-09-25 14:22:41,928 | INFO |   age_band_aggregates_2014.parquet: 2621 filas
+2026-09-25 14:22:41,930 | INFO | Leyendo semana 2014-W43 de capa1...
+2026-09-25 14:22:59,291 | INFO |   UTXO count al inicio de la semana: 14,361,964
+2026-09-25 14:23:32,310 | INFO |   Semana 2014-W43 procesada: 7 días, 63 filas de bandas, UTXOs al final: 14,501,395
+2026-09-25 14:23:33,180 | INFO |   daily_aggregates_2014.parquet: 299 filas
+2026-09-25 14:23:33,190 | INFO |   age_band_aggregates_2014.parquet: 2684 filas
+2026-09-25 14:23:33,191 | INFO | Leyendo semana 2014-W44 de capa1...
+2026-09-25 14:23:52,917 | INFO |   UTXO count al inicio de la semana: 14,501,395
+2026-09-25 14:24:25,558 | INFO |   Semana 2014-W44 procesada: 7 días, 63 filas de bandas, UTXOs al final: 14,701,673
+2026-09-25 14:24:26,357 | INFO |   daily_aggregates_2014.parquet: 306 filas
+2026-09-25 14:24:26,366 | INFO |   age_band_aggregates_2014.parquet: 2747 filas
+2026-09-25 14:24:26,377 | INFO | Leyendo semana 2014-W45 de capa1...
+2026-09-25 14:24:43,366 | INFO |   UTXO count al inicio de la semana: 14,701,673
+2026-09-25 14:25:14,856 | INFO |   Semana 2014-W45 procesada: 7 días, 63 filas de bandas, UTXOs al final: 14,792,109
+2026-09-25 14:25:15,600 | INFO |   daily_aggregates_2014.parquet: 313 filas
+2026-09-25 14:25:15,609 | INFO |   age_band_aggregates_2014.parquet: 2810 filas
+2026-09-25 14:25:15,611 | INFO | Leyendo semana 2014-W46 de capa1...
+2026-09-25 14:25:33,430 | INFO |   UTXO count al inicio de la semana: 14,792,109

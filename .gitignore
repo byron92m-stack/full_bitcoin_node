@@ -1,0 +1,18 @@
+# Datos pesados (reproducibles con el pipeline)
+capa1/
+capa2/
+capa4/
+capa3/*.csv
+tmp/
+obm_reference/
+state_*.json
+__pycache__/
+*.bak_*
+# Logs: se excluyen salvo la evidencia de la auditoria
+logs/*
+!logs/evidencia/
+
+# Historicos: se versiona solo la bitacora/documentos, no los datos viejos
+_historico/datos_old/
+_historico/salida_old/
+_historico/salida_corregida_old/
