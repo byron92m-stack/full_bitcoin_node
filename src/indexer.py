@@ -186,9 +186,9 @@ def open_db() -> sqlite3.Connection:
     con = sqlite3.connect(DB_PATH)
     con.execute("PRAGMA journal_mode = WAL")
     con.execute("PRAGMA synchronous = NORMAL")
-    con.execute("PRAGMA cache_size = -2000000")   # ~1 GB
+    con.execute("PRAGMA cache_size = -2000000")   # KiB -> ~1,9 GB
     con.execute("PRAGMA temp_store = MEMORY")
-    con.execute("PRAGMA mmap_size = 6000000000")   # ~2 GB
+    con.execute("PRAGMA mmap_size = 6000000000")   # bytes -> ~5,6 GB
     con.execute("""
         CREATE TABLE IF NOT EXISTS live_outputs (
             txid TEXT NOT NULL,
