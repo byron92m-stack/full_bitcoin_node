@@ -127,8 +127,10 @@ referencia).
 
 **Regla correcta**: para una fecha repartida, **sumar** los flujos (`spent_value`,
 `spent_output_count`, `cdd`, `fees`, `coinbase`, `issuance`, `ge155/ge365` y sus CDD) y quedarse
-con el **último** `utxo_eod_count` y el **máximo** `last_height`. Implementado en
-`append_daily_to_year` / `append_age_bands_to_year`.
+con el **último** `utxo_eod_count` y el **máximo** `last_height`. Se implementó en
+`append_daily_to_year` / `append_age_bands_to_year`; desde el arreglo de F7 (8-oct) esa fusión ya
+no existe: la fecha es la clave primaria de `daily_agg` en la DB, así que una fecha repartida
+converge sola con `INSERT OR REPLACE` y los parquet anuales se reconstruyen desde ahí.
 
 ---
 
@@ -171,17 +173,24 @@ commit se completó) pero `daily_aggregates_2022.parquet` **no tiene ninguno de 
 **6.650 BTC** desde 2022-02-13 (la emisión de esa semana) que contamina `supply`,
 `cdd_per_supply` y `liveliness` durante **686 días**.
 
-**Arreglo de fondo (pendiente de aplicar).** Invertir el orden a: **parquet → commit DB → estado**.
-Si el commit falla tras escribir el parquet, la semana se reprocesa y el parquet se reescribe con
-los **mismos** valores (idempotente por fecha, `drop_duplicates`/suma), así que no hay riesgo.
-Aplicarlo requiere reiniciar el indexer para que surta efecto.
+**Arreglo de fondo (aplicado el 8-oct).** NO se invirtió el orden a parquet→commit: la fusión
+anual por SUMA haría que una semana reprocesada tras un rollback se contase dos veces (el layout
+anual no distingue una fecha compartida entre semanas —F4— de una reescrita). La solución
+definitiva es la inversa: los agregados diarios y por banda pasan a **vivir en la DB**
+(`daily_agg`, `age_band_agg`), escritos en la **misma transacción** que los datos y `weeks_done`, y
+los parquet anuales quedan como **derivado** que se reconstruye entero desde la DB al arrancar
+(`rebuild_all_from_db`) y al cerrar cada semana (`rebuild_year_from_db`). Un corte entre commit y
+parquet ya no pierde nada: se cura solo en el siguiente arranque. Implementado en `src/indexer.py`,
+migrado con `src/exporters/migrar_agregados_a_db.py` (36/36 ficheros reconstruidos sin diferencias)
+y verificado con `src/exporters/verificar_f7_autocuracion.py` (5/5).
 
-**Arreglo de los datos ya perdidos (pendiente, ~1-3 h).** Los agregados de 2022-W06 son
-**recomputables desde capa1 solo** (no hace falta el estado del UTXO): `spent_value` = Σ valores de
-los prevouts resueltos (join de `capa1/inputs` de la semana contra `capa1/outputs`), `cdd` con
+**Arreglo de los datos ya perdidos (hecho el 30-sep).** Los agregados de 2022-W06 eran
+**recomputables desde capa1 solo** (sin el estado del UTXO): `spent_value` = Σ valores de los
+prevouts resueltos (join de `capa1/inputs` de la semana contra `capa1/outputs`), `cdd` con
 `age = t_spend − t_create` de las alturas respectivas, y `utxo_eod_count(d) = utxo_eod_count(fin de
-2022-W05) + Σ(creados − gastados) hasta d`. Escribir esas filas en
-`capa2/daily_aggregates_2022.parquet` y `age_band_aggregates_2022.parquet` deja capa3 completa.
+2022-W05) + Σ(creados − gastados) hasta d`. Hecho con `src/exporters/reparar_semana_2022W06.py`
+(más `reparar_utxo_eod_w06.py` para `utxo_eod_count`): los 7 días cuadran con la referencia y
+dejaron capa3 completa.
 
 ## F8 — Cuatro trampas silenciosas en el script de reparación (bug NUESTRO, corregido)
 

@@ -1,6 +1,6 @@
 # Handover — réplica OBM + auditoría de reproducibilidad
 
-> Punto de entrada para cualquier agente de código. Estado: **2026-09-28**.
+> Punto de entrada para cualquier agente de código. Estado: **2026-10-08**.
 > Si algo aquí contradice al código o a los logs, **manda el código**.
 
 ## Qué es
@@ -13,8 +13,8 @@ reproducibilidad). Ver `README.md` (arquitectura de 4 capas) y `AUDITORIA_HALLAZ
 | Capa | Estado |
 |---|---|
 | capa1 | **COMPLETA y validada**: 968.458 bloques (0..968.457), 0 huecos, 926 semanas × 4 tablas. `python3 etl/capa1_btccore_parquet.py --validate` ✓ |
-| capa2 | **EN CURSO**. Reanudable: `python3 src/indexer.py` → opción **2** (NUNCA 1, borraría 4 días de trabajo) |
-| capa3 | 23 CSV generados; **hay que regenerarlos al cerrar capa2** |
+| capa2 | **COMPLETA**: 925 semanas (2009-W01..2026-W38), invariante `COUNT = Σins−Σspent` con 0 fantasmas. Reanudable: `python3 src/indexer.py` → opción **2** (NUNCA 1, borra `capa2/`) |
+| capa3 | **VALIDADA: 22/23 series bit-exactas** contra `obm_reference/metrics` (única diferencia: `cdd_btcxdays`, 1 día con 1E-8 = 1 sat-día, redondeo float de OBM). Ver `capa3/VALIDACION.md` |
 | capa4 | vacía (precio/mercado, pendiente — ver `ROADMAP.md`) |
 
 ## Cómo consultar el estado en vivo
@@ -37,8 +37,9 @@ python3 src/exporters/capa3_series.py      # 23 series -> capa3/
 python3 src/exporters/validar_capa3.py     # -> capa3/VALIDACION.md + figuras/
 grep -cE "UTXO no encontrado|fees negativas|issuance negativa" logs/indexer.log   # debe ser 0
 ```
-Esperado: **22/23 series bit-exactas** y `cdd_btcxdays` con residuo ≤1,5 sat-días en 1,5% de
-los días (redondeo float de OBM). Si sale otra cosa, **parar y avisar**.
+Obtenido el 2026-10-08: **22/23 bit-exactas**; `cdd_btcxdays` con 1 día difiriendo 1E-8
+(1 sat-día, redondeo float de OBM). Al regenerarlo tras una extensión, si sale otra cosa,
+**parar y avisar**.
 
 ## Reglas NO negociables (cada una costó un bug real)
 1. **El orden es ALTURA, no tiempo.** Los timestamps de bloque no son monótonos. Particionar
@@ -92,25 +93,25 @@ los días (redondeo float de OBM). Si sale otra cosa, **parar y avisar**.
    de publicar.
 3. `ROADMAP.md`: capa4 (precio/mercado) → estudio econométrico → capa de balances.
 
-## PENDIENTE CRITICO (F7) — semana 2022-W06 sin agregados
+## F7 — RESUELTO (datos el 30-sep, código el 8-oct)
 
-El Ctrl-C del 28-sep cayó en `con.commit()` de 2022-W06: la DB la tiene commiteada y en
-`weeks_done`, pero **sus 7 días no están en `capa2/daily_aggregates_2022.parquet`** (ni en las
-bandas). Efecto: 7 días a cero + la oferta desplazada 6.650 BTC desde 2022-02-13 (contamina
-`supply`, `cdd_per_supply`, `liveliness`). Ver F7 en `AUDITORIA_HALLAZGOS.md` para el método de
-recomputación desde capa1. **No borrar ni resetear capa2**: la DB está bien; sólo falta ese parquet.
+El Ctrl-C del 28-sep cayó en `con.commit()` de 2022-W06: la DB quedó commiteada con la semana en
+`weeks_done`, pero **sus 7 días no se escribieron** al parquet anual. Efecto: 7 días a cero + la
+oferta desplazada 6.650 BTC desde 2022-02-13 (contaminaba `supply`, `cdd_per_supply`,
+`liveliness`). Ver F7 en `AUDITORIA_HALLAZGOS.md`.
 
-Arreglo de fondo en `src/indexer.py`: invertir el orden de `main()` a **parquet → commit DB →
-estado** (hoy es commit → parquet → estado). Requiere reiniciar el indexer.
-
-### Actualización F7 (29-sep)
-- **F7-datos**: `src/exporters/reparar_semana_2022W06.py` recomputa los 7 días de 2022-W06
-  desde capa1 (**en ejecución**; comprobar `logs/reparacion_w06.log` → debe terminar en
-  `REPARADO` con `prevouts resueltos: 6.574.407 / 6.574.407`). Escribe con backup `.bak_w06`.
-  El plan de join está verificado: hash sobre `inp` (6,5 M) + escaneo secuencial de outputs.
-- **F7-código**: se añadió `check_parquet_cobertura()` a `src/indexer.py`: al arrancar **aborta**
-  si alguna semana de `weeks_done` no tiene sus días en el parquet anual. **NO** se invirtió el
-  orden a parquet→commit: con la fusión por SUMA, una semana reprocesada tras un rollback se
-  contaría DOS veces (el layout anual no distingue una fecha compartida entre semanas —F4— de una
-  semana reescrita). El arreglo definitivo es guardar los agregados semanales **en la DB**
-  (misma transacción) y reconstruir los ficheros anuales desde ahí; queda documentado, no aplicado.
+- **Datos**: `src/exporters/reparar_semana_2022W06.py` y `reparar_utxo_eod_w06.py` recomputaron
+  los 7 días desde capa1 (`prevouts resueltos: 6.574.407/6.574.407`) y cuadran con la referencia.
+- **Código (arreglo definitivo)**: los agregados diarios y por banda viven ahora **en la DB**
+  (`daily_agg`, `age_band_agg`), escritos en la **MISMA transacción** que los datos, y los parquet
+  anuales son un **derivado** que se reconstruye entero al arrancar (`rebuild_all_from_db`) y al
+  cerrar cada semana (`rebuild_year_from_db`). Un corte entre el commit y el parquet ya no pierde
+  nada: se cura solo en el siguiente arranque. Además, al haber una sola fila por fecha,
+  desaparece el riesgo de doble conteo de la antigua fusión por SUMA (F4), que fue el motivo de
+  descartar invertir el orden a parquet→commit.
+- **Migración** (ejecutada el 8-oct): `src/exporters/migrar_agregados_a_db.py` — 6.465 filas
+  diarias y 60.792 de bandas; fidelidad **36/36 ficheros, 0 diferencias**.
+- **Verificación**: `src/exporters/verificar_f7_autocuracion.py` reproduce el escenario en un
+  entorno aislado (hueco → curación → idempotencia → reemplazo en vez de suma): 5/5 OK.
+- `check_parquet_cobertura()` se mantiene como comprobación de que la reconstrucción cubrió todas
+  las semanas de `weeks_done`.

@@ -210,6 +210,41 @@ def open_db() -> sqlite3.Connection:
             finished_at TEXT
         )
     """)
+    # F7: los agregados diarios y por banda viven en la DB, escritos en la MISMA
+    # transaccion que los datos. Los parquet anuales son un DERIVADO reconstruible con
+    # rebuild_year_from_db(), asi que un corte entre el commit y la escritura del parquet
+    # ya no puede dejar dias perdidos (fue el caso de 2022-W06).
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS daily_agg (
+            date TEXT PRIMARY KEY,
+            last_height INTEGER NOT NULL DEFAULT -1,
+            spent_value_sats INTEGER NOT NULL DEFAULT 0,
+            spent_output_count INTEGER NOT NULL DEFAULT 0,
+            cdd_sat_days INTEGER NOT NULL DEFAULT 0,
+            cdd_rem_86400 INTEGER NOT NULL DEFAULT 0,
+            fees_sats INTEGER NOT NULL DEFAULT 0,
+            coinbase_output_sats INTEGER NOT NULL DEFAULT 0,
+            issuance_sats INTEGER NOT NULL DEFAULT 0,
+            utxo_eod_count INTEGER NOT NULL DEFAULT 0,
+            spent_value_ge155d_sats INTEGER NOT NULL DEFAULT 0,
+            spent_value_ge365d_sats INTEGER NOT NULL DEFAULT 0,
+            cdd_ge155d_sat_days INTEGER NOT NULL DEFAULT 0,
+            cdd_ge155d_rem_86400 INTEGER NOT NULL DEFAULT 0,
+            cdd_ge365d_sat_days INTEGER NOT NULL DEFAULT 0,
+            cdd_ge365d_rem_86400 INTEGER NOT NULL DEFAULT 0
+        ) WITHOUT ROWID
+    """)
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS age_band_agg (
+            date TEXT NOT NULL,
+            age_band TEXT NOT NULL,
+            spent_value_sats INTEGER NOT NULL DEFAULT 0,
+            spent_output_count INTEGER NOT NULL DEFAULT 0,
+            cdd_sat_days INTEGER NOT NULL DEFAULT 0,
+            cdd_rem_86400 INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (date, age_band)
+        ) WITHOUT ROWID
+    """)
     con.execute("""
         CREATE TEMP TABLE IF NOT EXISTS input_keys (
             txid TEXT NOT NULL,
@@ -277,6 +312,10 @@ def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
     Causa conocida (hallazgo F7): la escritura de los parquet es POSTERIOR al commit, asi que
     un corte entre ambos deja la semana commiteada y registrada pero sin agregados, y al
     reanudar se salta. Aqui se detecta y se aborta en vez de perderlo en silencio.
+
+    Desde el arreglo de F7 los parquet son un DERIVADO de la DB que se reconstruye entero al
+    arrancar (rebuild_all_from_db), asi que este corte ya no puede producirse: esta guarda es
+    la comprobacion de que la reconstruccion ha cubierto todas las semanas de weeks_done.
     """
     por_anio = {}
 
@@ -568,6 +607,15 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
     last_height = max(blocks_by_height.keys())
     last_hash = blocks_by_height[last_height].hash
 
+    # ---- F7: los agregados van en la MISMA transaccion que los datos ----
+    # El parquet anual pasa a ser un derivado reconstruible desde aqui.
+    _sql_d = (f"INSERT OR REPLACE INTO daily_agg ({', '.join(DAILY_DTYPES)}) "
+              f"VALUES ({', '.join(['?'] * len(DAILY_DTYPES))})")
+    con.executemany(_sql_d, [tuple(r[c] for c in DAILY_DTYPES) for r in daily.values()])
+    _sql_b = (f"INSERT OR REPLACE INTO age_band_agg ({', '.join(AGE_BAND_DTYPES)}) "
+              f"VALUES ({', '.join(['?'] * len(AGE_BAND_DTYPES))})")
+    con.executemany(_sql_b, [tuple(r[c] for c in AGE_BAND_DTYPES) for r in age_bands.values()])
+
     # ---- P5: el progreso se registra en la MISMA transaccion que los datos ----
     # Un corte entre el commit y el guardado del JSON ya no puede reprocesar la
     # semana (sus inputs estarian borrados y los agregados saldrian a cero,
@@ -597,83 +645,43 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
 # ESCRITURA DE AGREGADOS (por año) en capa2
 # ============================================================
 
-def append_daily_to_year(year: str, daily: Dict[str, Dict[str, int]]):
-    if not daily:
-        return
-    path = os.path.join(CAPA2, f"daily_aggregates_{year}.parquet")
-    new_df = pd.DataFrame(list(daily.values()))
-    for col, dtype in DAILY_DTYPES.items():
-        if col in new_df.columns:
-            new_df[col] = new_df[col].astype(dtype)
-    new_df = new_df.sort_values("date").reset_index(drop=True)
-
-    if os.path.exists(path):
-        existing = pd.read_parquet(path)
-        for col, dtype in DAILY_DTYPES.items():
-            if col in existing.columns:
-                existing[col] = existing[col].astype(dtype)
-        combined = pd.concat([existing, new_df], ignore_index=True)
-        # Una FECHA puede aparecer en DOS ficheros de semana: si un timestamp de
-        # bloque retrocede cruzando la frontera, ese bloque se particiona en la
-        # semana siguiente (para preservar el orden por altura) y su fecha queda
-        # repartida. Por eso los FLUJOS se SUMAN entre semanas; utxo_eod_count y
-        # last_height se quedan con el valor de la ULTIMA (bloque de mayor altura).
-        _agg = {}
-        for _c in combined.columns:
-            if _c == "date":
-                continue
-            _agg[_c] = ("max" if _c == "last_height"
-                        else "last" if _c == "utxo_eod_count"
-                        else "sum")
-        combined = combined.groupby("date", as_index=False, sort=True).agg(_agg)
-        combined = combined.sort_values("date").reset_index(drop=True)
-    else:
-        combined = new_df
-
-    for col, dtype in DAILY_DTYPES.items():
-        if col in combined.columns:
-            combined[col] = combined[col].astype(dtype)
-
+def _write_year_parquet(con: sqlite3.Connection, table: str, dtypes: Dict[str, str],
+                        filename: str, year: str, order: str) -> None:
+    cols = list(dtypes)
+    df = pd.read_sql_query(
+        f"SELECT {', '.join(cols)} FROM {table} WHERE date LIKE ? ORDER BY {order}",
+        con, params=(year + "-%",),
+    )
+    for col, dt in dtypes.items():
+        if col in df.columns:
+            df[col] = df[col].astype(dt)
+    path = os.path.join(CAPA2, filename)
     tmp = path + ".tmp"
-    combined.to_parquet(tmp, index=False, compression="zstd")
+    df.to_parquet(tmp, index=False, compression="zstd")
     os.replace(tmp, path)
-    logger.info(f"  daily_aggregates_{year}.parquet: {len(combined)} filas")
+    logger.info(f"  {filename}: {len(df)} filas (desde la DB)")
 
-def append_age_bands_to_year(year: str, age_bands: Dict[Tuple[str, str], Dict[str, int]]):
-    if not age_bands:
-        return
-    path = os.path.join(CAPA2, f"age_band_aggregates_{year}.parquet")
-    new_df = pd.DataFrame(list(age_bands.values()))
-    for col, dtype in AGE_BAND_DTYPES.items():
-        if col in new_df.columns:
-            new_df[col] = new_df[col].astype(dtype)
-    new_df = new_df.sort_values(["date", "age_band"]).reset_index(drop=True)
+def rebuild_year_from_db(con: sqlite3.Connection, year: str) -> None:
+    """Reescribe COMPLETOS los dos parquet anuales de `year` a partir de la DB.
 
-    if os.path.exists(path):
-        existing = pd.read_parquet(path)
-        for col, dtype in AGE_BAND_DTYPES.items():
-            if col in existing.columns:
-                existing[col] = existing[col].astype(dtype)
-        combined = pd.concat([existing, new_df], ignore_index=True)
-        # Mismo motivo que en daily: si la fecha esta repartida entre dos semanas,
-        # las bandas de edad se SUMAN en vez de sobrescribirse.
-        combined = (combined.groupby(["date", "age_band"], as_index=False, sort=True)
-                            .agg({"spent_value_sats": "sum",
-                                  "spent_output_count": "sum",
-                                  "cdd_sat_days": "sum",
-                                  "cdd_rem_86400": "sum"}))
-        combined = combined.sort_values(["date", "age_band"]).reset_index(drop=True)
-    else:
-        combined = new_df
+    No fusiona con lo que hubiera en disco: la DB —escrita en la MISMA transaccion que
+    los datos— es la fuente unica, asi que esto es idempotente y repara por si solo
+    cualquier corte anterior entre el commit y la escritura del parquet (F7). Ademas,
+    al haber una sola fila por fecha, desaparece el riesgo de doble conteo que tenia la
+    fusion por SUMA cuando una fecha quedaba repartida entre dos semanas (F4).
+    """
+    _write_year_parquet(con, "daily_agg", DAILY_DTYPES,
+                        f"daily_aggregates_{year}.parquet", year, "date")
+    _write_year_parquet(con, "age_band_agg", AGE_BAND_DTYPES,
+                        f"age_band_aggregates_{year}.parquet", year, "date, age_band")
 
-    for col, dtype in AGE_BAND_DTYPES.items():
-        if col in combined.columns:
-            combined[col] = combined[col].astype(dtype)
-
-    tmp = path + ".tmp"
-    combined.to_parquet(tmp, index=False, compression="zstd")
-    os.replace(tmp, path)
-    logger.info(f"  age_band_aggregates_{year}.parquet: {len(combined)} filas")
+def rebuild_all_from_db(con: sqlite3.Connection) -> int:
+    """Reconstruye los ficheros anuales de todos los años presentes en la DB."""
+    anios = [r[0] for r in con.execute(
+        "SELECT DISTINCT substr(date, 1, 4) FROM daily_agg ORDER BY 1")]
+    for y in anios:
+        rebuild_year_from_db(con, y)
+    return len(anios)
 
 # ============================================================
 # MAIN
@@ -769,6 +777,12 @@ def main():
     # ---- P3: abortar si last_week is None con DB no vacía ----
     done_weeks = {r[0] for r in con.execute("SELECT week FROM weeks_done")}
     if done_weeks:
+        # F7: los parquet anuales son DERIVADOS de la DB, asi que se reconstruyen enteros
+        # al arrancar. Eso repara por si solo un corte anterior entre el commit y la
+        # escritura del parquet; la guarda que va despues comprueba que la reconstruccion
+        # ha cubierto todas las semanas de weeks_done.
+        n_anios = rebuild_all_from_db(con)
+        logger.info(f"parquet anual reconstruido desde la DB ({n_anios} anios)")
         faltan = check_parquet_cobertura(done_weeks)
         if faltan:
             for w, ds in faltan[:5]:
@@ -820,12 +834,10 @@ def main():
 
         utxo_count = result["utxo_count"]
 
-        years_in_week = set(d.split("-")[0] for d in result["daily"])
-        for y in years_in_week:
-            daily_y = {d: v for d, v in result["daily"].items() if d.startswith(y + "-")}
-            bands_y = {k: v for k, v in result["age_bands"].items() if k[0].startswith(y + "-")}
-            append_daily_to_year(y, daily_y)
-            append_age_bands_to_year(y, bands_y)
+        # Los agregados ya estan en la DB (misma transaccion); aqui solo se reescriben
+        # enteros los ficheros anuales de los años que toca esta semana.
+        for y in set(d.split("-")[0] for d in result["daily"]):
+            rebuild_year_from_db(con, y)
 
         state["last_processed_week"] = week
         state["last_processed_height"] = result["last_height"]
