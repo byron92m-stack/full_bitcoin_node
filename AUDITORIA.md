@@ -83,11 +83,12 @@ bloques, basta con **481 llamadas RPC** (`getblockheader`) en vez de una por blo
 `capa1/difficulty_epochs.parquet`. **Lección**: las variables de estado del protocolo se leen, no se
 recalculan.
 
-*(Aviso 2026-10-08: ese fichero cubre hasta la **época 480**; la **481**, que empieza en los
-bloques de `2026-W40`, falta, porque se generó con el tip anterior. `capa3_series.py` ya **avisa**
-por pantalla en vez de recalcular en silencio —`AVISO: falta la epoca 481…`— y la solución es
-relanzar `fix_difficulty_rpc.py` con el nodo encendido. Esas fechas quedan más allá del final de la
-referencia, así que no entran en la validación.)*
+*(Resuelto el 2026-10-08: el fichero se había quedado en la **época 480** y los bloques de
+`2026-W40` caían en la **481**, que faltaba; `capa3_series.py` lo detectó y **avisó** por pantalla
+en vez de recalcular en silencio —ese `AVISO` se añadió justo por esto (A3 de la revisión
+adversarial)— y el fichero se regeneró con el nodo encendido: hoy cubre **482 épocas (0..481)**,
+con el tip en 970.449, y el aviso ya no aparece. Esas fechas siguen quedando más allá del final de
+la referencia, así que no entran en la validación.)*
 
 ### F6 · Fusión cuando una fecha cae en dos ficheros semanales
 Consecuencia de particionar por semana ISO: una fecha puede aparecer en dos semanas (F4). La

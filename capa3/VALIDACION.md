@@ -1,6 +1,6 @@
 # Validación de capa3 frente a la referencia OBM v0.1.0
 
-Generado: 2026-10-08 11:09
+Generado: 2026-10-08 11:27
 
 - Cobertura de capa3: hasta **2026-10-08**
 - Comparación limitada a: **2026-10-04**

@@ -44,12 +44,12 @@ punto dice qué es, por qué importa y cómo queda acotado.
    desde ficheros de bloque aislados: hace falta el RPC. Es una propiedad del método de OBM, no
    nuestra, pero limita la promesa "sólo con el nodo" a *con el nodo en marcha*.
 
-7. **La tabla de épocas de dificultad puede quedarse corta.** `capa1/difficulty_epochs.parquet` se
-   generó con un tip anterior (481 épocas, 0..480) y hoy capa1 llega más lejos: los bloques de
-   `2026-W40` caen en la **época 481, que falta**, así que `capa3_series.py` los resuelve con
-   `difficulty_core(bits)` —justo lo que F3 prohíbe— aunque ahora **avisa** por pantalla en vez de
-   hacerlo en silencio. *Acotado*: esas fechas están más allá del final de la referencia (no entran
-   en la validación) y se arreglan relanzando `fix_difficulty_rpc.py` con el nodo encendido.
+7. **La tabla de épocas de dificultad hay que refrescarla al extender capa1.** Cubría hasta la
+   época 480 y los bloques nuevos caían en la 481: `capa3_series.py` habría usado
+   `difficulty_core(bits)` —justo lo que F3 prohíbe— pero **avisa** por pantalla en vez de hacerlo
+   en silencio. *Acotado*: se regeneró el 8-oct con el nodo encendido (**482 épocas, 0..481**, tip
+   970.449) y el aviso ya no aparece; el riesgo vuelve cada vez que se extienda capa1, y se cierra
+   volviendo a lanzar `fix_difficulty_rpc.py`.
 
 8. **El filtro de "gastabilidad" es una heurística de convención.** El UTXO vivo excluye salidas
    `OP_RETURN`/nulldata y `script_hex` anómalos. Es la convención que hace cuadrar el conteo con
