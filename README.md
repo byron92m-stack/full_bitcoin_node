@@ -253,6 +253,10 @@ python3 src/exporters/validar_capa3.py        # -> capa3/VALIDATION.md + figures
 python3 src/exporters/graficos_capa3.py       # -> capa3/figures/*.png
 ```
 
+> **Fresh clone:** the published bytes are the 24 layer-3 files (the 23 series plus
+> `validation_series.csv`). `obm_reference/` is **not** redistributed, so verify with
+> `sha256sum -c --ignore-missing capa3/MANIFEST.sha256` (the reference entries are skipped).
+
 **Repository map**
 
 | Path | What is there |
@@ -260,7 +264,7 @@ python3 src/exporters/graficos_capa3.py       # -> capa3/figures/*.png
 | `etl/` | layer 1 ETL and week-repair utilities |
 | `src/indexer.py` | layer 2 indexer (UTXO + aggregates) |
 | `src/exporters/` | layer 3 series, validation and one-off scripts |
-| `capa1/ … capa4/` | data (outside git; from `capa3/` the report, the figures and `MANIFEST.sha256` are versioned) |
+| `capa1/ … capa4/` | data. `capa3/` **is versioned** (the 23 series, `validation_series.csv`, `VALIDATION.md`, the figures and `MANIFEST.sha256`); `capa1/`, `capa2/` and `capa4/` are outside git (too heavy, rebuildable) |
 | `obm_reference/` | official OBM snapshot: `metrics/`, `paper/`, `tools/` |
 | `logs/` | execution logs (outside git except `logs/evidencia/`, the archived evidence) |
 | `_historico/` | **first attempt at the pipeline (Sep-2026), archived**: its 3 documents (`BITACORA.md`, `CONTRATO_REPLICA_OLD.md`, `INFORME_PIPELINE_VIEJO.md`) are versioned, not its data. It is not part of the artifact |
@@ -323,4 +327,17 @@ Reference dataset:
 
 If you use this artifact (the replication and its audit), cite the repository and the commit that
 validates the snapshot: `AUDITORIA.md` indicates the exact state of each layer at the moment of
-validation.
+validation. `CITATION.cff` provides the machine-readable citation for this repository and for the
+OBM paper.
+
+## License
+
+- **Code** (the `.py` scripts in `etl/` and `src/`): **MIT** - see [`LICENSE`](LICENSE).
+- **Documents, figures and the validation report** (`*.md`, `capa3/figures/*.png`,
+  `capa3/VALIDATION.md`, `capa3/validation_series.csv`): **Creative Commons Attribution 4.0
+  International (CC BY 4.0)** - <https://creativecommons.org/licenses/by/4.0/>.
+- **The OBM reference is not redistributed**: `obm_reference/` (the authors' manuscript, their code
+  and the 23 published CSVs) is kept outside git and must be obtained from its own source; cite the
+  original (arXiv:2607.03124v1).
+- `bitcoin_math.py` reimplements Bitcoin Core's difficulty/target formulas (MIT); it is an
+  independent implementation - no code was copied.

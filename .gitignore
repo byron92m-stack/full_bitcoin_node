@@ -2,7 +2,8 @@
 capa1/
 capa2/
 capa4/
-capa3/*.csv
+# Layer 3 is the exception: the 23 series (capa3/obm_*_daily.csv) and the validation
+# table ARE versioned (~13 MB) - the published dataset lives in the repository.
 tmp/
 obm_reference/
 state_*.json

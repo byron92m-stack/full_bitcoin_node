@@ -76,9 +76,11 @@ are worth 1 ulp of the last published decimal. When regenerating it after an ext
   Restart: `bitcoind -datadir=/media/SSD4T/bitcoin/.bitcoin -daemon`
 - Official reference in `obm_reference/`: `metrics/` (23 CSV), `paper/` (the manuscript),
   `tools/` (the authors' code — useful for the audit).
-- **git** repository initialised. The code and the documentation are versioned; the data is **not**
-  (`capa1/`, `capa2/`, `capa4/`, `capa3/*.csv`, `obm_reference/`, `state_*.json`, `*.bak_*`,
-  `tmp/`) nor are the logs, except `logs/evidencia/`. See `.gitignore`.
+- **git** repository initialised. The code, the documentation **and the layer-3 dataset**
+  (`capa3/`: the 23 series, `validation_series.csv`, `VALIDATION.md`, the figures and
+  `MANIFEST.sha256`) are versioned; the rest of the data is **not** (`capa1/`, `capa2/`, `capa4/`,
+  `obm_reference/`, `state_*.json`, `*.bak_*`, `tmp/`) nor are the logs, except `logs/evidencia/`.
+  See `.gitignore`.
 - The logs in `logs/evidencia/` are **evidence** of findings F4/F5: do not delete them.
 
 ## Conventions

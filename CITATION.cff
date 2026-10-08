@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this replication and its audit, cite it together with the OBM paper it verifies."
+title: "Verifiable replication of Open Bitcoin Metrics (OBM) v0.1.0"
+abstract: >-
+  An independent reimplementation, from our own Bitcoin Core full node and our own code, of the
+  23 daily series published by Open Bitcoin Metrics (OBM) v0.1.0, plus a reproducibility audit of
+  those series. 21 of the 23 series are bit-exact against the official snapshot; the two that
+  differ are the Coin Days Destroyed series, at one unit of the last published decimal.
+authors:
+  - family-names: "Martínez"
+    given-names: "Byron Josué"
+version: "0.1.0"
+date-released: "2026-10-08"
+license: MIT
+keywords:
+  - bitcoin
+  - on-chain metrics
+  - reproducibility
+  - open data
+references:
+  - type: article
+    title: "Open Bitcoin Metrics: Verifiable Full-Node-Derived Bitcoin Time Series for Economic Research"
+    authors:
+      - family-names: "Llanos"
+        given-names: "Diego R."
+    year: 2026
+    notes: "arXiv:2607.03124v1"

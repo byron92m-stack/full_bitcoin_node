@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """SHA-256 manifest of the validated bytes (layer 3) and of the frozen reference.
 
-Why it exists: the 23 series in `capa3/*.csv` and the reference in `obm_reference/` are NOT
-version-controlled (they are data), so without a manifest the exact bytes that produced
-`capa3/VALIDATION.md` cannot be identified (finding A6 of the adversarial review).
+Why it exists: pinning the exact bytes that produced `capa3/VALIDATION.md` (finding A6 of the
+adversarial review). The 23 series are versioned in git, but the frozen reference
+(`obm_reference/`) is not redistributed, so the manifest is what ties the published layer-3 bytes
+to the reference they were validated against.
 
 Output: capa3/MANIFEST.sha256   (`sha256sum` format: `<hash>  <path>`)
 
