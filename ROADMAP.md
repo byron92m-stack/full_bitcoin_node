@@ -14,12 +14,12 @@ agent. **It is the piece that demonstrates rigour and engineering.**
 *(Done on 8 Oct: the two documents, the adversarial review in an external harness —14 findings,
 A1-A14, already incorporated— and the 4 commits. The final closure of the package is still pending.)*
 
-## Phase 2 — layer 4: market  *(1 week)*
+## Phase 2 — market data (price)  *(1 week)*
 Daily price from **Binance** (1d klines; `data.binance.vision`, no API key) since 2017-08,
 **spliced** with Bitstamp/Coinbase/CoinDesk BPI for 2010-2017 (document the venue change).
 Funding rate and futures open interest are added.
 **Unlocks**: NVT, MVRV, realized price, hashprice, fees in USD.
-*Rule*: `layer 1`-`layer 3` remain reproducible **with the node only**; layer 4 is separate.
+*Rule*: the on-chain layers (1-3) remain reproducible **with the node only**; the market data is separate.
 
 ## Phase 3 — Research track: econometrics of the OBM series  *(2-4 weeks)*
 It is the declared purpose of the paper ("economic and econometric research") and the dataset is from
@@ -31,7 +31,7 @@ with on-chain exogenous variables. Tools already installed (`statsmodels`, `scip
 
 ## Phase 4 — Balances track (no addresses)  *(3-5 days)*
 Balance by **output size** ("whale outputs"), by script type, **HODL waves** and
-**URPD** (cost basis, requires layer 4). All from `live_outputs` — minutes of compute.
+**URPD** (cost basis, requires price data). All from `live_outputs` — minutes of compute.
 **Deliverable**: visual panel + methodological note.
 
 ## Phase 5 (optional) — Addresses / entities  *(weeks)*

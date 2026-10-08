@@ -73,9 +73,9 @@ point states what it is, why it matters and how it is bounded.
 
 ## 5 · Dataset coverage
 
-12. **There is no layer 4 (price/market).** All the series that depend on price are left out (NVT,
+12. **Price/market data is not included.** All the series that depend on price are left out (NVT,
     MVRV, realized price, hashprice, USD fees). `ROADMAP.md` places it apart **on
-    purpose**, so as not to break the rule that layers 1–3 are reproduced with the node alone.
+    purpose**, so as not to break the rule that the on-chain layers are reproduced with the node alone.
 
 13. **There are no addresses or entities.** All entity-based analysis (rich list, clustering,
     flows by exchange) is left out. The *proxies* without addresses (output size, script

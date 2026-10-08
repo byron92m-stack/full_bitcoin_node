@@ -14,10 +14,9 @@ and a **white-box audit of the published methodology** (paper + `APPENDIX A` + `
 
 ## Method
 
-1. **Own pipeline in 4 layers.** `layer 1` extracts the chain from the node into weekly parquet
+1. **Own pipeline in 3 layers.** `layer 1` extracts the chain from the node into weekly parquet
    (`blocks`, `txs`, `inputs`, `outputs`); `layer 2` is the *spent-output indexer* of §3.4 of the paper
-   (live UTXO in SQLite + daily and age-band aggregates); `layer 3` produces the 23 series;
-   `layer 4` (market) is out by design. Hard rules: **zero hand-written numbers in the pipeline** (every number it produces
+   (live UTXO in SQLite + daily and age-band aggregates); `layer 3` produces the 23 series. Price/market data is out of scope by design. Hard rules: **zero hand-written numbers in the pipeline** (every number it produces
    comes out of a re-runnable script) and `layer 1`–`layer 3` reproducible with the node.
 
 2. **Day-by-day comparison** against the official CSVs (`src/exporters/validar_capa3.py`), with the
@@ -207,7 +206,6 @@ The number-by-number evidence, with the command that regenerates it in each case
 | `layer 1` | 970,447 blocks (0..970,446), 928 weeks × 4 tables, parquet | complete and validated |
 | `layer 2` | 927 weeks (`2009-W01`..`2026-W40`); live UTXO in SQLite (~20 GiB); daily and age-band aggregates | complete; invariant 0 phantoms |
 | `layer 3` | the 23 daily series | **21/23** bit-exact |
-| `layer 4` | price/market | not included (out of scope) |
 
 Construction cost on this machine: `layer 2` ~1 h per week in 2026 (≈50-85 min/week), several
 days in total; `layer 1` 387 GiB of parquet.

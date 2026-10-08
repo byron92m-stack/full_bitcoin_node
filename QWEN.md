@@ -7,7 +7,7 @@
 Own pipeline that reproduces the **23 daily series of Open Bitcoin Metrics (OBM) v0.1.0**
 from a full Bitcoin Core node, and the basis of an **independent
 reproducibility audit** (the paper is called "Verifiable Full-Node-Derived…": its thesis is
-reproducibility). See `README.md` (4-layer architecture) and `AUDITORIA_HALLAZGOS.md`.
+reproducibility). See `README.md` (3-layer architecture) and `AUDITORIA_HALLAZGOS.md`.
 
 ## Status
 | Layer | Status |
@@ -15,7 +15,6 @@ reproducibility). See `README.md` (4-layer architecture) and `AUDITORIA_HALLAZGO
 | layer 1 | **COMPLETE and validated**: 970,447 blocks (0..970,446), 0 gaps, 928 weeks × 4 tables. `python3 etl/capa1_btccore_parquet.py --validate` ✓ |
 | layer 2 | **COMPLETE**: 927 weeks (2009-W01..2026-W40), invariant `COUNT = Σins−Σspent` with 0 phantom rows. Resumable: `python3 src/indexer.py` → option **2** (NEVER 1, it deletes `capa2/`) |
 | layer 3 | **VALIDATED: 21/23 bit-exact series** against `obm_reference/metrics`, with the tolerance derived from the decimals the reference publishes. The two differences are in CDD: `cdd_btcxdays` (1 day, 1E-8 = 1 sat-day) and `cdd_age_band` (111 days / 113 cells, 1E-12 = 1 ulp; exact ties where we round half-even). See `capa3/VALIDATION.md` |
-| layer 4 | empty (price/market, pending — see `ROADMAP.md`) |
 
 ## How to check the live status
 ```bash
@@ -78,7 +77,7 @@ are worth 1 ulp of the last published decimal. When regenerating it after an ext
   `tools/` (the authors' code — useful for the audit).
 - **git** repository initialised. The code, the documentation **and the layer-3 dataset**
   (`capa3/`: the 23 series, `validation_series.csv`, `VALIDATION.md`, the figures and
-  `MANIFEST.sha256`) are versioned; the rest of the data is **not** (`capa1/`, `capa2/`, `capa4/`,
+  `MANIFEST.sha256`) are versioned; the rest of the data is **not** (`capa1/`, `capa2/`,
   `obm_reference/`, `state_*.json`, `*.bak_*`, `tmp/`) nor are the logs, except `logs/evidencia/`.
   See `.gitignore`.
 - The logs in `logs/evidencia/` are **evidence** of findings F4/F5: do not delete them.
@@ -93,7 +92,7 @@ are worth 1 ulp of the last published decimal. When regenerating it after an ext
 2. **Package A**: `AUDITORIA.md` from `AUDITORIA_HALLAZGOS.md` (the 8 findings are already
    closed with numbers). Rule: adversarial review by an independent agent before
    publishing.
-3. `ROADMAP.md`: layer 4 (price/market) → econometric study → balances layer.
+3. `ROADMAP.md`: market data (price) → econometric study → balances layer.
 
 ## F7 — RESOLVED (data on 30 Sep, code on 8 Oct)
 

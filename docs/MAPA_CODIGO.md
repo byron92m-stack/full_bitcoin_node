@@ -1,4 +1,4 @@
-# Code map — OBM v0.1.0 replica in 4 layers
+# Code map — OBM v0.1.0 replica in 3 layers
 
 Orientation document for agents (Qwen Code and similar). It is equivalent to the graph that
 *graphify* would generate: who calls whom, what each module writes and which invariants
@@ -33,10 +33,6 @@ flowchart TD
         C3["capa3/obm_*_daily.csv (23)<br/>VALIDATION.md · validation_series.csv"]
     end
 
-    subgraph L4["LAYER 4 — market (pending)"]
-        MKT["price / volume / external on-chain"]
-    end
-
     NODE -->|RPC| ETL
     ETL --> C1D
     ETL --> ST1
@@ -51,7 +47,6 @@ flowchart TD
     EXP --> C3
     C3 --> VAL
     C3 --> GRAF
-    C3 --> MKT
 ```
 
 ## 2. Execution order (reproducible from scratch)

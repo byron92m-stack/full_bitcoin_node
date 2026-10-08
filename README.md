@@ -71,10 +71,6 @@ capa2/  │ src/indexer.py  (spent-output indexer, paper §3.4)    │  live_out
 capa3/  │ src/exporters/capa3_series.py                         │  obm_<series>_daily.csv ×23
   13 MB │ 21 long series + 2 wide tables, exact OBM schema      │  VALIDATION.md + figures/
         │ src/exporters/validar_capa3.py                        │
-        └───────────────┬───────────────────────────────────────┘
-        ┌───────────────▼───────────────────────────────────────┐
-capa4/  │ market (pending)                                      │  daily klines (price)
-        │ enables valuation: NVT, MVRV, hashprice               │  → valuation family
         └───────────────────────────────────────────────────────┘
 ```
 
@@ -264,7 +260,7 @@ python3 src/exporters/graficos_capa3.py       # -> capa3/figures/*.png
 | `etl/` | layer 1 ETL and week-repair utilities |
 | `src/indexer.py` | layer 2 indexer (UTXO + aggregates) |
 | `src/exporters/` | layer 3 series, validation and one-off scripts |
-| `capa1/ … capa4/` | data. `capa3/` **is versioned** (the 23 series, `validation_series.csv`, `VALIDATION.md`, the figures and `MANIFEST.sha256`); `capa1/`, `capa2/` and `capa4/` are outside git (too heavy, rebuildable) |
+| `capa1/`, `capa2/` | data outside git (too heavy, rebuildable). `capa3/` **is versioned**: the 23 series, `validation_series.csv`, `VALIDATION.md`, the figures and `MANIFEST.sha256` |
 | `obm_reference/` | official OBM snapshot: `metrics/`, `paper/`, `tools/` |
 | `logs/` | execution logs (outside git except `logs/evidencia/`, the archived evidence) |
 | `_historico/` | **first attempt at the pipeline (Sep-2026), archived**: its 3 documents (`BITACORA.md`, `CONTRATO_REPLICA_OLD.md`, `INFORME_PIPELINE_VIEJO.md`) are versioned, not its data. It is not part of the artifact |
@@ -286,7 +282,7 @@ Summary; the honest detail is 27 points in [`LIMITACIONES.md`](LIMITACIONES.md):
   of the exact value and OBM's differs by one unit of the last decimal, in either direction. The ratios derived from the CDD do come out
   exact.
 - The **difficulty is read from the node**, so the pipeline requires RPC, not only block files.
-- **Layer 4 (price) is not included**: NVT, MVRV, realized price and hashprice are left out.
+- **Price-based series are not included**: NVT, MVRV, realized price and hashprice are left out.
 - The audit **measures agreement, not truth**: a wrong interpretation shared with OBM would not be
   caught by the cross-check.
 
@@ -309,7 +305,6 @@ The 8 findings with their measurement and their repro are in [`AUDITORIA.md`](AU
 | layer 1 | **970,447 blocks** (0..970,446), 928 weeks × 4 tables, 387 GiB | complete; 0 overlaps, 0 duplicates, chain intact |
 | layer 2 | **927 weeks** (`2009-W01`..`2026-W40`), UTXO in SQLite (~20 GiB), daily and per-band aggregates | complete; invariant `rows = Σinserted − Σspent` with 0 ghosts |
 | layer 3 | the 23 daily series, up to `2026-10-08` (27 days beyond the reference) | **21/23 bit-exact** |
-| layer 4 | market (price) | pending |
 
 ## Citation
 
