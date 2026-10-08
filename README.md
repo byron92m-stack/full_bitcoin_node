@@ -149,6 +149,30 @@ español.
 
 Las 12 bandas y los umbrales 155d/365d son **las definiciones de OBM** (incluidas sus fronteras).
 
+### Figuras de las series
+
+Generadas por `src/exporters/graficos_capa3.py` **desde los CSV de capa3** (no recalculan nada, así
+que las figuras coinciden siempre con lo publicado), con la cobertura completa
+(`2009-01-03`..`2026-10-08`).
+
+![Panel de las 21 series diarias](capa3/graficos/dashboard_series.png)
+
+**Figura 1** — Las 21 series diarias en un panel 5×5. En cada recuadro, la línea clara es el valor
+diario y la oscura su **media móvil de 7 días**; hay escala logarítmica donde el rango abarca
+órdenes de magnitud. En `supply` (oferta en circulación) se ven los cambios de pendiente de los
+halvings (2012, 2016, 2020, 2024). Las 2 tablas anchas de bandas de edad van aparte.
+
+![Valor gastado por banda de edad](capa3/graficos/spent_por_banda.png)
+
+**Figura 2** — Valor gastado por banda de edad (las 12 bandas, de `0d_1d` a `10y_plus`): arriba, el
+flujo diario apilado (media móvil de 30 días); abajo, la misma composición en **porcentaje del
+día**. La rampa de color es **secuencial a propósito**, porque las bandas están ordenadas por edad.
+
+![CDD por banda de edad](capa3/graficos/cdd_por_banda.png)
+
+**Figura 3** — Lo mismo para el **CDD** por banda de edad (`BTC-días`), el flujo que pondera cada
+moneda gastada por el tiempo que estuvo quieta.
+
 ## 5 · Validación frente a OBM
 
 `python3 src/exporters/validar_capa3.py` — comparación día a día contra `obm_reference/metrics`,
@@ -175,25 +199,25 @@ Generadas por `validar_capa3.py` en `capa3/figuras/`.
 
 ![Días con diferencia por serie](capa3/figuras/acuerdo_series.png)
 
-**Figura 1** — Días con diferencia por serie (verde = bit-exacta, rojo = difiere). Las 22 verdes
+**Figura 4** — Días con diferencia por serie (verde = bit-exacta, rojo = difiere). Las 22 verdes
 están a **0 días**; la única roja es `cdd_btcxdays`, con **1 solo día** (invisible a esta escala).
 
 ![utxo_eod_count: diferencia frente a OBM](capa3/figuras/diff_utxo.png)
 
-**Figura 2** — `utxo_eod_count`: diferencia (referencia − capa3) a lo largo del tiempo. El escalón
+**Figura 5** — `utxo_eod_count`: diferencia (referencia − capa3) a lo largo del tiempo. El escalón
 plano de **−2 desde 2010-11-15** es exactamente el ajuste BIP30 (las dos copias de los coinbases
 duplicados), no un error: por eso capa3 lo compensa.
 
 ![CDD: error relativo](capa3/figuras/error_cdd.png)
 
-**Figura 3** — `cdd_btcxdays`: error relativo, escala logarítmica. La mediana está en ~1e-16 (el
+**Figura 6** — `cdd_btcxdays`: error relativo, escala logarítmica. La mediana está en ~1e-16 (el
 límite del `float64`) y los picos son el **último dígito publicado por OBM**: esta serie **no puede
 ser bit-exacta** porque OBM acumula el CDD en coma flotante (hallazgo F2), mientras que aquí se
 calcula con dos acumuladores enteros.
 
 ![Cobertura de la validación](capa3/figuras/cobertura.png)
 
-**Figura 4** — Días comparados por serie: entre **6.459 y 6.463**, porque las series de la
+**Figura 7** — Días comparados por serie: entre **6.459 y 6.463**, porque las series de la
 referencia no tienen todas la misma longitud (el denominador del «22/23» se lee por serie).
 
 ## 6 · Reproducibilidad
@@ -215,6 +239,9 @@ python3 src/exporters/capa3_series.py
 
 # 4) validación frente a la referencia oficial
 python3 src/exporters/validar_capa3.py        # -> capa3/VALIDACION.md + figuras/
+
+# 5) figuras de presentación (opcional; sólo lee los CSV de capa3)
+python3 src/exporters/graficos_capa3.py       # -> capa3/graficos/*.png
 ```
 
 **Mapa del repositorio**
