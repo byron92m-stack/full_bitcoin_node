@@ -1,6 +1,6 @@
-# Convenciones de OBM v0.1.0
+# OBM v0.1.0 conventions
 
-Extraido de los 23 README.md oficiales (repo diegorllanos/open-bitcoin-metrics, rama main).
+Extracted from the 23 official README.md files (repo diegorllanos/open-bitcoin-metrics, main branch).
 
 
 ---

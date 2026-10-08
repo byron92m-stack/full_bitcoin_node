@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Manifiesto SHA-256 de los bytes validados (capa3) y de la referencia congelada.
+"""SHA-256 manifest of the validated bytes (layer 3) and of the frozen reference.
 
-Por que existe: las 23 series de `capa3/*.csv` y la referencia de `obm_reference/` NO estan
-versionadas (son datos), asi que sin un manifiesto no se pueden identificar los bytes exactos
-que produjeron `capa3/VALIDATION.md` (hallazgo A6 de la revision adversarial).
+Why it exists: the 23 series in `capa3/*.csv` and the reference in `obm_reference/` are NOT
+version-controlled (they are data), so without a manifest the exact bytes that produced
+`capa3/VALIDATION.md` cannot be identified (finding A6 of the adversarial review).
 
-Salida: capa3/MANIFEST.sha256   (formato `sha256sum`: `<hash>  <ruta>`)
+Output: capa3/MANIFEST.sha256   (`sha256sum` format: `<hash>  <path>`)
 
-Uso:  python3 src/exporters/manifiesto.py
+Usage:  python3 src/exporters/manifiesto.py
 """
 import datetime
 import glob
@@ -15,36 +15,36 @@ import hashlib
 import os
 
 OBM = "/media/SSD4T/obm"
-PATRONES = ("capa3/obm_*_daily.csv",              # las 23 series publicadas
-            "capa3/validation_series.csv",        # la tabla de la validacion
-            "capa3/VALIDATION.md",                # el informe
-            "obm_reference/metrics/*/*.csv")      # la referencia contra la que se compara
+PATTERNS = ("capa3/obm_*_daily.csv",             # the 23 published series
+            "capa3/validation_series.csv",       # the validation table
+            "capa3/VALIDATION.md",               # the report
+            "obm_reference/metrics/*/*.csv")     # the reference we compare against
 
 
-def sha256(ruta):
+def sha256(path):
     h = hashlib.sha256()
-    with open(ruta, "rb") as fh:
-        for bloque in iter(lambda: fh.read(1 << 20), b""):
-            h.update(bloque)
+    with open(path, "rb") as fh:
+        for block in iter(lambda: fh.read(1 << 20), b""):
+            h.update(block)
     return h.hexdigest()
 
 
 def main():
-    lineas = [
-        "# SHA-256 de los bytes validados (capa3) y de la referencia congelada de OBM.",
-        f"# Generado: {datetime.datetime.now():%Y-%m-%d %H:%M}",
-        "# Regenerar: python3 src/exporters/manifiesto.py",
+    lines = [
+        "# SHA-256 of the validated bytes (layer 3) and of the frozen OBM reference.",
+        f"# Generated: {datetime.datetime.now():%Y-%m-%d %H:%M}",
+        "# Regenerate: python3 src/exporters/manifiesto.py",
         "",
     ]
     n = 0
-    for patron in PATRONES:
-        for ruta in sorted(glob.glob(os.path.join(OBM, patron))):
-            lineas.append(f"{sha256(ruta)}  {os.path.relpath(ruta, OBM)}")
+    for pattern in PATTERNS:
+        for path in sorted(glob.glob(os.path.join(OBM, pattern))):
+            lines.append(f"{sha256(path)}  {os.path.relpath(path, OBM)}")
             n += 1
-    destino = os.path.join(OBM, "capa3", "MANIFEST.sha256")
-    with open(destino, "w", encoding="utf-8") as fh:
-        fh.write("\n".join(lineas) + "\n")
-    print(f"{destino}: {n} ficheros con hash")
+    target = os.path.join(OBM, "capa3", "MANIFEST.sha256")
+    with open(target, "w", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    print(f"{target}: {n} files hashed")
 
 
 if __name__ == "__main__":

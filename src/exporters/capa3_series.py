@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""capa3 — Las 23 series de OBM v0.1.0.
+"""capa3 — The 23 OBM v0.1.0 series.
 
-Fuentes : capa1/blocks  +  capa2/daily_aggregates  +  capa2/age_band_aggregates
-Salida  : capa3/obm_<serie>_daily.csv   (esquema OBM exacto)
+Sources : capa1/blocks  +  capa2/daily_aggregates  +  capa2/age_band_aggregates
+Output  : capa3/obm_<serie>_daily.csv   (exact OBM schema)
 
-Esquema : date,series_id,value,unit,frequency,release_version
-Las 2 tablas de bandas de edad son ANCHAS: date,series_id + 12 columnas + unit,frequency,release_version.
+Schema : date,series_id,value,unit,frequency,release_version
+The 2 age-band tables are WIDE: date,series_id + 12 columns + unit,frequency,release_version.
 
-Decisiones (validadas contra la referencia oficial):
-  * issuance = coinbase - fees  (emision REALIZADA, no subsidio de protocolo) -> capa2
-  * raw_output_value = spent_value - fees   (identidad exacta del indexer)
-  * difficulty = float64 de Core derivada de bits -> Decimal(repr(...)) con 12 decimales
-  * Decimal (prec 60) en todo; 8 decimales BTC/BTC-days, 12 ratios/difficulty/hashrate, enteros en conteos
-  * 1 fila por dia UTC desde 2009-01-01, sin huecos; NaN (vacio) donde OBM no publica valor
+Decisions (validated against the official reference):
+  * issuance = coinbase - fees  (REALIZED issuance, not the protocol subsidy) -> capa2
+  * raw_output_value = spent_value - fees   (exact indexer identity)
+  * difficulty = Core float64 derived from bits -> Decimal(repr(...)) with 12 decimals
+  * Decimal (prec 60) everywhere; 8 decimals for BTC/BTC-days, 12 for ratios/difficulty/hashrate, integers for counts
+  * 1 row per UTC day since 2009-01-01, no gaps; NaN (empty) where OBM publishes no value
 
-Uso:  python3 /media/SSD4T/obm/src/exporters/capa3_series.py [--no-bip30]
-      --no-bip30 -> publica el UTXO set "real" (sin el ajuste de compatibilidad)
+Usage:  python3 /media/SSD4T/obm/src/exporters/capa3_series.py [--no-bip30]
+      --no-bip30 -> publishes the "real" UTXO set (without the compatibility adjustment)
 """
 import datetime
 import glob
@@ -43,12 +43,12 @@ INICIO = datetime.date(2009, 1, 1)
 BANDAS = ["0d_1d", "1d_1w", "1w_1m", "1m_3m", "3m_6m", "6m_1y",
           "1y_2y", "2y_3y", "3y_5y", "5y_7y", "7y_10y", "10y_plus"]
 
-# --- Ajuste de compatibilidad OBM por BIP30 ----------------------------------
-# OBM cuenta las DOS copias de los dos coinbases duplicados de 2010 (txid
-# d5d27987...:0 en las alturas 91812/91842 y e3bf3d07...:0 en 91722/91880),
-# mientras que live_outputs deduplica por (txid, vout) igual que Bitcoin Core.
-# Efecto medido: la serie oficial va +1 desde 2010-11-14 y +2 desde 2010-11-15.
-# Se aplica SOLO en capa3 (capa2 conserva el UTXO set real). --no-bip30 lo desactiva.
+# --- OBM compatibility adjustment for BIP30 -----------------------------------
+# OBM counts BOTH copies of the two duplicated 2010 coinbases (txid
+# d5d27987...:0 at heights 91812/91842 and e3bf3d07...:0 at 91722/91880),
+# while live_outputs deduplicates by (txid, vout) just like Bitcoin Core.
+# Measured effect: the official series is +1 from 2010-11-14 and +2 from 2010-11-15.
+# It is applied ONLY in capa3 (capa2 keeps the real UTXO set). --no-bip30 disables it.
 BIP30_D1 = datetime.date(2010, 11, 14)
 BIP30_D2 = datetime.date(2010, 11, 15)
 
@@ -63,7 +63,7 @@ def ajuste_bip30(f, activo=True):
     return 0
 
 
-# ------------------------- formateadores OBM -------------------------
+# ------------------------- OBM formatters -------------------------
 def ent(x):
     return "NaN" if x is None else str(int(x))
 
@@ -78,7 +78,7 @@ def btc(sats, dec=8):                      # satoshis -> BTC
     return "NaN" if sats is None else _q(Decimal(int(sats)) / SATS, dec)
 
 
-def btc_dias(sat_dias, dec=8):             # SATOSHI-DIAS (capa2) -> BTC-dias
+def btc_dias(sat_dias, dec=8):             # SATOSHI-DAYS (capa2) -> BTC-days
     return "NaN" if sat_dias is None else _q(Decimal(int(sat_dias)) / SATS, dec)
 
 
@@ -93,7 +93,7 @@ def escribir(serie, filas, unidad):
         fh.write("date,series_id,value,unit,frequency,release_version\n")
         for f, v in filas:
             fh.write(f"{f},{serie},{v},{unidad},daily,{VERSION}\n")
-    print(f"  {serie:<44} {len(filas):>6} filas  [{unidad}]")
+    print(f"  {serie:<44} {len(filas):>6} rows  [{unidad}]")
 
 
 def escribir_ancha(serie, filas, cols, unidad):
@@ -101,10 +101,10 @@ def escribir_ancha(serie, filas, cols, unidad):
         fh.write(",".join(["date", "series_id"] + cols + ["unit", "frequency", "release_version"]) + "\n")
         for f, vals in filas:
             fh.write(",".join([str(f), serie] + vals + [unidad, "daily", VERSION]) + "\n")
-    print(f"  {serie:<44} {len(filas):>6} filas  [{unidad}] ancha {len(cols)} col")
+    print(f"  {serie:<44} {len(filas):>6} rows  [{unidad}] wide {len(cols)} col")
 
 
-# ------------------------------ lecturas ------------------------------
+# ------------------------------ reads ------------------------------
 def cargar_capa2_diario():
     dias = {}
     for f in sorted(glob.glob(f"{CAPA2}/daily_aggregates_*.parquet")):
@@ -126,10 +126,10 @@ def cargar_capa2_bandas():
 
 
 def cargar_difficulty_epochs():
-    """Dificultad EXACTA de Core por epoca de 2016 bloques, leida del campo del RPC.
+    """EXACT Core difficulty per 2016-block epoch, read from the RPC field.
 
-    OBM lee 'difficulty' de getblock (Apéndice A.6); recalcularla desde 'bits' difiere
-    en 1 ULP de float64 en ~40% de los dias. Ver src/exporters/fix_difficulty_rpc.py.
+    OBM reads 'difficulty' from getblock (Appendix A.6); recomputing it from 'bits' differs
+    by 1 float64 ULP on ~40% of the days. See src/exporters/fix_difficulty_rpc.py.
     """
     p = f"{CAPA1}/difficulty_epochs.parquet"
     if not os.path.exists(p):
@@ -139,8 +139,8 @@ def cargar_difficulty_epochs():
 
 
 def cargar_capa1_bloques():
-    """Por dia UTC: n, Sum(nTx), Sum(weight), Sum(difficulty), tmin/tmax,
-    y difficulty del bloque de MAYOR ALTURA (difficulty_eod)."""
+    """Per UTC day: n, Sum(nTx), Sum(weight), Sum(difficulty), tmin/tmax,
+    and difficulty of the HIGHEST block (difficulty_eod)."""
     por_dia = {}
     dif_ep = cargar_difficulty_epochs()
     faltan_ep = set()
@@ -154,14 +154,14 @@ def cargar_capa1_bloques():
             if _e in dif_ep:
                 df = dif_ep[_e]
             else:
-                # F3: la dificultad se LEE del nodo; recalcularla desde bits difiere en 1 ULP.
-                # Que falte una epoca significa que difficulty_epochs.parquet se quedo atras.
+                # F3: difficulty is READ from the node; recomputing it from bits differs by 1 ULP.
+                # A missing epoch means difficulty_epochs.parquet fell behind.
                 df = Decimal(repr(difficulty_core(bits)))
                 if _e not in faltan_ep:
                     faltan_ep.add(_e)
-                    print(f"AVISO: falta la epoca {_e} de dificultad en difficulty_epochs.parquet "
-                          f"(altura {int(h)}); se usa difficulty_core(bits), que F3 prohibe. "
-                          f"Relanza src/exporters/fix_difficulty_rpc.py con el nodo encendido.")
+                    print(f"WARNING: missing difficulty epoch {_e} in difficulty_epochs.parquet "
+                          f"(height {int(h)}); difficulty_core(bits) is used, which F3 forbids. "
+                          f"Rerun src/exporters/fix_difficulty_rpc.py with the node running.")
             if r is None:
                 por_dia[d] = {"n": 1, "ntx": int(ntx or 0), "w": int(w or 0), "diff": df,
                               "tmin": ts, "tmax": ts, "hmax": int(h), "deod": df}
@@ -182,14 +182,14 @@ def cargar_capa1_bloques():
 def main():
     BIP30 = "--no-bip30" not in sys.argv
     os.makedirs(CAPA3, exist_ok=True)
-    print(f"=== capa3 — 23 series OBM v0.1.0 ===  (ajuste BIP30: {'ON' if BIP30 else 'OFF'})")
+    print(f"=== capa3 — 23 OBM v0.1.0 series ===  (BIP30 adjustment: {'ON' if BIP30 else 'OFF'})")
     d2 = cargar_capa2_diario()
     bandas = cargar_capa2_bandas()
     b1 = cargar_capa1_bloques()
     if not d2:
-        sys.exit("ERROR: capa2/daily_aggregates_*.parquet vacio")
+        sys.exit("ERROR: capa2/daily_aggregates_*.parquet is empty")
     if not b1:
-        sys.exit("ERROR: capa1/blocks vacio")
+        sys.exit("ERROR: capa1/blocks is empty")
     primer = min(b1)
     ultimo = max(list(d2) + list(b1))
     cal, f = [], INICIO
@@ -198,15 +198,15 @@ def main():
         f += datetime.timedelta(days=1)
     desde = [f for f in cal if f >= primer]
     idx = {f: i for i, f in enumerate(cal)}
-    print(f"capa2: {len(d2)} dias | capa1: {len(b1)} dias con bloque | "
-          f"calendario {cal[0]}..{cal[-1]} ({len(cal)} dias) | primer bloque {primer}\n")
+    print(f"capa2: {len(d2)} days | capa1: {len(b1)} days with blocks | "
+          f"calendar {cal[0]}..{cal[-1]} ({len(cal)} days) | first block {primer}\n")
 
     def V(f, k):
         r = d2.get(f)
         return None if r is None else int(r[k])
 
     def CDD_SAT(f):
-        """CDD EXACTO en sat-dias (Decimal) = cdd_sat_days + cdd_rem_86400/86400."""
+        """EXACT CDD in sat-days (Decimal) = cdd_sat_days + cdd_rem_86400/86400."""
         r = d2.get(f)
         if r is None:
             return None
@@ -217,7 +217,7 @@ def main():
         x = CDD_SAT(f)
         return None if x is None else x / SATS
 
-    # ---- 1-5: de capa1/blocks ----
+    # ---- 1-5: from capa1/blocks ----
     escribir("obm_block_count_daily", [(f, ent(b1[f]["n"] if f in b1 else 0)) for f in cal], "blocks")
     escribir("obm_tx_count_daily", [(f, ent(b1[f]["ntx"] if f in b1 else 0)) for f in cal], "transactions")
     escribir("obm_block_weight_wu_daily", [(f, ent(b1[f]["w"] if f in b1 else 0)) for f in desde], "WU")
@@ -237,12 +237,12 @@ def main():
         hr.append((f, _q((dsum * DOS32) / Decimal(tmax - tmin) / E18, 12)))
     escribir("obm_est7d_hashrate_ehs_daily", hr, "EH/s")
 
-    # ---- 6-10: emision / comisiones / revenue / fee share / oferta ----
+    # ---- 6-10: issuance / fees / revenue / fee share / supply ----
     escribir("obm_issuance_btc_daily", [(f, btc(V(f, "issuance_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
     escribir("obm_fees_btc_daily", [(f, btc(V(f, "fees_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
     escribir("obm_miner_revenue_btc_daily",
              [(f, btc(V(f, "coinbase_output_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
-    # fee_share = fees/coinbase; sin coinbase (dia sin bloque) el campo va VACIO
+    # fee_share = fees/coinbase; with no coinbase (day without blocks) the field is EMPTY
     escribir("obm_fee_share_revenue_ratio_daily",
              [(f, "" if (not f in d2 or not V(f, "coinbase_output_sats"))
                else ratio(V(f, "fees_sats"), V(f, "coinbase_output_sats"))) for f in cal], "ratio")
@@ -251,9 +251,9 @@ def main():
         acum += Decimal(btc(V(f, "issuance_sats")) if f in d2 else "0")
         filas.append((f, _q(acum, 8)))
     escribir("obm_supply_btc_daily", filas, "BTC")
-    sup_dia = dict(filas)                      # date -> oferta en BTC (str, 8 dec)
+    sup_dia = dict(filas)                      # date -> supply in BTC (str, 8 dec)
 
-    # ---- 11-21: UTXO y coin-age ----
+    # ---- 11-21: UTXO and coin-age ----
     escribir("obm_raw_output_value_btc_daily",
              [(f, btc(V(f, "spent_value_sats") - V(f, "fees_sats")) if f in d2 else btc(0)) for f in desde], "BTC")
     escribir("obm_spent_output_count_daily",
@@ -262,7 +262,7 @@ def main():
              [(f, btc(V(f, "spent_value_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
     escribir("obm_cdd_btcxdays_daily",
              [(f, _q(CDD_BTC(f), 8) if f in d2 else btc_dias(0)) for f in desde], "BTC-days")
-    # dormancy = CDD/spent_value en DIAS -> sat-dias / satoshis (mismas unidades)
+    # dormancy = CDD/spent_value in DAYS -> sat-days / satoshis (same units)
     escribir("obm_dormancy_days_daily",
              [(f, ratio(CDD_SAT(f), V(f, "spent_value_sats")) if f in d2 else "NaN")
               for f in cal], "days")
@@ -281,11 +281,11 @@ def main():
         else:
             filas.append((f, "0"))
     escribir("obm_spent_value_lt155d_btc_daily", filas, "BTC")
-    # OBM publica NaN en los dias sin bloque, no forward-fill
+    # OBM publishes NaN on days without blocks, no forward-fill
     escribir("obm_utxo_eod_count_daily",
              [(f, ent(V(f, "utxo_eod_count") + ajuste_bip30(f, BIP30)) if f in d2 else "NaN")
               for f in desde], "outputs")
-    # liveliness = cumsum(CDD) / cumsum(oferta), acumulado desde el primer bloque
+    # liveliness = cumsum(CDD) / cumsum(supply), accumulated since the first block
     acum_cdd, acum_sup, filas = Decimal(0), Decimal(0), []
     for f in desde:
         if f in d2:
@@ -294,7 +294,7 @@ def main():
         filas.append((f, ratio(acum_cdd, acum_sup)))
     escribir("obm_liveliness_ratio_daily", filas, "ratio")
 
-    # ---- 22-23: tablas anchas de bandas de edad ----
+    # ---- 22-23: wide age-band tables ----
     escribir_ancha("obm_spent_value_age_band_btc_daily",
                    [(f, [btc(bandas[f][b][0]) if (f in bandas and b in bandas[f]) else btc(0) for b in BANDAS])
                     for f in cal], [f"spent_value_{b}_btc" for b in BANDAS], "BTC")

@@ -1,11 +1,11 @@
 # AGENTS.md
 
-El contexto completo del proyecto está en **[QWEN.md](QWEN.md)** — léelo antes de tocar nada.
+The full context of the project is in **[QWEN.md](QWEN.md)** — read it before touching anything.
 
-Este fichero **no repite** el estado ni las reglas: el estado vivo (capas, invariantes, trampas
-conocidas y cómo comprobarlos) está sólo en `QWEN.md`, para que no haya dos sitios que mantener y
-este no pueda quedarse desactualizado.
+This file **does not repeat** the state or the rules: the live state (layers, invariants, known
+traps and how to check them) is only in `QWEN.md`, so that there are not two places to maintain and
+this one cannot become outdated.
 
-- Resumen de una línea: pipeline de 4 capas que replica las 23 series de OBM v0.1.0 desde un nodo
-  Bitcoin Core propio; la auditoría de reproducibilidad está en `AUDITORIA.md`.
-- Mapa de módulos e invariantes: `docs/MAPA_CODIGO.md`.
+- One-line summary: a 4-layer pipeline that replicates the 23 series of OBM v0.1.0 from a Bitcoin
+  Core node of our own; the reproducibility audit is in `AUDITORIA.md`.
+- Module and invariant map: `docs/MAPA_CODIGO.md`.

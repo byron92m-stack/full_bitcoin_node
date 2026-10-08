@@ -1,13 +1,13 @@
-"""Migracion F7: rellena daily_agg / age_band_agg desde los parquet anuales existentes.
+"""Migration F7: fills daily_agg / age_band_agg from the existing annual parquet files.
 
-Capa2 se construyo cuando los agregados vivian SOLO en los parquet anuales; el arreglo F7
-los mueve a la DB (en la MISMA transaccion que los datos) y deja los parquet como un
-DERIVADO reconstruible. Este script hace esa migracion una sola vez y, al final,
-reconstruye los ficheros desde la DB y comprueba que no cambia ni un valor.
+Capa2 was built when the aggregates lived ONLY in the annual parquet files; fix F7
+moves them into the DB (in the SAME transaction as the data) and leaves the parquet files as a
+RECONSTRUCTIBLE DERIVATIVE. This script performs that migration once and, at the end,
+rebuilds the files from the DB and checks that not a single value changes.
 
-Reejecutable: INSERT OR REPLACE, asi que volver a lanzarlo no duplica nada.
+Re-runnable: INSERT OR REPLACE, so running it again does not duplicate anything.
 
-Uso:  python3 src/exporters/migrar_agregados_a_db.py
+Usage:  python3 src/exporters/migrar_agregados_a_db.py
 """
 import glob
 import os
@@ -40,9 +40,9 @@ def main():
     con = ix.open_db()
     antes_d = _cargar("daily_aggregates_")
     antes_b = _cargar("age_band_aggregates_")
-    print(f"parquet anuales encontrados: {len(antes_d)} diarios, {len(antes_b)} de bandas")
+    print(f"annual parquet files found: {len(antes_d)} daily, {len(antes_b)} age-band")
     if not antes_d:
-        print("nada que migrar: no hay ficheros anuales")
+        print("nothing to migrate: no annual files")
         return 0
 
     cols_d, cols_b = list(ix.DAILY_DTYPES), list(ix.AGE_BAND_DTYPES)
@@ -54,14 +54,14 @@ def main():
         _insertar(con, "age_band_agg", cols_b, df)
         n_b += len(df)
     con.commit()
-    print(f"migradas {n_d:,} filas diarias y {n_b:,} de bandas")
-    print(f"en la DB ahora: daily_agg="
+    print(f"migrated {n_d:,} daily rows and {n_b:,} age-band rows")
+    print(f"in the DB now: daily_agg="
           f"{con.execute('SELECT COUNT(*) FROM daily_agg').fetchone()[0]:,} | age_band_agg="
           f"{con.execute('SELECT COUNT(*) FROM age_band_agg').fetchone()[0]:,}")
 
-    # Reconstruir los anuales DESDE la DB y comprobar que no cambia ni un valor.
+    # Rebuild the annual files FROM the DB and check that not a single value changes.
     n_anios = ix.rebuild_all_from_db(con)
-    print(f"reconstruidos los anuales de {n_anios} años desde la DB")
+    print(f"rebuilt {n_anios} years of annual files from the DB")
 
     despues_d = _cargar("daily_aggregates_")
     despues_b = _cargar("age_band_aggregates_")
@@ -70,15 +70,15 @@ def main():
         b = (despues_d | despues_b).get(nombre)
         if b is None:
             err += 1
-            print(f"  FALTA {nombre}")
+            print(f"  MISSING {nombre}")
             continue
         try:
             pd.testing.assert_frame_equal(a, b, check_dtype=False)
         except AssertionError as e:
             err += 1
-            print(f"  DIFIERE {nombre}: {str(e).splitlines()[0]}")
+            print(f"  DIFFERS {nombre}: {str(e).splitlines()[0]}")
     total = len(antes_d) + len(antes_b)
-    print(f"fidelidad: {total} ficheros comparados, {err} con diferencias")
+    print(f"fidelity: {total} files compared, {err} with differences")
     con.close()
     return err
 

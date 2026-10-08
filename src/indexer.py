@@ -1,40 +1,40 @@
 #!/usr/bin/env python3
 # ============================================================
-# OBM — Indexer (Capa 1 → Capa 2)
+# OBM — Indexer (Layer 1 → Layer 2)
 #
-# Replica del spent-output indexer descrito en OBM §3.4:
-#   - live_outputs.sqlite       UTXO set actual (estado mutable)
-#   - daily_aggregates_YYYY.parquet    agregados diarios por año
-#   - age_band_aggregates_YYYY.parquet agregados por (día, banda) por año
-#   - state_indexer.json        progreso: last_processed_week + journal + utxo_count
+# Replica of the spent-output indexer described in OBM §3.4:
+#   - live_outputs.sqlite       current UTXO set (mutable state)
+#   - daily_aggregates_YYYY.parquet    daily aggregates per year
+#   - age_band_aggregates_YYYY.parquet aggregates per (day, band) per year
+#   - state_indexer.json        progress: last_processed_week + journal + utxo_count
 #
-# Uso:
-#   python3 indexer.py    # menú (1 = reset, 2 = continuar)
+# Usage:
+#   python3 indexer.py    # menu (1 = reset, 2 = continue)
 #
-# Procesa SEMANA A SEMANA, alineado con capa1.
-# Solo procesa semanas COMPLETAS (no la última en curso).
-# Commit por semana.
-# Sin rollback (solo avanza hacia adelante).
+# Processes WEEK BY WEEK, aligned with capa1.
+# Only processes COMPLETE weeks (not the last one in progress).
+# Commit per week.
+# No rollback (only moves forward).
 #
-# Salida: capa2/ (TODO lo que produce el indexer).
-# CDD en SATOSHI-DÍAS (int64). Caben holgadamente en int64 (max 9.2e18).
-# Para convertir a BTC-días: cdd_btc_days = cdd_sat_days / 100_000_000.
+# Output: capa2/ (EVERYTHING the indexer produces).
+# CDD in SATOSHI-DAYS (int64). They fit comfortably in int64 (max 9.2e18).
+# To convert to BTC-days: cdd_btc_days = cdd_sat_days / 100_000_000.
 #
-# v5 — parches de la revision:
-#   P1b. Nunca procesa la semana en curso del ETL (el drain final la deja a medias):
-#        exige que el ETL ya haya escrito una semana POSTERIOR.
-#   P2c. inserted via cursor.rowcount. NUNCA con.total_changes: sqlite3_total_changes()
-#        trunca a 32 bits y da la vuelta (bug real F5, corrompio utxo_count desde 2017-W13).
-#   P4b. CROSS JOIN para fijar el plan: un JOIN normal se invierte si hay ANALYZE
-#        (SCAN completo de live_outputs por bloque).
-#   P5.  weeks_done: progreso en la MISMA transaccion que los datos; la DB es la
-#        fuente de verdad del avance y utxo_count se deriva de ella.
+# v5 — patches from the review:
+#   P1b. Never processes the ETL's current week (the final drain leaves it half-done):
+#        it requires that the ETL has already written a LATER week.
+#   P2c. inserted via cursor.rowcount. NEVER con.total_changes: sqlite3_total_changes()
+#        truncates to 32 bits and wraps around (real bug F5, corrupted utxo_count from 2017-W13).
+#   P4b. CROSS JOIN to pin the plan: a normal JOIN is reversed if ANALYZE is present
+#        (full SCAN of live_outputs per block).
+#   P5.  weeks_done: progress in the SAME transaction as the data; the DB is the
+#        source of truth for progress and utxo_count is derived from it.
 #
-# v4 — parches aplicados:
-#   P1. Guard de semana completa (no procesa la última en curso de capa1).
-#   P2. inserted = max(cursor.rowcount, 0) (no infla utxo_count).
-#   P3. Abortar si last_week is None con DB no vacía.
-#   P4. Batching SQLite por bloque (SELECT + DELETE masivos).
+# v4 — applied patches:
+#   P1. Complete-week guard (does not process capa1's last week in progress).
+#   P2. inserted = max(cursor.rowcount, 0) (does not inflate utxo_count).
+#   P3. Abort if last_week is None with a non-empty DB.
+#   P4. SQLite batching per block (bulk SELECT + DELETE).
 # ============================================================
 
 import os
@@ -72,7 +72,7 @@ DB_PATH = os.path.join(CAPA2, "live_outputs.sqlite")
 SATOSHI = 100_000_000
 SEGUNDOS_DIA = 86400
 
-# Bandas de edad (paper §3.4)
+# Age bands (paper §3.4)
 BANDAS = [
     (0, 1, "0d_1d"),
     (1, 7, "1d_1w"),
@@ -92,7 +92,7 @@ THRESHOLD_155D = 155 * SEGUNDOS_DIA
 THRESHOLD_365D = 365 * SEGUNDOS_DIA
 
 # ============================================================
-# DTYPES EXPLÍCITOS
+# EXPLICIT DTYPES
 # ============================================================
 
 DAILY_DTYPES = {
@@ -100,7 +100,7 @@ DAILY_DTYPES = {
     "last_height": "int64",
     "spent_value_sats": "int64",
     "spent_output_count": "int64",
-    # CDD EXACTO = cdd_sat_days + cdd_rem_86400/86400  (sat-dias, Decimal)
+    # EXACT CDD = cdd_sat_days + cdd_rem_86400/86400  (sat-days, Decimal)
     "cdd_sat_days": "int64",
     "cdd_rem_86400": "int64",
     "fees_sats": "int64",
@@ -171,7 +171,7 @@ def save_state(state: Dict[str, Any]) -> None:
     os.replace(tmp, STATE_FILE)
 
 def load_state_capa1() -> Dict[str, Any]:
-    """State del ETL (para saber hasta dónde está escrito capa1)."""
+    """ETL state (to know how far capa1 has been written)."""
     if not os.path.exists(STATE_CAPA1_FILE):
         return {"written_through_height": -1, "last_written_week": None}
     with open(STATE_CAPA1_FILE, "r", encoding="utf-8") as f:
@@ -186,9 +186,9 @@ def open_db() -> sqlite3.Connection:
     con = sqlite3.connect(DB_PATH)
     con.execute("PRAGMA journal_mode = WAL")
     con.execute("PRAGMA synchronous = NORMAL")
-    con.execute("PRAGMA cache_size = -2000000")   # KiB -> ~1,9 GB
+    con.execute("PRAGMA cache_size = -2000000")   # KiB -> ~1.9 GB
     con.execute("PRAGMA temp_store = MEMORY")
-    con.execute("PRAGMA mmap_size = 6000000000")   # bytes -> ~5,6 GB
+    con.execute("PRAGMA mmap_size = 6000000000")   # bytes -> ~5.6 GB
     con.execute("""
         CREATE TABLE IF NOT EXISTS live_outputs (
             txid TEXT NOT NULL,
@@ -210,10 +210,10 @@ def open_db() -> sqlite3.Connection:
             finished_at TEXT
         )
     """)
-    # F7: los agregados diarios y por banda viven en la DB, escritos en la MISMA
-    # transaccion que los datos. Los parquet anuales son un DERIVADO reconstruible con
-    # rebuild_year_from_db(), asi que un corte entre el commit y la escritura del parquet
-    # ya no puede dejar dias perdidos (fue el caso de 2022-W06).
+    # F7: the daily and per-band aggregates live in the DB, written in the SAME
+    # transaction as the data. The yearly parquet files are a DERIVED artifact rebuildable with
+    # rebuild_year_from_db(), so a cut between the commit and the parquet write
+    # can no longer leave days lost (it was the case of 2022-W06).
     con.execute("""
         CREATE TABLE IF NOT EXISTS daily_agg (
             date TEXT PRIMARY KEY,
@@ -258,7 +258,7 @@ def db_count(con: sqlite3.Connection) -> int:
     return con.execute("SELECT COUNT(*) FROM live_outputs").fetchone()[0]
 
 # ============================================================
-# LECTURA DE CAPA1 (por semana)
+# READING CAPA1 (per week)
 # ============================================================
 
 def list_available_weeks() -> List[str]:
@@ -273,8 +273,8 @@ def list_available_weeks() -> List[str]:
     return sorted(semanas)
 
 def check_capa1_monotonic(weeks: List[str]) -> bool:
-    """Comprueba que los ficheros de semana de capa1 esten ordenados por altura.
-    Usa las estadisticas de parquet (min/max de 'height'): coste ~milisegundos."""
+    """Checks that the capa1 week files are ordered by height.
+    Uses the parquet statistics (min/max of 'height'): cost ~milliseconds."""
     prev_max, prev_week, malas = -1, None, []
     for w in weeks:
         p = os.path.join(CAPA1, "blocks", f"blocks_{w}.parquet")
@@ -288,7 +288,7 @@ def check_capa1_monotonic(weeks: List[str]) -> bool:
                 break
             mn = st.min if mn is None else min(mn, st.min)
             mx = st.max if mx is None else max(mx, st.max)
-        if mn is None:                      # sin estadisticas: leer la columna
+        if mn is None:                      # no statistics: read the column
             col = pq.read_table(p, columns=["height"])["height"].to_pylist()
             mn, mx = min(col), max(col)
         if mn <= prev_max:
@@ -296,26 +296,26 @@ def check_capa1_monotonic(weeks: List[str]) -> bool:
         prev_max, prev_week = mx, w
     if malas:
         for pw, w, mn, pm in malas:
-            logger.error(f"capa1 NO monotona en altura: {w} empieza en {mn:,} "
-                         f"pero {pw} llega a {pm:,}")
-        print("\nERROR: capa1 tiene semanas desordenadas por altura "
-              "(timestamps de bloque no monotonos mal particionados).")
-        print("El indexer procesaria bloques fuera de orden -> UTXOs fantasma.")
-        print("Arregla el ETL (semana = max(propia, anterior)) y re-particiona")
-        print("con etl/reparticionar_semanas.py")
+            logger.error(f"capa1 NOT monotonic in height: {w} starts at {mn:,} "
+                         f"but {pw} reaches {pm:,}")
+        print("\nERROR: capa1 has weeks out of order by height "
+              "(non-monotonic block timestamps badly partitioned).")
+        print("The indexer would process blocks out of order -> ghost UTXOs.")
+        print("Fix the ETL (week = max(own, previous)) and re-partition")
+        print("with etl/reparticionar_semanas.py")
         return False
     return True
 
 def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
-    """Detecta semanas de weeks_done cuyos dias NO estan en el parquet anual de agregados.
+    """Detects weeks in weeks_done whose days are NOT in the yearly aggregates parquet.
 
-    Causa conocida (hallazgo F7): la escritura de los parquet es POSTERIOR al commit, asi que
-    un corte entre ambos deja la semana commiteada y registrada pero sin agregados, y al
-    reanudar se salta. Aqui se detecta y se aborta en vez de perderlo en silencio.
+    Known cause (finding F7): the parquet write is AFTER the commit, so
+    a cut between both leaves the week committed and registered but without aggregates, and on
+    resume it is skipped. Here it is detected and we abort instead of losing it silently.
 
-    Desde el arreglo de F7 los parquet son un DERIVADO de la DB que se reconstruye entero al
-    arrancar (rebuild_all_from_db), asi que este corte ya no puede producirse: esta guarda es
-    la comprobacion de que la reconstruccion ha cubierto todas las semanas de weeks_done.
+    Since the F7 fix the parquet files are a DERIVED artifact of the DB that is rebuilt entirely at
+    startup (rebuild_all_from_db), so this cut can no longer happen: this guard is
+    the check that the rebuild has covered all the weeks in weeks_done.
     """
     por_anio = {}
 
@@ -334,10 +334,10 @@ def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
             esperados = {utc_date_from_timestamp(int(x)) for x in t["time"].to_pylist()}
         except Exception:
             continue
-        # F8.6: cada dia se escribe en el parquet de SU anio, no en el de la semana. Una
-        # semana puede empezar o terminar en el anio contiguo (2009-W53 -> 2010-01-01..03
-        # vive en daily_aggregates_2010.parquet), asi que hay que buscar por el anio del
-        # propio dia. Buscarlo en el de w[:4] daba 13 abortos falsos por frontera de anio.
+        # F8.6: each day is written to the parquet of ITS year, not to that of the week. A
+        # week can start or end in the adjacent year (2009-W53 -> 2010-01-01..03
+        # lives in daily_aggregates_2010.parquet), so it must be looked up by the year of
+        # the day itself. Looking it up in the one for w[:4] caused 13 false aborts at year boundaries.
         f = sorted(d for d in esperados
                    if dias_del_anio(d[:4]) is None or d not in dias_del_anio(d[:4]))
         if f:
@@ -346,7 +346,7 @@ def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
 
 
 def week_to_int(week: str) -> int:
-    """'2026-W39' -> 202639 (comparable como entero)."""
+    """'2026-W39' -> 202639 (comparable as an integer)."""
     y, w = week.split("-W")
     return int(y) * 100 + int(w)
 
@@ -366,7 +366,7 @@ def utc_date_from_timestamp(ts: int) -> str:
     return dt.strftime("%Y-%m-%d")
 
 def get_age_band(age_days: float) -> Optional[str]:
-    """Banda de edad del paper (SS3.4). Las fronteras de BANDAS estan en DIAS."""
+    """Paper's age band (SS3.4). The BANDAS boundaries are in DAYS."""
     for lo, hi, name in BANDAS:
         if lo <= age_days < hi:
             return name
@@ -392,18 +392,18 @@ def empty_age_band_row(date: str, band: str) -> Dict[str, int]:
     }
 
 # ============================================================
-# PROCESAMIENTO DE UNA SEMANA (con P4: batching)
+# PROCESSING ONE WEEK (with P4: batching)
 # ============================================================
 
 def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optional[Dict[str, Any]]:
-    logger.info(f"Leyendo semana {week} de capa1...")
+    logger.info(f"Reading week {week} from capa1...")
     blocks, txs, inputs, outputs = read_week(week)
 
     if blocks.empty:
-        logger.warning(f"  Semana {week} sin bloques, saltando")
+        logger.warning(f"  Week {week} has no blocks, skipping")
         return None
 
-    # Indexar por altura
+    # Index by height
     blocks_by_height = {int(r.height): r for r in blocks.itertuples(index=False)}
     txs_by_height: Dict[int, List[Any]] = {}
     for r in txs.itertuples(index=False):
@@ -421,7 +421,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
     n_spent_total = 0
     n_inserted_total = 0
 
-    logger.info(f"  UTXO count al inicio de la semana: {utxo_count:,}")
+    logger.info(f"  UTXO count at the start of the week: {utxo_count:,}")
 
     alturas = sorted(blocks_by_height.keys())
     for h in alturas:
@@ -437,7 +437,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
         total_input_sats = 0
         total_output_sats_no_coinbase = 0
 
-        # ---- P4: PASO A: recolectar input_keys del bloque ----
+        # ---- P4: STEP A: collect the block's input_keys ----
         input_keys_batch = []
         input_to_tx = {}
 
@@ -448,7 +448,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
             tx_outputs = outputs_by_height_txid.get(key, [])
 
             if not tx_inputs:
-                logger.warning(f"  TX {txid} sin inputs (bloque {h}), saltando")
+                logger.warning(f"  TX {txid} has no inputs (block {h}), skipping")
                 continue
             is_coinbase = bool(tx_inputs[0].is_coinbase)
 
@@ -465,7 +465,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
                 input_keys_batch.append(pk)
                 input_to_tx[pk] = txid
 
-        # ---- P4: PASO B: resolver con UN SELECT ----
+        # ---- P4: STEP B: resolve with ONE SELECT ----
         con.execute("DELETE FROM input_keys")
         if input_keys_batch:
             con.executemany(
@@ -473,10 +473,10 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
                 input_keys_batch,
             )
 
-        # CROSS JOIN fija el orden del join: recorre input_keys (pequena) y busca en
-        # live_outputs por PRIMARY KEY. Con "JOIN" normal, si existen estadisticas
-        # (ANALYZE) el planificador lo invierte -> SCAN completo de live_outputs por
-        # bloque (cientos de millones de filas) y el job no termina nunca.
+        # CROSS JOIN pins the join order: it scans input_keys (small) and looks up
+        # live_outputs by PRIMARY KEY. With a normal "JOIN", if statistics exist
+        # (ANALYZE) the planner reverses it -> full SCAN of live_outputs per
+        # block (hundreds of millions of rows) and the job never finishes.
         rows = con.execute("""
             SELECT ik.txid, ik.vout, lo.value_sats, lo.created_time
             FROM input_keys ik CROSS JOIN live_outputs lo
@@ -484,7 +484,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
         """).fetchall()
         utxo_map = {(r[0], r[1]): (int(r[2]), int(r[3])) for r in rows}
 
-        # ---- P4: PASO C: procesar inputs resueltos ----
+        # ---- P4: STEP C: process resolved inputs ----
         resolved_keys = []
         for pk in input_keys_batch:
             row = utxo_map.get(pk)
@@ -498,16 +498,16 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
 
             if row is None:
                 logger.warning(
-                    f"  UTXO no encontrado: {pk[0]}:{pk[1]} "
-                    f"gastado por {input_to_tx[pk]} (bloque {h})"
+                    f"  UTXO not found: {pk[0]}:{pk[1]} "
+                    f"spent by {input_to_tx[pk]} (block {h})"
                 )
                 continue
 
             value_sats, created_time = row
             age_seconds = max(0, block_time - created_time)
-            # CDD EXACTO: parte entera y numerador del resto por separado.
-            # Truncar por input (//86400) metia hasta 1 sat-dia de error por input
-            # (~1e-9 relativo en el agregado diario).
+            # EXACT CDD: integer part and remainder numerator separately.
+            # Truncating per input (//86400) introduced up to 1 sat-day of error per input
+            # (~1e-9 relative in the daily aggregate).
             cdd_sat_days, cdd_rem = divmod(value_sats * age_seconds, SEGUNDOS_DIA)
 
             daily[date]["spent_value_sats"] += value_sats
@@ -525,8 +525,8 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
                 daily[date]["cdd_ge365d_sat_days"] += cdd_sat_days
                 daily[date]["cdd_ge365d_rem_86400"] += cdd_rem
 
-            # OJO: las fronteras de BANDAS estan en DIAS -> hay que pasar la edad
-            # en dias. Antes se pasaba en SEGUNDOS y casi todo caia en '10y_plus'.
+            # NOTE: the BANDAS boundaries are in DAYS -> the age must be passed
+            # in days. It used to be passed in SECONDS and almost everything fell into '10y_plus'.
             band = get_age_band(age_seconds / SEGUNDOS_DIA)
             if band is not None:
                 key_band = (date, band)
@@ -540,21 +540,21 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
             resolved_keys.append(pk)
             utxo_count -= 1
 
-        # ---- Fees e issuance ----
+        # ---- Fees and issuance ----
         fees_sats = total_input_sats - total_output_sats_no_coinbase
         if fees_sats < 0:
-            logger.warning(f"  Bloque {h}: fees negativas ({fees_sats}), ajustando a 0")
+            logger.warning(f"  Block {h}: negative fees ({fees_sats}), clamping to 0")
             fees_sats = 0
         issuance_sats = coinbase_output_sats - fees_sats
         if issuance_sats < 0:
-            logger.warning(f"  Bloque {h}: issuance negativa ({issuance_sats}), ajustando a 0")
+            logger.warning(f"  Block {h}: negative issuance ({issuance_sats}), clamping to 0")
             issuance_sats = 0
 
         daily[date]["fees_sats"] += fees_sats
         daily[date]["coinbase_output_sats"] += coinbase_output_sats
         daily[date]["issuance_sats"] += issuance_sats
 
-        # ---- Procesar outputs ----
+        # ---- Process outputs ----
         output_rows = []
         for tx in block_txs:
             txid = tx.txid
@@ -574,23 +574,23 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
                 "INSERT OR IGNORE INTO live_outputs VALUES (?, ?, ?, ?, ?, ?)",
                 output_rows,
             )
-            # ---- P2c: contabilidad del INSERT ----
-            # NO usar con.total_changes: la API C sqlite3_total_changes() trunca a
-            # 32 bits y da la vuelta pasado 2^32 cambios (bug real que corrompio
-            # utxo_count a partir de 2017-W13). cursor.rowcount acumula en
-            # executemany y esta acotado por el tamano del lote (miles), sin riesgo.
+            # ---- P2c: INSERT accounting ----
+            # Do NOT use con.total_changes: the C API sqlite3_total_changes() truncates to
+            # 32 bits and wraps around after 2^32 changes (real bug that corrupted
+            # utxo_count from 2017-W13). cursor.rowcount accumulates in
+            # executemany and is bounded by the batch size (thousands), with no risk.
             inserted = cur.rowcount if (cur.rowcount is not None and cur.rowcount > 0) else 0
             if not (0 <= inserted <= len(output_rows)):
-                logger.error(f"  Bloque {h}: inserted={inserted} fuera de rango "
-                             f"(lote de {len(output_rows)}); acotando")
+                logger.error(f"  Block {h}: inserted={inserted} out of range "
+                             f"(batch of {len(output_rows)}); clamping")
                 inserted = max(0, min(inserted, len(output_rows)))
             utxo_count += inserted
             n_inserted_total += inserted
 
-        # ---- P4: PASO D: borrar TODOS los gastados de una vez ----
-        # CRITICO: el DELETE va DESPUES del INSERT de outputs.
-        # Si va antes, un output creado y gastado en el mismo bloque
-        # no se borra (aun no existe) y queda como fila fantasma.
+        # ---- P4: STEP D: delete ALL spent outputs at once ----
+        # CRITICAL: the DELETE goes AFTER the INSERT of outputs.
+        # If it goes before, an output created and spent in the same block
+        # is not deleted (it does not exist yet) and remains as a ghost row.
         if resolved_keys:
             con.executemany(
                 "DELETE FROM live_outputs WHERE txid = ? AND vout = ?",
@@ -600,15 +600,15 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
 
         utxo_count_by_date[date] = utxo_count
 
-    # Asignar utxo_eod_count
+    # Assign utxo_eod_count
     for date in daily:
         daily[date]["utxo_eod_count"] = utxo_count_by_date.get(date, utxo_count)
 
     last_height = max(blocks_by_height.keys())
     last_hash = blocks_by_height[last_height].hash
 
-    # ---- F7: los agregados van en la MISMA transaccion que los datos ----
-    # El parquet anual pasa a ser un derivado reconstruible desde aqui.
+    # ---- F7: the aggregates go in the SAME transaction as the data ----
+    # The yearly parquet becomes a derived artifact rebuildable from here.
     _sql_d = (f"INSERT OR REPLACE INTO daily_agg ({', '.join(DAILY_DTYPES)}) "
               f"VALUES ({', '.join(['?'] * len(DAILY_DTYPES))})")
     con.executemany(_sql_d, [tuple(r[c] for c in DAILY_DTYPES) for r in daily.values()])
@@ -616,10 +616,10 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
               f"VALUES ({', '.join(['?'] * len(AGE_BAND_DTYPES))})")
     con.executemany(_sql_b, [tuple(r[c] for c in AGE_BAND_DTYPES) for r in age_bands.values()])
 
-    # ---- P5: el progreso se registra en la MISMA transaccion que los datos ----
-    # Un corte entre el commit y el guardado del JSON ya no puede reprocesar la
-    # semana (sus inputs estarian borrados y los agregados saldrian a cero,
-    # sobrescribiendo con drop_duplicates(keep="last") los valores correctos).
+    # ---- P5: progress is recorded in the SAME transaction as the data ----
+    # A cut between the commit and the JSON save can no longer reprocess the
+    # week (its inputs would be deleted and the aggregates would come out zero,
+    # overwriting the correct values with drop_duplicates(keep="last")).
     con.execute(
         "INSERT OR REPLACE INTO weeks_done "
         "(week, last_height, last_hash, n_spent, n_inserted, finished_at) "
@@ -629,8 +629,8 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
     )
     con.commit()
     logger.info(
-        f"  Semana {week} procesada: {len(daily)} días, "
-        f"{len(age_bands)} filas de bandas, UTXOs al final: {utxo_count:,}"
+        f"  Week {week} processed: {len(daily)} days, "
+        f"{len(age_bands)} band rows, UTXOs at end: {utxo_count:,}"
     )
 
     last_height = max(blocks_by_height.keys())
@@ -642,7 +642,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
     }
 
 # ============================================================
-# ESCRITURA DE AGREGADOS (por año) en capa2
+# WRITING AGGREGATES (per year) in capa2
 # ============================================================
 
 def _write_year_parquet(con: sqlite3.Connection, table: str, dtypes: Dict[str, str],
@@ -659,16 +659,16 @@ def _write_year_parquet(con: sqlite3.Connection, table: str, dtypes: Dict[str, s
     tmp = path + ".tmp"
     df.to_parquet(tmp, index=False, compression="zstd")
     os.replace(tmp, path)
-    logger.info(f"  {filename}: {len(df)} filas (desde la DB)")
+    logger.info(f"  {filename}: {len(df)} rows (from the DB)")
 
 def rebuild_year_from_db(con: sqlite3.Connection, year: str) -> None:
-    """Reescribe COMPLETOS los dos parquet anuales de `year` a partir de la DB.
+    """Rewrites COMPLETELY the two yearly parquet files of `year` from the DB.
 
-    No fusiona con lo que hubiera en disco: la DB —escrita en la MISMA transaccion que
-    los datos— es la fuente unica, asi que esto es idempotente y repara por si solo
-    cualquier corte anterior entre el commit y la escritura del parquet (F7). Ademas,
-    al haber una sola fila por fecha, desaparece el riesgo de doble conteo que tenia la
-    fusion por SUMA cuando una fecha quedaba repartida entre dos semanas (F4).
+    Does not merge with whatever was on disk: the DB —written in the SAME transaction as
+    the data— is the single source, so this is idempotent and repairs by itself
+    any earlier cut between the commit and the parquet write (F7). Also,
+    since there is a single row per date, the double-counting risk that the
+    merge-by SUM had when a date was split between two weeks disappears (F4).
     """
     _write_year_parquet(con, "daily_agg", DAILY_DTYPES,
                         f"daily_aggregates_{year}.parquet", year, "date")
@@ -676,7 +676,7 @@ def rebuild_year_from_db(con: sqlite3.Connection, year: str) -> None:
                         f"age_band_aggregates_{year}.parquet", year, "date, age_band")
 
 def rebuild_all_from_db(con: sqlite3.Connection) -> int:
-    """Reconstruye los ficheros anuales de todos los años presentes en la DB."""
+    """Rebuilds the yearly files for all the years present in the DB."""
     anios = [r[0] for r in con.execute(
         "SELECT DISTINCT substr(date, 1, 4) FROM daily_agg ORDER BY 1")]
     for y in anios:
@@ -693,55 +693,55 @@ def ensure_dirs():
     os.makedirs(TMP_DIR, exist_ok=True)
 
 def main():
-    print("\n=== OBM Indexer — Capa 1 → Capa 2 ===")
-    print(f"capa1 (lectura):  {CAPA1}")
-    print(f"capa2 (escritura): {CAPA2}")
-    print("1) Reset completo (borrar capa2 + state)")
-    print("2) Continuar desde la última semana procesada")
+    print("\n=== OBM Indexer — Layer 1 → Layer 2 ===")
+    print(f"capa1 (read):  {CAPA1}")
+    print(f"capa2 (write): {CAPA2}")
+    print("1) Full reset (delete capa2 + state)")
+    print("2) Continue from the last processed week")
     print("================================================")
 
-    choice = input("Selecciona una opción [1-2]: ").strip()
+    choice = input("Select an option [1-2]: ").strip()
     ensure_dirs()
 
     if choice == "1":
-        print("Reset completo solicitado.")
-        logger.info("Reset completo solicitado.")
+        print("Full reset requested.")
+        logger.info("Full reset requested.")
         if os.path.exists(CAPA2):
             shutil.rmtree(CAPA2)
         if os.path.exists(STATE_FILE):
             os.remove(STATE_FILE)
         ensure_dirs()
-        print("Reset completo ejecutado.")
-        logger.info("Reset completo ejecutado.")
+        print("Full reset executed.")
+        logger.info("Full reset executed.")
 
-    # Cargar state
+    # Load state
     state = load_state()
     last_week = state.get("last_processed_week")
     journal = state.get("week_journal", {})
     utxo_count = state.get("utxo_count", 0)
 
-    # ---- P1: cargar written_through del ETL ----
+    # ---- P1: load written_through from the ETL ----
     state_capa1 = load_state_capa1()
     written_through = state_capa1.get("written_through_height", -1)
     print(f"\nwritten_through (ETL): {written_through:,}")
 
-    # Filtrar semanas COMPLETAS
+    # Filter COMPLETE weeks
     available = list_available_weeks()
     if not available:
-        print("No hay semanas en capa1.")
+        print("No weeks in capa1.")
         return
 
     if not check_capa1_monotonic(available):
         return
 
-    # Una semana esta COMPLETA solo si el ETL ya avanzo a una semana POSTERIOR.
-    # El ETL hace un "drain" final que escribe la semana en curso A MEDIAS, asi que
-    # (max(height) <= written_through) NO basta: seria cierto para esa semana parcial
-    # y el indexer la procesaria incompleta y luego la saltaria para siempre.
+    # A week is COMPLETE only if the ETL has already moved on to a LATER week.
+    # The ETL does a final "drain" that writes the current week HALF-DONE, so
+    # (max(height) <= written_through) is NOT enough: it would be true for that partial week
+    # and the indexer would process it incomplete and then skip it forever.
     capa1_week = state_capa1.get("last_written_week")
     capa1_week_int = week_to_int(capa1_week) if capa1_week else None
     if capa1_week:
-        print(f"semana en curso del ETL: {capa1_week} (se excluye)")
+        print(f"ETL's current week: {capa1_week} (excluded)")
 
     def week_is_complete(week):
         try:
@@ -750,67 +750,67 @@ def main():
                 columns=["height"],
             )
             if max(t["height"].to_pylist()) > written_through:
-                return False          # fichero truncado respecto al state del ETL
+                return False          # file truncated relative to the ETL state
             if capa1_week_int is not None and week_to_int(week) >= capa1_week_int:
-                return False          # semana en curso del ETL (posiblemente parcial)
+                return False          # ETL's current week (possibly partial)
             return True
         except Exception:
             return False
 
     available_complete = [w for w in available if week_is_complete(w)]
-    print(f"Semanas disponibles: {len(available)}")
-    print(f"Semanas completas:   {len(available_complete)}")
+    print(f"Available weeks: {len(available)}")
+    print(f"Complete weeks:  {len(available_complete)}")
 
-    # El progreso real vive en la tabla weeks_done de la DB (se filtra mas abajo,
-    # tras abrirla). last_week / state_indexer.json queda como informacion.
+    # The real progress lives in the DB's weeks_done table (filtered further below,
+    # after opening it). last_week / state_indexer.json remains as information.
     to_process = available_complete
 
     if not to_process:
-        print("No hay semanas nuevas para procesar.")
+        print("No new weeks to process.")
         return
 
-    print(f"Semanas a procesar: {len(to_process)} (de {to_process[0]} a {to_process[-1]})")
-    logger.info(f"Procesando {len(to_process)} semanas")
+    print(f"Weeks to process: {len(to_process)} (from {to_process[0]} to {to_process[-1]})")
+    logger.info(f"Processing {len(to_process)} weeks")
 
     con = open_db()
 
-    # ---- P3: abortar si last_week is None con DB no vacía ----
+    # ---- P3: abort if last_week is None with a non-empty DB ----
     done_weeks = {r[0] for r in con.execute("SELECT week FROM weeks_done")}
     if done_weeks:
-        # F7: los parquet anuales son DERIVADOS de la DB, asi que se reconstruyen enteros
-        # al arrancar. Eso repara por si solo un corte anterior entre el commit y la
-        # escritura del parquet; la guarda que va despues comprueba que la reconstruccion
-        # ha cubierto todas las semanas de weeks_done.
+        # F7: the yearly parquet files are DERIVED from the DB, so they are rebuilt entirely
+        # at startup. That repairs by itself an earlier cut between the commit and the
+        # parquet write; the guard that follows checks that the rebuild
+        # has covered all the weeks in weeks_done.
         n_anios = rebuild_all_from_db(con)
-        logger.info(f"parquet anual reconstruido desde la DB ({n_anios} anios)")
+        logger.info(f"yearly parquet rebuilt from the DB ({n_anios} years)")
         faltan = check_parquet_cobertura(done_weeks)
         if faltan:
             for w, ds in faltan[:5]:
-                logger.error(f"agregados ausentes para {w}: {len(ds)} dias (p.ej. {ds[:3]})")
-            print("\nERROR: hay semanas en weeks_done SIN sus agregados en el parquet anual.")
-            print("Causa conocida (F7): corte entre el commit y la escritura del parquet.")
-            print("NO continuar con esos dias sin reparar. Ver AUDITORIA_HALLAZGOS.md (F7).")
+                logger.error(f"aggregates missing for {w}: {len(ds)} days (e.g. {ds[:3]})")
+            print("\nERROR: there are weeks in weeks_done WITHOUT their aggregates in the yearly parquet.")
+            print("Known cause (F7): cut between the commit and the parquet write.")
+            print("Do NOT continue with those days without repairing. See AUDITORIA_HALLAZGOS.md (F7).")
             con.close()
             return
     if not done_weeks:
         real_count = db_count(con)
         if real_count > 0:
-            logger.error(f"DB tiene {real_count:,} UTXOs pero el state dice last_week=None.")
-            print(f"\nERROR: DB tiene {real_count:,} UTXOs pero el state no.")
-            print("Abortando para evitar corrupción.")
-            print("Para empezar de cero:")
-            print("  python3 indexer.py  # opción 1 (reset)")
+            logger.error(f"DB has {real_count:,} UTXOs but the state says last_week=None.")
+            print(f"\nERROR: DB has {real_count:,} UTXOs but the state does not.")
+            print("Aborting to avoid corruption.")
+            print("To start from scratch:")
+            print("  python3 indexer.py  # option 1 (reset)")
             return
         utxo_count = 0
     else:
         utxo_count = con.execute(
             "SELECT COALESCE(SUM(n_inserted),0) - COALESCE(SUM(n_spent),0) FROM weeks_done"
         ).fetchone()[0]
-        print(f"Semanas ya indexadas: {len(done_weeks)} (ultima: {max(done_weeks)}) | "
-              f"UTXOs vivos: {utxo_count:,}")
+        print(f"Weeks already indexed: {len(done_weeks)} (last: {max(done_weeks)}) | "
+              f"Live UTXOs: {utxo_count:,}")
         to_process = [w for w in to_process if w not in done_weeks]
         if not to_process:
-            print("No hay semanas nuevas para procesar.")
+            print("No new weeks to process.")
             con.close()
             return
 
@@ -820,22 +820,22 @@ def main():
         try:
             result = process_week(con, week, utxo_count)
         except Exception as e:
-            logger.error(f"Error procesando {week}: {e}", exc_info=True)
-            print(f"\nError procesando {week}: {e}")
+            logger.error(f"Error processing {week}: {e}", exc_info=True)
+            print(f"\nError processing {week}: {e}")
             save_state(state)
             con.close()
             return
 
         if result is None:
-            logger.warning(f"  Semana {week} sin datos, saltando")
+            logger.warning(f"  Week {week} has no data, skipping")
             state["last_processed_week"] = week
             save_state(state)
             continue
 
         utxo_count = result["utxo_count"]
 
-        # Los agregados ya estan en la DB (misma transaccion); aqui solo se reescriben
-        # enteros los ficheros anuales de los años que toca esta semana.
+        # The aggregates are already in the DB (same transaction); here only the
+        # yearly files of the years touched by this week are rewritten entirely.
         for y in set(d.split("-")[0] for d in result["daily"]):
             rebuild_year_from_db(con, y)
 
@@ -857,8 +857,8 @@ def main():
               f"UTXOs: {utxo_count:>12,}")
 
     con.close()
-    print("\nIndexer completado correctamente.")
-    logger.info("Indexer completado correctamente.")
+    print("\nIndexer completed successfully.")
+    logger.info("Indexer completed successfully.")
 
 if __name__ == "__main__":
     main()

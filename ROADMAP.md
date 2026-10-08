@@ -1,49 +1,49 @@
-# Roadmap (post-auditoría)
+# Roadmap (post-audit)
 
-Cada fase es independiente y entregable por sí sola. Coste estimado y prerrequisitos indicados.
+Each phase is independent and deliverable on its own. Estimated cost and prerequisites are given.
 
-## Fase 0 — Cerrar capa3  *(cerrada el 8-oct)*
-`capa2` termina → `capa3_series.py` + `validar_capa3.py`. Obtenido el 2026-10-08: **21/23 bit-exactas**
-(las dos diferencias son del CDD, a 1 ulp del último decimal publicado).
-**Entregable**: capa3 cerrada + `VALIDATION.md` + figuras.
+## Phase 0 — Close layer 3  *(closed on 8 Oct)*
+`layer 2` finishes → `capa3_series.py` + `validar_capa3.py`. Obtained on 2026-10-08: **21/23 bit-exact**
+(the two differences are in CDD, at 1 ulp of the last published decimal).
+**Deliverable**: layer 3 closed + `VALIDATION.md` + figures.
 
-## Fase 1 — Paquete A: auditoría de reproducibilidad  *(escrita el 8-oct; falta el cierre)*
-A partir de `AUDITORIA_HALLAZGOS.md` (los 8 hallazgos, F1-F8, ya cerrados con números).
-**Entregable**: `AUDITORIA.md` + `LIMITACIONES.md` + repo git + revisión adversarial de un agente
-independiente. **Es la pieza que demuestra rigor e ingeniería.**
-*(Hecho el 8-oct: los dos documentos, la revisión adversarial en un harness externo —14 hallazgos,
-A1-A14, ya incorporados— y los 4 commits. Queda el cierre final del paquete.)*
+## Phase 1 — Package A: reproducibility audit  *(written on 8 Oct; closure pending)*
+From `AUDITORIA_HALLAZGOS.md` (the 8 findings, F1-F8, already closed with numbers).
+**Deliverable**: `AUDITORIA.md` + `LIMITACIONES.md` + git repo + adversarial review by an independent
+agent. **It is the piece that demonstrates rigour and engineering.**
+*(Done on 8 Oct: the two documents, the adversarial review in an external harness —14 findings,
+A1-A14, already incorporated— and the 4 commits. The final closure of the package is still pending.)*
 
-## Fase 2 — capa4: mercado  *(1 semana)*
-Precio diario de **Binance** (klines 1d; `data.binance.vision`, sin API key) desde 2017-08,
-**empalmado** con Bitstamp/Coinbase/CoinDesk BPI para 2010-2017 (documentar el cambio de venue).
-Se añaden funding rate y open interest de futuros.
-**Desbloquea**: NVT, MVRV, realized price, hashprice, comisiones en USD.
-*Regla*: `capa1`-`capa3` siguen siendo reproducibles **sólo con el nodo**; capa4 va aparte.
+## Phase 2 — layer 4: market  *(1 week)*
+Daily price from **Binance** (1d klines; `data.binance.vision`, no API key) since 2017-08,
+**spliced** with Bitstamp/Coinbase/CoinDesk BPI for 2010-2017 (document the venue change).
+Funding rate and futures open interest are added.
+**Unlocks**: NVT, MVRV, realized price, hashprice, fees in USD.
+*Rule*: `layer 1`-`layer 3` remain reproducible **with the node only**; layer 4 is separate.
 
-## Fase 3 — Track investigación: econometría de las series OBM  *(2-4 semanas)*
-Es el propósito declarado del paper ("economic and econometric research") y el dataset es de
-jul-2026: **cualquier estudio serio es una contribución nueva**.
-Candidatos: cambios estructurales (cuota de comisiones, crecimiento de oferta), colas gruesas en
-CDD/comisiones, estudio de eventos de halvings, cointegración hashrate-comisiones-precio, GARCH
-con exógenas on-chain. Herramientas ya instaladas (`statsmodels`, `scipy`, `sklearn`).
-**Entregable**: un paper/notebook con 5-6 figuras y una sección de limitaciones honesta.
+## Phase 3 — Research track: econometrics of the OBM series  *(2-4 weeks)*
+It is the declared purpose of the paper ("economic and econometric research") and the dataset is from
+Jul-2026: **any serious study is a new contribution**.
+Candidates: structural breaks (fee share, supply growth), heavy tails in
+CDD/fees, halving event studies, hashrate-fees-price cointegration, GARCH
+with on-chain exogenous variables. Tools already installed (`statsmodels`, `scipy`, `sklearn`).
+**Deliverable**: a paper/notebook with 5-6 figures and an honest limitations section.
 
-## Fase 4 — Track balances (sin direcciones)  *(3-5 días)*
-Balance por **tamaño de output** ("outputs ballena"), por tipo de script, **HODL waves** y
-**URPD** (coste base, requiere capa4). Todo desde `live_outputs` — minutos de cómputo.
-**Entregable**: panel visual + nota metodológica.
+## Phase 4 — Balances track (no addresses)  *(3-5 days)*
+Balance by **output size** ("whale outputs"), by script type, **HODL waves** and
+**URPD** (cost basis, requires layer 4). All from `live_outputs` — minutes of compute.
+**Deliverable**: visual panel + methodological note.
 
-## Fase 5 (opcional) — Direcciones / entidades  *(semanas)*
-Rich list del tip (join `live_outputs` × `capa1/outputs` + derivar dirección, 1-3 h). Seguimiento
-de una lista concreta con `scantxoutset` (segundos por dirección). Clustering de entidades =
-proyecto de investigación aparte (heurística de co-gasto; se rompe con CoinJoin).
-*Nota*: los *proxies* de ballenas sin direcciones (Fase 4) son más robustos y ya están.
+## Phase 5 (optional) — Addresses / entities  *(weeks)*
+Tip rich list (join `live_outputs` × `capa1/outputs` + derive address, 1-3 h). Tracking
+of a specific list with `scantxoutset` (seconds per address). Entity clustering =
+a separate research project (co-spend heuristic; it breaks with CoinJoin).
+*Note*: the whale *proxies* without addresses (Phase 4) are more robust and already exist.
 
-## Fase 6 (opcional) — Estrategia de trading  *(sólo si se decide)*
-**Límite duro**: datos diarios y autocorrelacionados → ~50-100 episodios independientes → potencia
-estadística baja, y las métricas on-chain son públicas y lentas.
-Orden correcto: (1) data mart alineado, (2) **backtest honesto sin look-ahead** (señal del día *d*
-→ open de *d+1*, costes, walk-forward, corrección por múltiples test), (3) overlay de **riesgo**
-(tamaño de posición), nunca predictor de retorno con ML sobre 6.400 muestras.
-El entregable más valioso de esta fase suele ser **"qué NO funciona"**.
+## Phase 6 (optional) — Trading strategy  *(only if it is decided)*
+**Hard limit**: daily and autocorrelated data → ~50-100 independent episodes → low statistical
+power, and on-chain metrics are public and slow.
+Correct order: (1) aligned data mart, (2) **honest backtest without look-ahead** (signal from day *d*
+→ open of *d+1*, costs, walk-forward, multiple-testing correction), (3) **risk** overlay
+(position sizing), never a return predictor with ML on 6.400 samples.
+The most valuable deliverable of this phase is usually **"what does NOT work"**.

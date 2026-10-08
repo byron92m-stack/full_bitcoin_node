@@ -1,14 +1,14 @@
-"""Test NEGATIVO del arreglo F7: un corte entre el commit y el parquet se repara solo.
+"""NEGATIVE test of the F7 fix: a cut between the commit and the parquet repairs itself.
 
-Reproduce en un capa2 minimo y AISLADO (DB y parquet en un directorio temporal) el
-escenario de 2022-W06: una semana con sus agregados commiteados en la DB pero sin sus
-dias en el parquet anual. Despues llama a la reconstruccion de arranque y comprueba que:
+Reproduces, in a minimal and ISOLATED capa2 (DB and parquet in a temporary directory), the
+2022-W06 scenario: a week with its aggregates committed in the DB but without its
+days in the annual parquet. Then it calls the startup reconstruction and checks that:
 
-  1. los dias que faltaban aparecen con los valores de la DB;
-  2. reconstruir dos veces da lo mismo (idempotente);
-  3. reinsertar una fecha la REEMPLAZA, no la suma (era el riesgo de la fusion por SUMA).
+  1. the days that were missing appear with the DB values;
+  2. rebuilding twice gives the same result (idempotent);
+  3. reinserting a date REPLACES it, it does not add it (this was the risk of the SUM merge).
 
-Uso:  python3 src/exporters/verificar_f7_autocuracion.py     # 0 = OK
+Usage:  python3 src/exporters/verificar_f7_autocuracion.py     # 0 = OK
 """
 import os
 import shutil
@@ -47,54 +47,54 @@ def main():
         con = ix.open_db()
         parquet = os.path.join(tmp, "daily_aggregates_2022.parquet")
 
-        # --- paso A: dos dias escritos con normalidad ---
+        # --- step A: two days written normally ---
         _insertar_dias(con, {
             "2022-02-07": _dia("2022-02-07", 721000, 111, 1, 7),
             "2022-02-08": _dia("2022-02-08", 721100, 222, 2, 8)})
         ix.rebuild_all_from_db(con)
         a = pd.read_parquet(parquet)
         ok_a = list(a["date"]) == ["2022-02-07", "2022-02-08"] and int(a["spent_value_sats"].sum()) == 333
-        print(f"paso A  parquet con 2 dias ......................... {'OK' if ok_a else 'FALLA'}")
+        print(f"step A  parquet with 2 days ......................... {'OK' if ok_a else 'FAIL'}")
         fallos += 0 if ok_a else 1
 
-        # --- paso B: el corte de F7: se commitea un dia mas y NO se escribe el parquet ---
+        # --- step B: the F7 cut: one more day is committed and the parquet is NOT written ---
         _insertar_dias(con, {"2022-02-09": _dia("2022-02-09", 721200, 333, 3, 9)})
         b = pd.read_parquet(parquet)
-        ok_b = list(b["date"]) == ["2022-02-07", "2022-02-08"]     # el parquet sigue corto
-        print(f"paso B  parquet corto (hueco de F7) ............... {'OK' if ok_b else 'FALLA'}")
+        ok_b = list(b["date"]) == ["2022-02-07", "2022-02-08"]     # the parquet is still short
+        print(f"step B  short parquet (F7 gap) ............... {'OK' if ok_b else 'FAIL'}")
         fallos += 0 if ok_b else 1
 
-        # --- paso C: reconstruccion de arranque -> se cura solo ---
+        # --- step C: startup reconstruction -> it heals itself ---
         ix.rebuild_all_from_db(con)
         c = pd.read_parquet(parquet)
         ok_c = (list(c["date"]) == ["2022-02-07", "2022-02-08", "2022-02-09"]
                 and int(c["spent_value_sats"].sum()) == 666
                 and int(c.loc[c["date"] == "2022-02-09", "fees_sats"].iloc[0]) == 9)
-        print(f"paso C  reconstruido, hueco curado ............... {'OK' if ok_c else 'FALLA'}")
+        print(f"step C  rebuilt, gap healed ............... {'OK' if ok_c else 'FAIL'}")
         fallos += 0 if ok_c else 1
 
-        # --- paso D: idempotencia ---
+        # --- step D: idempotence ---
         ix.rebuild_all_from_db(con)
         d = pd.read_parquet(parquet)
         ok_d = c.equals(d)
-        print(f"paso D  reconstruir dos veces es idempotente ..... {'OK' if ok_d else 'FALLA'}")
+        print(f"step D  rebuilding twice is idempotent ..... {'OK' if ok_d else 'FAIL'}")
         fallos += 0 if ok_d else 1
 
-        # --- paso E: reinsertar una fecha la reemplaza, NO la suma ---
+        # --- step E: reinserting a date replaces it, it does NOT add it ---
         _insertar_dias(con, {"2022-02-09": _dia("2022-02-09", 721201, 5, 1, 1)})
         ix.rebuild_all_from_db(con)
         e = pd.read_parquet(parquet)
         v = int(e.loc[e["date"] == "2022-02-09", "spent_value_sats"].iloc[0])
         ok_e = (len(e) == 3 and v == 5 and int(e["spent_value_sats"].sum()) == 338)
-        print(f"paso E  reinsertar reemplaza (no suma) ........... {'OK' if ok_e else 'FALLA'}"
-              f"  [2022-02-09 = {v}, debe ser 5]")
+        print(f"step E  reinserting replaces (does not add) ........... {'OK' if ok_e else 'FAIL'}"
+              f"  [2022-02-09 = {v}, should be 5]")
         fallos += 0 if ok_e else 1
 
         con.close()
     finally:
         ix.CAPA2, ix.DB_PATH = orig_capa2, orig_db
         shutil.rmtree(tmp, ignore_errors=True)
-    print(f"\nresultado: {'TODO OK' if fallos == 0 else str(fallos) + ' FALLOS'}")
+    print(f"\nresult: {'ALL OK' if fallos == 0 else str(fallos) + ' FAILURES'}")
     return fallos
 
 

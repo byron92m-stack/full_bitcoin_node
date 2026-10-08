@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Repara el desbordamiento de 32 bits de total_changes (2017-W13).
+"""Repairs the 32-bit overflow of total_changes (2017-W13).
 
-El contador dio la vuelta exactamente una vez al pasar 2^32 cambios, lo que
-- dejo la semana 2017-W13 de weeks_done con n_inserted negativo, y
-- desplazo utxo_eod_count en exactamente 2^32 desde 2017-03-29.
+The counter wrapped around exactly once when passing 2^32 changes, which
+- left the 2017-W13 week of weeks_done with a negative n_inserted, and
+- shifted utxo_eod_count by exactly 2^32 since 2017-03-29.
 
-Ambas cosas se reparan SUMANDO 2^32. Idempotente: comprueba antes de tocar.
-REQUIERE EL INDEXER PARADO.
+Both things are repaired by ADDING 2^32. Idempotent: it checks before touching.
+REQUIRES THE INDEXER STOPPED.
 """
 import glob, os, sqlite3, sys, shutil
 import pandas as pd
 
 WRAP = 2 ** 32
-DIA = "2017-03-29"          # primer dia afectado (el wrap ocurre dentro de 2017-W13)
+DIA = "2017-03-29"          # first affected day (the wrap occurs inside 2017-W13)
 SEMANA = "2017-W13"
 DB = "/media/SSD4T/obm/capa2/live_outputs.sqlite"
 
@@ -24,15 +24,15 @@ print(f"weeks_done[{SEMANA}]: n_inserted={ins:,}  n_spent={sp:,}")
 if ins < 0:
     con.execute("UPDATE weeks_done SET n_inserted = n_inserted + ? WHERE week = ?", (WRAP, SEMANA))
     con.commit()
-    print(f"  -> reparado a n_inserted={ins+WRAP:,}")
+    print(f"  -> repaired to n_inserted={ins+WRAP:,}")
 else:
-    print("  -> ya estaba reparado (n_inserted>=0)")
+    print("  -> it was already repaired (n_inserted>=0)")
 n, i, s = con.execute("SELECT COUNT(*), SUM(n_inserted), SUM(n_spent) FROM weeks_done").fetchone()
-print(f"weeks_done: semanas={n}  SUM(ins)={i:,}  SUM(spent)={s:,}  -> utxo_count derivado={i-s:,}")
+print(f"weeks_done: weeks={n}  SUM(ins)={i:,}  SUM(spent)={s:,}  -> derived utxo_count={i-s:,}")
 con.close()
 
 # 2) parquet ---------------------------------------------------------------
-print(f"\nutxo_eod_count: sumando {WRAP:,} a las fechas >= {DIA}")
+print(f"\nutxo_eod_count: adding {WRAP:,} to the dates >= {DIA}")
 for f in sorted(glob.glob("/media/SSD4T/obm/capa2/daily_aggregates_*.parquet")):
     d = pd.read_parquet(f)
     d["date"] = d["date"].astype(str)
@@ -41,20 +41,20 @@ for f in sorted(glob.glob("/media/SSD4T/obm/capa2/daily_aggregates_*.parquet")):
         continue
     neg = int((d.loc[m, "utxo_eod_count"] < 0).sum())
     if neg == 0:
-        print(f"  {os.path.basename(f)}: ya reparado ({int(m.sum())} dias >= {DIA})")
+        print(f"  {os.path.basename(f)}: already repaired ({int(m.sum())} days >= {DIA})")
         continue
     shutil.copy2(f, f + ".bak_wrap")
     d.loc[m, "utxo_eod_count"] = d.loc[m, "utxo_eod_count"].astype("int64") + WRAP
     d.to_parquet(f + ".tmp", index=False, compression="zstd")
     os.replace(f + ".tmp", f)
-    print(f"  {os.path.basename(f)}: {neg} dias negativos reparados (de {int(m.sum())} afectados)")
+    print(f"  {os.path.basename(f)}: {neg} negative days repaired (of {int(m.sum())} affected)")
 
-# 3) verificacion ----------------------------------------------------------
-print("\nverificacion:")
+# 3) verification ----------------------------------------------------------
+print("\nverification:")
 for f in sorted(glob.glob("/media/SSD4T/obm/capa2/daily_aggregates_*.parquet")):
     d = pd.read_parquet(f, columns=["date", "utxo_eod_count"])
     neg = int((d["utxo_eod_count"] < 0).sum())
     if neg:
-        print(f"  {os.path.basename(f)}: AUN HAY {neg} NEGATIVOS  <== REVISAR")
+        print(f"  {os.path.basename(f)}: THERE ARE STILL {neg} NEGATIVES  <== CHECK")
         sys.exit(1)
-print("  0 valores negativos en utxo_eod_count  -> OK")
+print("  0 negative values in utxo_eod_count  -> OK")

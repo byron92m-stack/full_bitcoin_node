@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""Repara los agregados de 2022-W06 en capa2 (perdidos por la ventana de crash F7).
+"""Repairs the 2022-W06 aggregates in capa2 (lost due to the F7 crash window).
 
-Recomputa EXACTAMENTE desde capa1 (no necesita el estado del UTXO):
-  * resuelve cada prevout de la semana contra capa1/outputs (un escaneo global),
-  * agrega por dia UTC: spent_value, count, cdd (exacto: entero + resto/86400),
-    umbrales 155d/365d, fees, coinbase, issuance y las 12 bandas de edad,
-  * utxo_eod_count(d) = eod(dia anterior) + SUM(creados - gastados) hasta d.
+Recomputes EXACTLY from capa1 (it does not need the UTXO state):
+  * resolves every prevout of the week against capa1/outputs (one global scan),
+  * aggregates per UTC day: spent_value, count, cdd (exact: integer + remainder/86400),
+    155d/365d thresholds, fees, coinbase, issuance and the 12 age bands,
+  * utxo_eod_count(d) = eod(previous day) + SUM(created - spent) up to d.
 
-Tres precauciones, cada una por un bug real medido el 30-Sep-2026:
-  1. SET TimeZone='UTC'. strftime(to_timestamp(t),'%Y-%m-%d') usa la zona de la
-     sesion: con America/Guayaquil (UTC-5) cada dia UTC se corria 5 h y aparecia un
-     dia fantasma al inicio de la semana (aqui: 2022-02-06 con 127.914 gastos).
-  2. Solo se escriben los dias UTC que pertenecen a la semana, nunca el dia vecino.
-  3. Las bandas se agregan por banda (GROUP BY date, age_band): 7 dias = 84 filas
-     como maximo, no una fila por edad entera (17.069).
+Three precautions, each one for a real bug measured on 30-Sep-2026:
+  1. SET TimeZone='UTC'. strftime(to_timestamp(t),'%Y-%m-%d') uses the session
+     time zone: with America/Guayaquil (UTC-5) every UTC day was shifted 5 h and a
+     phantom day appeared at the start of the week (here: 2022-02-06 with 127,914 spends).
+  2. Only the UTC days that belong to the week are written, never the neighbouring day.
+  3. The bands are aggregated per band (GROUP BY date, age_band): 7 days = 84 rows
+     at most, not one row per full age (17,069).
 
-Escribe en capa2/daily_aggregates_2022.parquet y age_band_aggregates_2022.parquet
-(con backup .bak_w06). Idempotente: borra las fechas de la semana antes de insertar.
+Writes to capa2/daily_aggregates_2022.parquet and age_band_aggregates_2022.parquet
+(with .bak_w06 backup). Idempotent: it deletes the dates of the week before inserting.
 """
 import os
 import shutil
@@ -41,20 +41,20 @@ con = duckdb.connect()
 con.execute("SET threads=4")
 con.execute("SET memory_limit='10GB'")
 con.execute(f"SET temp_directory='{BASE}/tmp/repair'")
-con.execute("SET TimeZone='UTC'")            # (1) fechas en UTC, como OBM
-try:                                         # hash sobre `inp` (6,5 M), no 3.900 M
+con.execute("SET TimeZone='UTC'")            # (1) dates in UTC, like OBM
+try:                                         # hash on `inp` (6.5 M), not 3,900 M
     con.execute("SET disabled_optimizers='join_order'")
 except Exception as e:
-    print(f"  aviso: no se pudo fijar el orden de join ({e})")
+    print(f"  warning: could not fix the join order ({e})")
 
-# (2) dias UTC de la semana, segun los propios bloques de capa1
+# (2) UTC days of the week, according to capa1's own blocks
 DIAS = [r[0] for r in con.execute(
     f"SELECT DISTINCT strftime(to_timestamp(time),'%Y-%m-%d') d "
     f"FROM read_parquet('{C1}/blocks/blocks_{SEM}.parquet') ORDER BY 1").fetchall()]
 FILTRO = "(" + ",".join(f"'{d}'" for d in DIAS) + ")"
-print(f"  dias UTC de {SEM}: {DIAS[0]} .. {DIAS[-1]}  ({len(DIAS)} dias)")
+print(f"  UTC days of {SEM}: {DIAS[0]} .. {DIAS[-1]}  ({len(DIAS)} days)")
 if len(DIAS) != 7:
-    sys.exit(f"ABORTADO: {SEM} deberia tener 7 dias UTC y tiene {len(DIAS)}")
+    sys.exit(f"ABORTED: {SEM} should have 7 UTC days and has {len(DIAS)}")
 EN_DIAS = f"strftime(to_timestamp(t_spend),'%Y-%m-%d') IN {FILTRO}"
 
 for t, sql in (
@@ -64,7 +64,7 @@ for t, sql in (
     ("blk", f"SELECT height,time FROM read_parquet('{C1}/blocks/blocks_*.parquet')"),
 ):
     con.execute(f"CREATE TABLE {t} AS {sql}")
-print("  tablas de la semana cargadas")
+print("  week tables loaded")
 
 JOIN = f"""
 FROM read_parquet('{C1}/outputs/outputs_*.parquet') o
@@ -72,7 +72,7 @@ JOIN inp i  ON o.txid = i.prev_txid AND o.vout = i.prev_vout
 JOIN blk bs ON bs.height = i.height
 JOIN blk bc ON bc.height = o.height
 """
-print("  plan del join (debe construir hash sobre 'inp', NO escanear+hashear 3.900 M filas):")
+print("  join plan (must build a hash on 'inp', NOT scan+hash 3,900 M rows):")
 for r in con.execute("EXPLAIN SELECT count(*) " + JOIN).fetchall():
     for ln in str(r[-1]).splitlines():
         if any(k in ln for k in ("JOIN", "SCAN", "HASH", "inp", "read_parquet")):
@@ -84,11 +84,11 @@ con.execute(f"""CREATE TABLE res AS SELECT
     GREATEST(0, bs.time - bc.time) age {JOIN}""")
 n = con.execute("SELECT count(*) FROM res").fetchone()[0]
 tot = con.execute("SELECT count(*) FROM inp").fetchone()[0]
-print(f"  prevouts resueltos: {n:,} / {tot:,}  ({'OK' if n==tot else 'FALTAN ' + format(tot-n, ',')})")
+print(f"  prevouts resolved: {n:,} / {tot:,}  ({'OK' if n==tot else 'MISSING ' + format(tot-n, ',')})")
 if n != tot:
-    sys.exit("ABORTADO: no se resolvieron todos los inputs; no se escribe nada")
+    sys.exit("ABORTED: not all inputs were resolved; nothing is written")
 
-# ---- agregado diario (solo los 7 dias UTC de la semana) ----
+# ---- daily aggregate (only the 7 UTC days of the week) ----
 dia = con.execute(f"""
 SELECT strftime(to_timestamp(t_spend),'%Y-%m-%d') date,
        CAST(SUM((CAST(value_sats AS HUGEINT)*age) // 86400) AS BIGINT) cdd_sat_days,
@@ -115,15 +115,15 @@ WHERE strftime(to_timestamp(b.time),'%Y-%m-%d') IN {FILTRO}
 GROUP BY 1 ORDER BY 1""").df()
 m = dia.merge(b, on="date", how="left")
 if set(m["date"]) != set(DIAS):
-    sys.exit(f"ABORTADO: dias recomputados {sorted(m['date'])} != dias UTC {DIAS}")
+    sys.exit(f"ABORTED: recomputed days {sorted(m['date'])} != UTC days {DIAS}")
 
-# base utxo_eod_count: ultimo dia con datos ANTES de la semana
+# utxo_eod_count base: last day with data BEFORE the week
 prev = pd.read_parquet(f"{C2}/daily_aggregates_{ANIO}.parquet")
 prev["date"] = prev["date"].astype(str)
 ant = prev[prev["date"] < DIAS[0]]
 DIA0 = ant["date"].max()
 base = int(ant.loc[ant["date"] == DIA0, "utxo_eod_count"].iloc[0])
-print(f"  base utxo_eod_count: {DIA0} = {base:,}")
+print(f"  utxo_eod_count base: {DIA0} = {base:,}")
 m["fees_sats"] = m.spent_value_sats - (m.out_all - m.cb_sats)
 m["coinbase_output_sats"] = m.cb_sats
 m["issuance_sats"] = m.cb_sats - m.fees_sats
@@ -142,9 +142,9 @@ COLS = ["date","last_height","spent_value_sats","spent_output_count","cdd_sat_da
 m = m.rename(columns={"ge155_v":"spent_value_ge155d_sats","ge155_c":"cdd_ge155d_sat_days",
                       "ge155_r":"cdd_ge155d_rem_86400","ge365_v":"spent_value_ge365d_sats",
                       "ge365_c":"cdd_ge365d_sat_days","ge365_r":"cdd_ge365d_rem_86400"})[COLS]
-print("\n  filas recomputadas:"); print(m.to_string(index=False))
+print("\n  recomputed rows:"); print(m.to_string(index=False))
 
-# ---- bandas de edad (3) agregadas por banda, no por edad entera ----
+# ---- age bands (3) aggregated per band, not per full age ----
 bd = con.execute(f"""
 WITH r AS (
   SELECT strftime(to_timestamp(t_spend),'%Y-%m-%d') date, value_sats, age,
@@ -156,19 +156,19 @@ SELECT date, {CASO_BANDA} age_band,
        COUNT(*) spent_output_count,
        CAST(SUM((CAST(value_sats AS HUGEINT)*age) // 86400) AS BIGINT) cdd_sat_days,
        CAST(SUM((CAST(value_sats AS HUGEINT)*age) % 86400) AS BIGINT) cdd_rem_86400
-FROM r GROUP BY 1,2 ORDER BY 1,2""").df()
-print(f"\n  filas de bandas: {len(bd)} (maximo esperado {7*12})")
+FROM r GROUP BY 1.2 ORDER BY 1.2""").df()
+print(f"\n  band rows: {len(bd)} (expected maximum {7*12})")
 
-# ---- verificacion: la suma de bandas debe dar el agregado diario ----
+# ---- verification: the sum of bands must equal the daily aggregate ----
 for d in DIAS:
     s = bd[bd["date"] == d][["spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400"]].sum()
     r0 = m[m["date"] == d].iloc[0]
     for c in ("spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400"):
         if int(s[c]) != int(r0[c]):
-            sys.exit(f"ABORTADO: {d}: bandas {c}={int(s[c])} != diario {int(r0[c])}")
-print("  verificacion OK: las bandas suman igual que el agregado diario en los 7 dias")
+            sys.exit(f"ABORTED: {d}: bands {c}={int(s[c])} != daily {int(r0[c])}")
+print("  verification OK: the bands sum equal to the daily aggregate on the 7 days")
 
-# ---- verificacion en SQL (HUGEINT: exacto; pandas convierte HUGEINT a float64) ----
+# ---- verification in SQL (HUGEINT: exact; pandas converts HUGEINT to float64) ----
 con.register("dia_df", m[["date","spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400"]])
 con.register("bd_df", bd[["date","age_band","spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400"]])
 CHK = """
@@ -181,11 +181,11 @@ JOIN dia_df d USING (date)
 WHERE x.sv<>d.spent_value_sats OR x.n<>d.spent_output_count
    OR x.cdd<>d.cdd_sat_days OR x.rem<>d.cdd_rem_86400"""
 mal = con.execute(CHK).fetchone()[0]
-print(f"  verificacion SQL (suma de bandas == agregado diario): {mal} discrepancias")
+print(f"  SQL verification (sum of bands == daily aggregate): {mal} discrepancies")
 if mal:
-    sys.exit("ABORTADO: el agregado diario no coincide con la suma de sus bandas")
+    sys.exit("ABORTED: the daily aggregate does not match the sum of its bands")
 
-# ---- escribir con backup ----
+# ---- write with backup ----
 for ruta, nuevo, clave in ((f"{C2}/daily_aggregates_{ANIO}.parquet", m, ["date"]),
                            (f"{C2}/age_band_aggregates_{ANIO}.parquet", bd, ["date","age_band"])):
     viejo = pd.read_parquet(ruta)
@@ -198,6 +198,6 @@ for ruta, nuevo, clave in ((f"{C2}/daily_aggregates_{ANIO}.parquet", m, ["date"]
             out[c] = out[c].astype(viejo[c].dtype)
     out.to_parquet(ruta + ".tmp", index=False, compression="zstd")
     os.replace(ruta + ".tmp", ruta)
-    print(f"  {os.path.basename(ruta)}: {len(viejo)} -> {len(out)} filas (backup .bak_w06)")
+    print(f"  {os.path.basename(ruta)}: {len(viejo)} -> {len(out)} rows (backup .bak_w06)")
 con.close()
-print("\nREPARADO")
+print("\nREPAIRED")

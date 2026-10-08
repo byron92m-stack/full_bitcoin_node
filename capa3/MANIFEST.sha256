@@ -1,6 +1,6 @@
-# SHA-256 de los bytes validados (capa3) y de la referencia congelada de OBM.
-# Generado: 2026-10-08 11:40
-# Regenerar: python3 src/exporters/manifiesto.py
+# SHA-256 of the validated bytes (layer 3) and of the frozen OBM reference.
+# Generated: 2026-10-08 11:45
+# Regenerate: python3 src/exporters/manifiesto.py
 
 ed6dc7c4351f8a4f8e7399dfe7c70ad8179602c5a4f3bad5de2518a2a7cc0d44  capa3/obm_block_count_daily.csv
 f30af680133930779d17009fe847110a1e63ab6b6a3e8830266459d593426fe8  capa3/obm_block_weight_wu_daily.csv
@@ -26,7 +26,7 @@ e141b83304344e821b6535b6522c51ac6daf4d4e0101fa416460602c37f1ea1e  capa3/obm_spen
 552808540280d5b7620a32389ec8dacb3e9afc4d44fc4e6990d5d88635816c22  capa3/obm_tx_count_daily.csv
 ebd289cd2b0e22b15aa265393d2b5a91d0fcadb4ad19eba188f6907a642c7f11  capa3/obm_utxo_eod_count_daily.csv
 d0998e4ac28287d5f34609ddfc0091231c60e4b6aa6ed4e7049417b9968c896c  capa3/validation_series.csv
-1e5ae93092c4a2708a8784cda6418a3fbba092e624bf90c01b7e2ef3b55dfd28  capa3/VALIDATION.md
+555d006c9860fef30eb3da00a15d2cca19ae75773fca86296addfe67e9e8d358  capa3/VALIDATION.md
 9f2fe1c035bebfdaf1665602c99cd1053d435cd5590b1bee70ae57e70ca1bd84  obm_reference/metrics/obm_block_count_daily/obm_block_count_daily.csv
 f24a0916cd700fb2b9f8f0a72e66acfd85bc93f3152d1ee9556cc4a72f8c7207  obm_reference/metrics/obm_block_weight_wu_daily/obm_block_weight_wu_daily.csv
 64dce4b6cfc94db6881617da5b2b1698d6ee817b7324d26b9e83428f9883c62c  obm_reference/metrics/obm_cdd_age_band_btcxdays_daily/obm_cdd_age_band_btcxdays_daily.csv

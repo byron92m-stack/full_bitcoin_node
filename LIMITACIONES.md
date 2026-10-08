@@ -1,129 +1,129 @@
-# Limitaciones de esta auditoría
+# Limitations of this audit
 
-Documento honesto de lo que **no** cubre la reproducibilidad demostrada en `AUDITORIA.md`. Cada
-punto dice qué es, por qué importa y cómo queda acotado.
+An honest document of what the reproducibility demonstrated in `AUDITORIA.md` does **not** cover. Each
+point states what it is, why it matters and how it is bounded.
 
-## 1 · Alcance de la comparación
+## 1 · Scope of the comparison
 
-1. **La referencia es un snapshot móvil.** Se compara contra los 23 CSV de OBM **v0.1.0** tal como
-   se publicaron (jul-2026, cubriendo hasta 2026-09-11). OBM puede revisar sus series; esta
-   auditoría **no** verifica versiones posteriores, y una revisión suya invalidaría el cruce.
-   *Acotado*: el snapshot queda congelado en `obm_reference/`, y `validar_capa3.py` se puede
-   re-ejecutar sobre cualquier otro.
+1. **The reference is a moving snapshot.** The comparison is against the 23 OBM CSVs of **v0.1.0** as
+   they were published (Jul-2026, covering up to 2026-09-11). OBM may revise its series; this
+   audit **does not** verify later versions, and a revision on their side would invalidate the cross-check.
+   *Bounded*: the snapshot is frozen in `obm_reference/`, and `validar_capa3.py` can be
+   re-run against any other one.
 
-2. **"Exacta" = dentro de medio último decimal publicado**, y esa tolerancia se **deriva del propio
-   fichero de referencia** (por serie y, en las tablas anchas, por columna), no de una tabla escrita
-   a mano: el 2026-10-08 una tabla así decía 8 decimales donde la referencia publica 12, dejaba la
-   tolerancia 10.000× más laxa y ocultaba 113 celdas (hallazgo A1 de la revisión adversarial). No es
-   una comparación infinitamente precisa: en las series de 8 decimales, una diferencia por debajo de
-   5e-9 cuenta como coincidencia. Y en series de magnitud enorme —la dificultad ronda 1,3e14— los 12
-   decimales publicados son **ruido de impresión** (el ulp de `float64` es ≈0,016), así que ahí la
-   tolerancia es estricta sin ser informativa. El titular "21/23 bit-exactas" significa esta regla.
+2. **"Exact" = within half the last published decimal**, and that tolerance is **derived from the reference
+   file itself** (per series and, in the wide tables, per column), not from a hand-written table:
+   on 2026-10-08 such a table said 8 decimals where the reference publishes 12, left the
+   tolerance 10,000× looser and hid 113 cells (finding A1 of the adversarial review). It is not
+   an infinitely precise comparison: in the 8-decimal series, a difference below
+   5e-9 counts as a match. And in series of enormous magnitude —difficulty is around 1.3e14— the 12
+   published decimals are **printing noise** (the `float64` ulp is ≈0.016), so there the
+   tolerance is strict without being informative. The headline "21/23 bit-exact" means this rule.
 
-3. **Las series de la referencia no tienen todas la misma longitud** (entre 6.459 y 6.463 fechas).
-   El denominador del "21/23" hay que leerlo por serie, no global.
+3. **The reference series do not all have the same length** (between 6,459 and 6,463 dates).
+   The denominator of the "21/23" has to be read per series, not globally.
 
-## 2 · Lo que no es bit-exacto
+## 2 · What is not bit-exact
 
-4. **El CDD no se puede reproducir bit a bit, y no es "coma flotante" genérica.** Con la tolerancia
-   publicada quedan dos diferencias: **1 día** en `cdd_btcxdays` (1E-8 = 1 sat-día, el residuo del
-   redondeo con que OBM acumula el CDD) y **111 días / 113 celdas** en `cdd_age_band` (1E-12 = 1 ulp
-   del último decimal). Esas 113 celdas se comprobaron una a una: son **empates exactos en el
-   decimal 13**, nuestra cifra es el redondeo *half-even* del valor exacto en **113/113** y la de OBM
-   queda un ulp por debajo. *Acotado*: documentado como F2 con la comprobación incluida; el
-   desacuerdo está del lado de OBM.
+4. **The CDD cannot be reproduced bit for bit, and it is not generic "floating point".** With the published
+   tolerance two differences remain: **1 day** in `cdd_btcxdays` (1E-8 = 1 sat-day, the rounding
+   residue with which OBM accumulates the CDD) and **111 days / 113 cells** in `cdd_age_band` (1E-12 = 1 ulp
+   of the last decimal). Those 113 cells were checked one by one: they are **exact ties in
+   decimal 13**, our figure is the *half-even* rounding of the exact value in **113/113** and OBM's
+   falls one ulp below. *Bounded*: documented as F2 with the check included; the
+   disagreement is on OBM's side.
 
-5. **Las ratios que derivan del CDD heredan esa cota** (`dormancy`, `cdd_per_supply`, `liveliness`).
-   En este cruce salen exactas incluso con la tolerancia estricta, pero **no hay garantía
-   estructural** de que lo sigan siendo día a día: cualquier día con residuo por encima de la
-   tolerancia aparecería como diferencia de último dígito.
+5. **The ratios derived from the CDD inherit that bound** (`dormancy`, `cdd_per_supply`, `liveliness`).
+   In this cross-check they come out exact even with the strict tolerance, but there is **no structural
+   guarantee** that they will keep being so day by day: any day with a residue above the
+   tolerance would show up as a last-digit difference.
 
-## 3 · Dependencias y heurísticas del pipeline
+## 3 · Pipeline dependencies and heuristics
 
-6. **La dificultad hay que leerla del nodo (F3).** Por tanto `capa1`–`capa3` **no** son reproducibles
-   desde ficheros de bloque aislados: hace falta el RPC. Es una propiedad del método de OBM, no
-   nuestra, pero limita la promesa "sólo con el nodo" a *con el nodo en marcha*.
+6. **Difficulty has to be read from the node (F3).** Therefore `layer 1`–`layer 3` are **not** reproducible
+   from isolated block files: the RPC is required. It is a property of OBM's method, not
+   ours, but it limits the promise "with the node alone" to *with the node running*.
 
-7. **La tabla de épocas de dificultad hay que refrescarla al extender capa1.** Cubría hasta la
-   época 480 y los bloques nuevos caían en la 481: `capa3_series.py` habría usado
-   `difficulty_core(bits)` —justo lo que F3 prohíbe— pero **avisa** por pantalla en vez de hacerlo
-   en silencio. *Acotado*: se regeneró el 8-oct con el nodo encendido (**482 épocas, 0..481**, tip
-   970.449) y el aviso ya no aparece; el riesgo vuelve cada vez que se extienda capa1, y se cierra
-   volviendo a lanzar `fix_difficulty_rpc.py`.
+7. **The difficulty-epoch table has to be refreshed when layer 1 is extended.** It covered up to
+   epoch 480 and the new blocks fell in 481: `capa3_series.py` would have used
+   `difficulty_core(bits)` —precisely what F3 forbids— but it **warns** on screen instead of doing it
+   silently. *Bounded*: it was regenerated on 8 Oct with the node running (**482 epochs, 0..481**, tip
+   970,449) and the warning no longer appears; the risk returns every time layer 1 is extended, and it is closed
+   by running `fix_difficulty_rpc.py` again.
 
-8. **El filtro de "gastabilidad" es una heurística de convención.** El UTXO vivo excluye salidas
-   `OP_RETURN`/nulldata y `script_hex` anómalos. Es la convención que hace cuadrar el conteo con
-   OBM, pero **no es una propiedad del protocolo**: define la población de outputs de la que hablan
-   todas las series de UTXO y coin-age.
+8. **The "spendability" filter is a convention heuristic.** The live UTXO excludes
+   `OP_RETURN`/nulldata outputs and anomalous `script_hex`. It is the convention that makes the count agree with
+   OBM, but **it is not a property of the protocol**: it defines the population of outputs spoken about by
+   all the UTXO and coin-age series.
 
-9. **El día es UTC según el `time` del bloque**, no `mediantime`. Los timestamps no son monótonos y
-   hay **2 inversiones que cruzan frontera de semana** en 970.447 bloques (F4); se resuelven
-   particionando y escaneando **por altura**, de modo que el "día" de un bloque es el de su
-   timestamp, pero el orden de procesado es el de la cadena.
+9. **The day is UTC according to the block's `time`**, not `mediantime`. Timestamps are not monotonic and
+   there are **2 inversions that cross a week boundary** in 970,447 blocks (F4); they are resolved
+   by partitioning and scanning **by height**, so that the "day" of a block is that of its
+   timestamp, but the processing order is that of the chain.
 
-## 4 · Convenciones que se replican a propósito
+## 4 · Conventions replicated on purpose
 
-10. **El conteo BIP30 (+2) es una convención, no una verdad.** OBM cuenta las dos copias de los dos
-    coinbases duplicados; Core mantiene una. Nuestra `live_outputs` sigue a Core y el ajuste va en
-    capa3. Cualquiera que use `capa2/live_outputs.sqlite` directamente obtendrá los conteos **sin**
-    ese +2.
+10. **The BIP30 count (+2) is a convention, not a truth.** OBM counts the two copies of the two
+    duplicate coinbases; Core keeps one. Our `live_outputs` follows Core and the adjustment is applied in
+    layer 3. Anyone who uses `capa2/live_outputs.sqlite` directly will get the counts **without**
+    that +2.
 
-11. **Las 12 bandas de edad y los umbrales 155d/365d son las definiciones de OBM**, incluidas sus
-    fronteras exactas. Reproducimos *su* partición, no una canónica.
+11. **The 12 age bands and the 155d/365d thresholds are OBM's definitions**, including its
+    exact boundaries. We reproduce *its* partition, not a canonical one.
 
-## 5 · Cobertura del dataset
+## 5 · Dataset coverage
 
-12. **No hay capa4 (precio/mercado).** Quedan fuera todas las series que dependen del precio (NVT,
-    MVRV, realized price, hashprice, comisiones en USD). El `ROADMAP.md` la sitúa aparte **a
-    propósito**, para no romper la regla de que capa1–capa3 se reproducen sólo con el nodo.
+12. **There is no layer 4 (price/market).** All the series that depend on price are left out (NVT,
+    MVRV, realized price, hashprice, USD fees). `ROADMAP.md` places it apart **on
+    purpose**, so as not to break the rule that layers 1–3 are reproduced with the node alone.
 
-13. **No hay direcciones ni entidades.** Todos los análisis por entidad (rich list, clustering,
-    flujos por exchange) están fuera. Los *proxies* sin direcciones (tamaño de output, tipo de
-    script, HODL waves, URPD) son más robustos, pero no sustituyen a las entidades.
+13. **There are no addresses or entities.** All entity-based analysis (rich list, clustering,
+    flows by exchange) is left out. The *proxies* without addresses (output size, script
+    type, HODL waves, URPD) are more robust, but they do not replace entities.
 
-14. **El dataset termina donde termina la cadena ingerida.** El tip es un objetivo móvil; cualquier
-    comparación con OBM (que publica con su propio retardo) es válida sólo en la intersección de
-    coberturas.
+14. **The dataset ends where the ingested chain ends.** The tip is a moving target; any
+    comparison with OBM (which publishes with its own delay) is valid only on the intersection of
+    coverages.
 
-## 6 · Coste y forma de los datos
+## 6 · Cost and shape of the data
 
-15. **Reproducirlo no es barato.** `capa1` son 388 GiB de parquet y `capa2` costó **~50-85 min por
-    semana** (varios días en total) con unas 8-11 M de inserciones y 7-8 M de borrados por semana.
-    Un revisor con menos horas de cómputo no podrá rehacerlo entero.
+15. **Reproducing it is not cheap.** `layer 1` is 388 GiB of parquet and `layer 2` cost **~50-85 min per
+    week** (several days in total) with about 8-11 M insertions and 7-8 M deletions per week.
+    A reviewer with fewer compute hours will not be able to redo it in full.
 
-16. **`capa2` es un SQLite de un solo fichero (~20 GiB), no un sistema distribuido.** Durante una
-    semana el WAL llega a ~14 GB. La reproducibilidad es de *proceso*, no de infraestructura.
+16. **`layer 2` is a single-file SQLite (~20 GiB), not a distributed system.** Over one
+    week the WAL reaches ~14 GB. Reproducibility is of *process*, not of infrastructure.
 
-## 7 · Lo que esta auditoría NO verifica
+## 7 · What this audit does NOT verify
 
-17. **No audita el código de OBM** (no se usó): verifica la *coincidencia con sus salidas
-    publicadas*, no la corrección de su implementación ni de sus decisiones.
+17. **It does not audit OBM's code** (it was not used): it verifies the *agreement with its published
+    outputs*, not the correctness of its implementation or of its decisions.
 
-18. **No verifica que la referencia sea correcta respecto a la cadena.** Si OBM y nosotros
-    compartiéramos una misma interpretación equivocada (por ejemplo, el filtro de gastabilidad), el
-    cruce **no lo detectaría**: coincidiríamos en el error. La auditoría mide *acuerdo*, y el
-    acuerdo es evidencia fuerte pero no prueba de verdad.
+18. **It does not verify that the reference is correct with respect to the chain.** If OBM and we
+    shared the same mistaken interpretation (for example, the spendability filter), the
+    cross-check **would not detect it**: we would agree on the error. The audit measures *agreement*, and
+    agreement is strong evidence but not proof of truth.
 
-19. **La prueba bilateral se aplicó a guardas y validadores, no a todas las funciones.** Los cinco
-    invariantes y los scripts de reparación se probaron con caso real y caso negativo; el resto del
-    código se verifica indirectamente, por la comparación global contra la referencia.
+19. **The bilateral test was applied to guards and validators, not to every function.** The five
+    invariants and the repair scripts were tested with the real case and the negative case; the rest of the
+    code is verified indirectly, through the global comparison against the reference.
 
-## 8 · De la documentación
+## 8 · On the documentation
 
-20. **"Cero números a mano" se cumple en el pipeline, no en los documentos.** Los invariantes, la
-    validación, las reparaciones y las figuras se regeneran con un script
-    (`validar_capa3.py`, `verificar_f7_autocuracion.py`, `graficos_capa3.py`); pero varias cifras de
-    los informes son **transcripciones** de ejecuciones anteriores (los estados previos a las
-    reparaciones F5 y F7, los recuentos de días de F2, los tamaños) y hoy sólo se reproducen
-    rehaciendo el cálculo. Se marcan como históricas cuando aplica.
+20. **"Zero hand-written numbers" holds in the pipeline, not in the documents.** The invariants, the
+    validation, the repairs and the figures are regenerated by a script
+    (`validar_capa3.py`, `verificar_f7_autocuracion.py`, `graficos_capa3.py`); but several figures in
+    the reports are **transcriptions** of earlier runs (the states prior to repairs F5 and F7,
+    the day counts of F2, the sizes) and today they are reproduced only by
+    redoing the calculation. They are marked as historical where applicable.
 
-21. **Las figuras no se auditan mirándolas.** Este modelo no procesa PNG: los pies de figura se
-    derivan del código que las dibuja y de las medidas, no de inspección visual. Una figura puede
-    estar mal recortada sin que este informe lo detecte.
+21. **The figures are not audited by looking at them.** This model does not process PNG: figure captions are
+    derived from the code that draws them and from the measurements, not from visual inspection. A figure may
+    be badly cropped without this report detecting it.
 
-## 9 · Naturaleza de las conclusiones
+## 9 · Nature of the conclusions
 
-22. **Nada de esto es inferencia causal ni econometría.** El dataset es una descripción de la
-    cadena; las series están autocorrelacionadas y son fuertemente no estacionarias. Cualquier uso
-    de estas series para atribuir causas o predecir precios exige, aparte, el tratamiento
-    estadístico que el `ROADMAP.md` (Fases 3 y 6) deja explícitamente fuera de esta entrega.
+22. **None of this is causal inference or econometrics.** The dataset is a description of the
+    chain; the series are autocorrelated and strongly non-stationary. Any use
+    of these series to attribute causes or to predict prices requires, separately, the statistical
+    treatment that `ROADMAP.md` (Phases 3 and 6) explicitly leaves out of this delivery.

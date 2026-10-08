@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 # ============================================================
-# BTC ETL — CAPA 1 (Bitcoin Core → Parquet semanal)
+# BTC ETL — LAYER 1 (Bitcoin Core → weekly Parquet)
 # UTXO-safe, compact, reproducible
-# Un archivo por semana ISO: blocks_YYYY-Www.parquet, ...
-# Escribe en /media/SSD4T/obm/capa1/
+# One file per ISO week: blocks_YYYY-Www.parquet, ...
+# Writes to /media/SSD4T/obm/capa1/
 #
-# Uso:
-#   python3 capa1_btccore_parquet.py                  # menú (1 = reset, 2 = continuar)
-#   python3 capa1_btccore_parquet.py --repair H1 H2   # reparar rango (CLI)
-#   python3 capa1_btccore_parquet.py --validate       # validar capa1 (CLI)
+# Usage:
+#   python3 capa1_btccore_parquet.py                  # menu (1 = reset, 2 = continue)
+#   python3 capa1_btccore_parquet.py --repair H1 H2   # repair range (CLI)
+#   python3 capa1_btccore_parquet.py --validate       # validate layer 1 (CLI)
 #
-# v3.3 — parches aplicados:
+# v3.3 — patches applied:
 #   F1-F7 (v3.2).
-#   M1. Acumulador con pa.Table en vez de listas de dicts (~10x menos RAM).
-#   M2. write_week usa pa.concat_tables (sin pandas).
-#   M3. process_block devuelve pa.Table directamente.
+#   M1. Accumulator with pa.Table instead of lists of dicts (~10x less RAM).
+#   M2. write_week uses pa.concat_tables (no pandas).
+#   M3. process_block returns pa.Table directly.
 # ============================================================
 
 import os
@@ -43,7 +43,7 @@ from requests.exceptions import ConnectionError as ReqConnectionError, ReadTimeo
 from urllib3.exceptions import ProtocolError
 from http.client import RemoteDisconnected
 
-# Modulo canonico compartido: src/bitcoin_math.py (unica fuente de verdad).
+# Shared canonical module: src/bitcoin_math.py (single source of truth).
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(
     os.path.abspath(__file__))), "src"))
 from bitcoin_math import bits_to_difficulty
@@ -79,14 +79,14 @@ RPC_RETRY_BACKOFF = 0.6
 
 SATOSHI = 100_000_000
 
-# BIP30: 2 txid duplicados históricos (bloques 91.812/91.842 y 91.722/91.880)
+# BIP30: 2 historical duplicate txids (blocks 91,812/91,842 and 91,722/91,880)
 BIP30_TXIDS = {
     "d5d27987d2a3dfc724e359870c6644b40e497bdc0589a033220fe15429d88599",
     "e3bf3d07d4b0375638d5f1db5255fe07ba2c4cb067cd81b84ee974b6585fb468",
 }
 
 # ============================================================
-# SCHEMAS EXPLÍCITOS
+# EXPLICIT SCHEMAS
 # ============================================================
 
 BLOCKS_SCHEMA = pa.schema([
@@ -96,8 +96,8 @@ BLOCKS_SCHEMA = pa.schema([
     ("mediantime", pa.int64()),
     ("version", pa.int64()),
     ("bits", pa.string()),
-    # OJO: NO es el campo 'difficulty' del nodo, es bits_to_difficulty(bits). El valor exacto
-    # de Core (el que usa OBM, Apendice A.6) esta en difficulty_epochs.parquet. Ver F3.
+    # WARNING: this is NOT the node's 'difficulty' field, it is bits_to_difficulty(bits). The
+    # exact Core value (the one OBM uses, Appendix A.6) is in difficulty_epochs.parquet. See F3.
     ("difficulty_from_bits", pa.float64()),
     ("chainwork", pa.string()),
     ("size", pa.int32()),
@@ -287,8 +287,8 @@ def _normalize_none(col_list, arrow_type):
     return col_list
 
 def _dicts_to_arrow(filas: List[Dict], table: str) -> pa.Table:
-    """Convierte una lista de dicts en una pa.Table con schema explícito.
-    Mucho más compacto en memoria que un DataFrame de pandas."""
+    """Converts a list of dicts into a pa.Table with an explicit schema.
+    Much more compact in memory than a pandas DataFrame."""
     schema = SCHEMAS[table]
     arrays = {}
     for field in schema:
@@ -306,7 +306,7 @@ def week_to_int(week: str) -> int:
     return int(y) * 100 + int(w)
 
 # ============================================================
-# PROCESS BLOCK (M3: devuelve pa.Table)
+# PROCESS BLOCK (M3: returns pa.Table)
 # ============================================================
 
 def process_block(blk: Dict[str, Any]):
@@ -316,9 +316,9 @@ def process_block(blk: Dict[str, Any]):
 
     bits = blk.get("bits")
     if bits is None:
-        raise ValueError(f"bloque {height} sin campo 'bits'")
-    # F3: el campo 'difficulty' del nodo difiere de esto en ~47% de los bloques (1 ULP). Se
-    # guarda bajo un nombre que diga su origen para que nadie lo confunda con el de Core.
+        raise ValueError(f"block {height} without 'bits' field")
+    # F3: the node's 'difficulty' field differs from this in ~47% of the blocks (1 ULP). It is
+    # stored under a name that states its origin so nobody confuses it with Core's.
     difficulty_from_bits = bits_to_difficulty(bits)
 
     blocks.append({
@@ -397,7 +397,7 @@ def process_block(blk: Dict[str, Any]):
     )
 
 # ============================================================
-# VALIDACIÓN POST-ESCRITURA
+# POST-WRITE VALIDATION
 # ============================================================
 
 def _validate_written_file(path: str, table: str):
@@ -416,14 +416,14 @@ def _validate_written_file(path: str, table: str):
     elif table == "inputs":
         for v in t["prev_vout"].to_pylist():
             if v is not None and not isinstance(v, int):
-                raise ValueError(f"prev_vout no entero: {v!r}")
+                raise ValueError(f"prev_vout not an integer: {v!r}")
 
 # ============================================================
-# ESCRITURA SEMANAL CON FUSIÓN (DuckDB)
+# WEEKLY WRITE WITH FUSION (DuckDB)
 # ============================================================
 
 def _fuse_with_duckdb(existing_path: str, new_path: str, table: str) -> Tuple[str, int]:
-    """F1: NO reemplaza. Devuelve (tmp_out_path, n_combined)."""
+    """F1: does NOT replace. Returns (tmp_out_path, n_combined)."""
     pk = PRIMARY_KEY[table]
     pk_join = " AND ".join([f"e.{k} = n.{k}" for k in pk])
 
@@ -459,12 +459,12 @@ def _fuse_with_duckdb(existing_path: str, new_path: str, table: str) -> Tuple[st
 
 
 def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
-    """M2: usa pa.concat_tables (sin pandas)."""
+    """M2: uses pa.concat_tables (no pandas)."""
     if not accum["blocks"]:
-        logger.info(f"Semana {week} vacía, nada que escribir")
+        logger.info(f"Week {week} empty, nothing to write")
         return (-1, None)
 
-    logger.info(f"Escribiendo semana {week}: "
+    logger.info(f"Writing week {week}: "
                 f"blocks={len(accum['blocks'])}, "
                 f"txs={len(accum['txs'])}, "
                 f"inputs={len(accum['inputs'])}, "
@@ -477,7 +477,7 @@ def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
         if not tablas:
             continue
 
-        # Concatenar tablas Arrow (sin pandas, sin duplicados intra-semana)
+        # Concatenate Arrow tables (no pandas, no intra-week duplicates)
         nueva = tablas[0] if len(tablas) == 1 else pa.concat_tables(tablas)
 
         path = DIRS[table]
@@ -504,16 +504,16 @@ def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
                 if os.path.exists(tmp_out):
                     os.remove(tmp_out)
                 raise RuntimeError(
-                    f"FUSIÓN ABORTADA para {table}_{week}: "
+                    f"FUSION ABORTED for {table}_{week}: "
                     f"n_combined={n_combined} < n_existing_distinct={n_existing_distinct}."
                 )
 
             os.replace(tmp_out, final)
-            logger.info(f"  {table}_{week}: fusión {n_existing_distinct:,} + {n_new:,} "
-                        f"→ {n_combined:,} filas (+{n_combined - n_existing_distinct:,})")
+            logger.info(f"  {table}_{week}: fusion {n_existing_distinct:,} + {n_new:,} "
+                        f"→ {n_combined:,} rows (+{n_combined - n_existing_distinct:,})")
         else:
             os.replace(tmp_new, final)
-            logger.info(f"  {table}_{week}: nuevo ({n_new:,} filas)")
+            logger.info(f"  {table}_{week}: new ({n_new:,} rows)")
 
         if os.path.exists(tmp_new):
             os.remove(tmp_new)
@@ -523,7 +523,7 @@ def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
         size_mb = os.path.getsize(final) / 1024 / 1024
         logger.info(f"  {table}_{week}.parquet: {size_mb:.1f} MB")
 
-    # M2: last_h desde las tablas Arrow
+    # M2: last_h from the Arrow tables
     tbl_blocks = accum["blocks"][0] if len(accum["blocks"]) == 1 else pa.concat_tables(accum["blocks"])
     heights = tbl_blocks.column("height").to_pylist()
     hashes = tbl_blocks.column("hash").to_pylist()
@@ -533,11 +533,11 @@ def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
 
 
 def new_accumulator() -> Dict[str, List[pa.Table]]:
-    """M1: acumulador de tablas Arrow (no listas de dicts)."""
+    """M1: accumulator of Arrow tables (not lists of dicts)."""
     return {"blocks": [], "txs": [], "inputs": [], "outputs": []}
 
 # ============================================================
-# FLUSH INCREMENTAL DE SEMANAS
+# INCREMENTAL FLUSH OF WEEKS
 # ============================================================
 
 def flush_ready_weeks(accums: Dict[str, Dict[str, List[pa.Table]]],
@@ -564,7 +564,7 @@ def flush_ready_weeks(accums: Dict[str, Dict[str, List[pa.Table]]],
     return len(ready)
 
 # ============================================================
-# VALIDACIÓN (F3 + F4 + F7)
+# VALIDATION (F3 + F4 + F7)
 # ============================================================
 
 def _validate_one_year(year: str) -> Dict[str, Any]:
@@ -628,8 +628,8 @@ def validate_capa1_continuity() -> bool:
     import glob
     os.makedirs(TMP_DIR, exist_ok=True)
 
-    print("\n=== Validando continuidad de capa1 (por año) ===")
-    logger.info("Validando continuidad de capa1...")
+    print("\n=== Validating layer 1 continuity (by year) ===")
+    logger.info("Validating layer 1 continuity...")
 
     years = sorted(set(
         f.split("_")[-1].split("-")[0]
@@ -644,44 +644,44 @@ def validate_capa1_continuity() -> bool:
         cross_ok = all(v[2] for v in cross.values())
         status_c = "✓" if cross_ok else "✗"
         status_u = "✓" if r.get("unique_ok") else "✗"
-        print(f"  {year}: alturas {status_h}  cross {status_c}  unique {status_u}")
+        print(f"  {year}: heights {status_h}  cross {status_c}  unique {status_u}")
         if not (r.get("heights_ok") and cross_ok and r.get("unique_ok")):
             all_ok = False
 
     if all_ok:
-        print("\n  ✓ capa1 completa y consistente.")
-        logger.info("✓ capa1 completa y consistente.")
+        print("\n  ✓ layer 1 complete and consistent.")
+        logger.info("✓ layer 1 complete and consistent.")
         return True
     else:
-        print("\n  ⚠  capa1 con problemas.")
-        logger.warning("capa1 con problemas de validación.")
+        print("\n  ⚠  layer 1 has problems.")
+        logger.warning("layer 1 has validation problems.")
         return False
 
 # ============================================================
-# REPARAR RANGO (F2: no toca checkpoint)
+# REPAIR RANGE (F2: does not touch the checkpoint)
 # ============================================================
 
 def repair_range(start_h: int, end_h: int):
-    print(f"\n=== Reparando rango {start_h:,} – {end_h:,} ===")
-    logger.info(f"Reparando rango {start_h}-{end_h}")
+    print(f"\n=== Repairing range {start_h:,} – {end_h:,} ===")
+    logger.info(f"Repairing range {start_h}-{end_h}")
 
     ensure_dirs()
     accums: Dict[str, Dict[str, List[pa.Table]]] = {}
     week_actual = None
-    if start_h > 0:                      # semana del bloque anterior al rango
+    if start_h > 0:                      # week of the block before the range
         try:
             _prev = get_block(get_block_hash(start_h - 1))
             week_actual = timestamp_to_week(int(_prev["time"]))
         except Exception:
             week_actual = None
 
-    for h in tqdm(range(start_h, end_h + 1), desc=f"Reparando {start_h}-{end_h}"):
+    for h in tqdm(range(start_h, end_h + 1), desc=f"Repairing {start_h}-{end_h}"):
         try:
             bh = get_block_hash(h)
             blk = get_block(bh)
             ts = blk.get("time")
             if ts is None:
-                raise ValueError(f"bloque {h} sin timestamp")
+                raise ValueError(f"block {h} without timestamp")
             own_week = timestamp_to_week(int(ts))
             if week_actual is None or week_to_int(own_week) > week_to_int(week_actual):
                 week_actual = own_week
@@ -696,20 +696,20 @@ def repair_range(start_h: int, end_h: int):
             accums[week]["inputs"].append(i)
             accums[week]["outputs"].append(o)
         except Exception as e:
-            logger.error(f"Error procesando bloque {h}: {e}")
-            print(f"Error procesando bloque {h}: {e}")
+            logger.error(f"Error processing block {h}: {e}")
+            print(f"Error processing block {h}: {e}")
             raise
 
     for week in sorted(accums.keys()):
-        print(f"\n  Semana {week}: {len(accums[week]['blocks'])} bloques")
+        print(f"\n  Week {week}: {len(accums[week]['blocks'])} blocks")
         write_week(week, accums[week])
 
-    print(f"\n✓ Reparación completada. {len(accums)} semanas afectadas.")
-    logger.info(f"Reparación completada: {len(accums)} semanas")
-    print("NOTA: el checkpoint de ingesta NO ha sido modificado (F2).")
+    print(f"\n✓ Repair completed. {len(accums)} weeks affected.")
+    logger.info(f"Repair completed: {len(accums)} weeks")
+    print("NOTE: the ingestion checkpoint has NOT been modified (F2).")
 
 # ============================================================
-# INGESTA NORMAL (F7: sin validación automática)
+# NORMAL INGESTION (F7: no automatic validation)
 # ============================================================
 
 def ingest_normal():
@@ -721,38 +721,38 @@ def ingest_normal():
 
     if written_through >= 0:
         start_height = written_through + 1
-        print(f"Reanudando desde bloque {start_height} (escrito hasta {written_through})")
-        logger.info(f"Reanudando desde {start_height} (written_through={written_through})")
+        print(f"Resuming from block {start_height} (written through {written_through})")
+        logger.info(f"Resuming from {start_height} (written_through={written_through})")
     else:
         start_height = 0
-        print("Arrancando desde el principio.")
-        logger.info("Arrancando desde bloque 0")
+        print("Starting from the beginning.")
+        logger.info("Starting from block 0")
 
     if start_height > tip:
-        print("No hay bloques nuevos para procesar.")
-        logger.info("No hay bloques nuevos para procesar.")
+        print("There are no new blocks to process.")
+        logger.info("There are no new blocks to process.")
         return
 
-    print(f"\nProcesando bloques {start_height} → {tip}")
-    logger.info(f"Procesando bloques {start_height} → {tip}")
+    print(f"\nProcessing blocks {start_height} → {tip}")
+    logger.info(f"Processing blocks {start_height} → {tip}")
 
     accums: Dict[str, Dict[str, List[pa.Table]]] = {}
 
-    # FIX monotonicidad de semana: la semana asignada a un bloque NUNCA puede
-    # retroceder respecto a la del bloque anterior. Los timestamps de bloque no
-    # son crecientes (permitido por consenso) y particionar por la semana ISO del
-    # timestamp hacia que un bloque quedase en un fichero de semana ANTERIOR,
-    # procesandose fuera de orden de altura (=> UTXOs fantasma y gastos perdidos).
+    # FIX week monotonicity: the week assigned to a block can NEVER go
+    # backwards with respect to the previous block's. Block timestamps are not
+    # increasing (allowed by consensus) and partitioning by the ISO week of the
+    # timestamp made a block land in a file for an EARLIER week,
+    # being processed out of height order (=> phantom UTXOs and lost spends).
     week_actual = state.get("last_processed_week") if start_height > 0 else None
 
-    for h in tqdm(range(start_height, tip + 1), desc="Bloques", unit="blk"):
+    for h in tqdm(range(start_height, tip + 1), desc="Blocks", unit="blk"):
         try:
             bh = get_block_hash(h)
             blk = get_block(bh)
 
             ts = blk.get("time")
             if ts is None:
-                raise ValueError(f"bloque {h} sin timestamp")
+                raise ValueError(f"block {h} without timestamp")
             own_week = timestamp_to_week(int(ts))
             if week_actual is None or week_to_int(own_week) > week_to_int(week_actual):
                 week_actual = own_week
@@ -776,14 +776,14 @@ def ingest_normal():
                 save_state(state)
 
         except Exception as e:
-            logger.error(f"Error procesando bloque {h}: {e}")
-            print(f"Error procesando bloque {h}: {e}")
+            logger.error(f"Error processing block {h}: {e}")
+            print(f"Error processing block {h}: {e}")
             save_state(state)
             return
 
-    print(f"\n=== Escribiendo semanas restantes ({len(accums)}) ===")
+    print(f"\n=== Writing remaining weeks ({len(accums)}) ===")
     for week in sorted(accums.keys()):
-        print(f"  {week}: {len(accums[week]['blocks'])} bloques")
+        print(f"  {week}: {len(accums[week]['blocks'])} blocks")
         last_h, _ = write_week(week, accums[week])
         if last_h >= 0:
             state["written_through_height"] = max(
@@ -792,8 +792,8 @@ def ingest_normal():
             state["last_written_week"] = week
             save_state(state)
 
-    print("\nCapa 1 completada correctamente.")
-    logger.info("Capa 1 completada correctamente.")
+    print("\nLayer 1 completed successfully.")
+    logger.info("Layer 1 completed successfully.")
 
 # ============================================================
 # MAIN
@@ -806,7 +806,7 @@ def ensure_dirs():
         os.makedirs(d, exist_ok=True)
 
 def main():
-    parser = argparse.ArgumentParser(description="Capa 1 — Bitcoin Core → Parquet semanal")
+    parser = argparse.ArgumentParser(description="Layer 1 — Bitcoin Core → weekly Parquet")
     parser.add_argument("--repair", nargs=2, type=int, metavar=("H1", "H2"))
     parser.add_argument("--validate", action="store_true")
     args = parser.parse_args()
@@ -814,7 +814,7 @@ def main():
     if args.repair:
         start_h, end_h = args.repair
         if start_h > end_h:
-            print("Error: H1 debe ser <= H2"); return
+            print("Error: H1 must be <= H2"); return
         tip = get_block_count()
         if end_h > tip:
             print(f"Error: H2={end_h} > tip={tip}"); return
@@ -825,31 +825,31 @@ def main():
         validate_capa1_continuity()
         return
 
-    print("\n=== CAPA 1 — Bitcoin Core → Parquet (semanal) ===")
-    print(f"Ruta de escritura: {FAST_BASE}")
-    print("1) Reset completo (borrar parquet + state)")
-    print("2) Continuar desde la última semana completa")
+    print("\n=== LAYER 1 — Bitcoin Core → weekly Parquet ===")
+    print(f"Write path: {FAST_BASE}")
+    print("1) Full reset (delete parquet + state)")
+    print("2) Continue from the last complete week")
     print("==================================================")
 
-    choice = input("Selecciona una opción [1-2]: ").strip()
+    choice = input("Select an option [1-2]: ").strip()
 
     if choice == "1":
-        print("Reset completo solicitado.")
-        logger.info("Reset completo solicitado.")
+        print("Full reset requested.")
+        logger.info("Full reset requested.")
         if os.path.exists(FAST_BASE):
             shutil.rmtree(FAST_BASE)
         ensure_dirs()
         if os.path.exists(STATE_FILE):
             os.remove(STATE_FILE)
-        print("Reset completo ejecutado. Empezando desde bloque 0.")
-        logger.info("Reset completo ejecutado.")
+        print("Full reset executed. Starting from block 0.")
+        logger.info("Full reset executed.")
         ingest_normal()
     elif choice == "2":
-        print("Continuando desde el último estado.")
-        logger.info("Continuación solicitada.")
+        print("Continuing from the last state.")
+        logger.info("Continuation requested.")
         ingest_normal()
     else:
-        print("Opción inválida.")
+        print("Invalid option.")
 
 
 if __name__ == "__main__":
