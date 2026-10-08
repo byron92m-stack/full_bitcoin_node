@@ -1,4 +1,4 @@
-# Datos pesados (reproducibles con el pipeline)
+# Heavy data (reproducible with the pipeline)
 capa1/
 capa2/
 capa4/
@@ -8,11 +8,11 @@ obm_reference/
 state_*.json
 __pycache__/
 *.bak_*
-# Logs: se excluyen salvo la evidencia de la auditoria
+# Logs: excluded except the audit evidence
 logs/*
 !logs/evidencia/
 
-# Historicos: se versiona solo la bitacora/documentos, no los datos viejos
+# History: only the logbook/documents are versioned, not the old data
 _historico/datos_old/
 _historico/salida_old/
 _historico/salida_corregida_old/
