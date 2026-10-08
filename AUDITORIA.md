@@ -192,12 +192,12 @@ datos publicables. Que se encontraran es el resultado útil de la auditoría.
 ```bash
 cd /media/SSD4T/obm
 python3 src/exporters/capa3_series.py     # 23 series desde capa1 + capa2
-python3 src/exporters/validar_capa3.py    # comparación + figuras + VALIDACION.md
+python3 src/exporters/validar_capa3.py    # comparación + figuras + VALIDATION.md
 python3 src/exporters/verificar_f7_autocuracion.py   # test negativo de la autocuración
 ```
 
 La evidencia número a número, con el comando que la regenera en cada caso, está en
-`AUDITORIA_HALLAZGOS.md`. Las series y su validación, en `capa3/VALIDACION.md`.
+`AUDITORIA_HALLAZGOS.md`. Las series y su validación, en `capa3/VALIDATION.md`.
 
 ---
 

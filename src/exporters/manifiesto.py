@@ -3,7 +3,7 @@
 
 Por que existe: las 23 series de `capa3/*.csv` y la referencia de `obm_reference/` NO estan
 versionadas (son datos), asi que sin un manifiesto no se pueden identificar los bytes exactos
-que produjeron `capa3/VALIDACION.md` (hallazgo A6 de la revision adversarial).
+que produjeron `capa3/VALIDATION.md` (hallazgo A6 de la revision adversarial).
 
 Salida: capa3/MANIFEST.sha256   (formato `sha256sum`: `<hash>  <ruta>`)
 
@@ -16,8 +16,8 @@ import os
 
 OBM = "/media/SSD4T/obm"
 PATRONES = ("capa3/obm_*_daily.csv",              # las 23 series publicadas
-            "capa3/validacion_series.csv",        # la tabla de la validacion
-            "capa3/VALIDACION.md",                # el informe
+            "capa3/validation_series.csv",        # la tabla de la validacion
+            "capa3/VALIDATION.md",                # el informe
             "obm_reference/metrics/*/*.csv")      # la referencia contra la que se compara
 
 

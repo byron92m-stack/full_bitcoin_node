@@ -14,7 +14,7 @@ reproducibilidad). Ver `README.md` (arquitectura de 4 capas) y `AUDITORIA_HALLAZ
 |---|---|
 | capa1 | **COMPLETA y validada**: 970.447 bloques (0..970.446), 0 huecos, 928 semanas × 4 tablas. `python3 etl/capa1_btccore_parquet.py --validate` ✓ |
 | capa2 | **COMPLETA**: 927 semanas (2009-W01..2026-W40), invariante `COUNT = Σins−Σspent` con 0 fantasmas. Reanudable: `python3 src/indexer.py` → opción **2** (NUNCA 1, borra `capa2/`) |
-| capa3 | **VALIDADA: 21/23 series bit-exactas** contra `obm_reference/metrics`, con la tolerancia derivada de los decimales que publica la referencia. Las dos diferencias son del CDD: `cdd_btcxdays` (1 día, 1E-8 = 1 sat-día) y `cdd_age_band` (111 días / 113 celdas, 1E-12 = 1 ulp; empates exactos donde redondeamos half-even). Ver `capa3/VALIDACION.md` |
+| capa3 | **VALIDADA: 21/23 series bit-exactas** contra `obm_reference/metrics`, con la tolerancia derivada de los decimales que publica la referencia. Las dos diferencias son del CDD: `cdd_btcxdays` (1 día, 1E-8 = 1 sat-día) y `cdd_age_band` (111 días / 113 celdas, 1E-12 = 1 ulp; empates exactos donde redondeamos half-even). Ver `capa3/VALIDATION.md` |
 | capa4 | vacía (precio/mercado, pendiente — ver `ROADMAP.md`) |
 
 ## Cómo consultar el estado en vivo
@@ -34,7 +34,7 @@ print(f'COUNT={n:,} derivado={i-s:,} FANTASMAS={n-(i-s):,}')"   # FANTASMAS debe
 ## Al terminar capa2 (orden exacto)
 ```bash
 python3 src/exporters/capa3_series.py      # 23 series -> capa3/
-python3 src/exporters/validar_capa3.py     # -> capa3/VALIDACION.md + figuras/
+python3 src/exporters/validar_capa3.py     # -> capa3/VALIDATION.md + figuras/
 grep -cE "UTXO no encontrado|fees negativas|issuance negativa" logs/indexer.log   # debe ser 0
 ```
 Obtenido el 2026-10-08: **21/23 bit-exactas** (ver el `Estado`); las dos diferencias son del CDD y

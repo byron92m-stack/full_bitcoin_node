@@ -5,7 +5,7 @@ Cada fase es independiente y entregable por sí sola. Coste estimado y prerrequi
 ## Fase 0 — Cerrar capa3  *(cerrada el 8-oct)*
 `capa2` termina → `capa3_series.py` + `validar_capa3.py`. Obtenido el 2026-10-08: **21/23 bit-exactas**
 (las dos diferencias son del CDD, a 1 ulp del último decimal publicado).
-**Entregable**: capa3 cerrada + `VALIDACION.md` + figuras.
+**Entregable**: capa3 cerrada + `VALIDATION.md` + figuras.
 
 ## Fase 1 — Paquete A: auditoría de reproducibilidad  *(escrita el 8-oct; falta el cierre)*
 A partir de `AUDITORIA_HALLAZGOS.md` (los 8 hallazgos, F1-F8, ya cerrados con números).
