@@ -17,8 +17,8 @@ and a **white-box audit of the published methodology** (paper + `APPENDIX A` + `
 1. **Own pipeline in 4 layers.** `layer 1` extracts the chain from the node into weekly parquet
    (`blocks`, `txs`, `inputs`, `outputs`); `layer 2` is the *spent-output indexer* of §3.4 of the paper
    (live UTXO in SQLite + daily and age-band aggregates); `layer 3` produces the 23 series;
-   `layer 4` (market) is out by design. Hard rules: **zero hand-written numbers** (every published
-   number comes out of a re-runnable script) and `layer 1`–`layer 3` reproducible with the node.
+   `layer 4` (market) is out by design. Hard rules: **zero hand-written numbers in the pipeline** (every number it produces
+   comes out of a re-runnable script) and `layer 1`–`layer 3` reproducible with the node.
 
 2. **Day-by-day comparison** against the official CSVs (`src/exporters/validar_capa3.py`), with the
    tolerance fixed by the **published decimals** of each series (half the last digit) so as not to
@@ -38,7 +38,7 @@ and a **white-box audit of the published methodology** (paper + `APPENDIX A` + `
 
 | Group of series | Result |
 |---|---|
-| 5 block series (`block_count`, `block_weight_wu`, `tx_count`, `difficulty_eod`, `est7d_hashrate`) | **bit-exact** on the 6,461 dates of the reference |
+| 5 block series (`block_count`, `block_weight_wu`, `tx_count`, `difficulty_eod`, `est7d_hashrate`) | **bit-exact** on the dates of the reference (6,461–6,463 depending on the series) |
 | 12 flow and UTXO series (`spent_output_count`, `spent_value` and their 155d/365d thresholds, `fees`, `issuance`, `miner_revenue`, `raw_output_value`, `supply`, `utxo_eod_count`, `fee_share`) | **bit-exact** |
 | `spent_value_age_band` (12-column wide table) | **bit-exact** |
 | `cdd_btcxdays` | **1 day** off (2010-05-22, 1E-8 BTC-days = 1 sat-day) |
@@ -47,8 +47,7 @@ and a **white-box audit of the published methodology** (paper + `APPENDIX A` + `
 
 **21 of 23 series bit-exact**; the two that differ are the CDD ones, and they do so by **one unit
 of the last published decimal** (1 sat-day on a day in 2010; 1 ulp on 111 days of the wide table),
-where our value is verified to be the exact *half-even* rounding and OBM's falls
-below it (F2). **The whole reference** is compared (its 23 series have between 6,459 and 6,463 dates), and
+where our value is verified to be the exact *half-even* rounding and OBM's differs by one unit of the last decimal, in either direction (F2). **The whole reference** is compared (its 23 series have between 6,459 and 6,463 dates), and
 layer 3 extends 27 days beyond its end (up to 2026-10-08).
 
 ---
@@ -65,21 +64,21 @@ so the only consequence is the **count**; it is compensated by an explicit adjus
 ### F2 · The CDD is not bit-exact: rounding ties in the last decimal
 OBM defines `CDD_i = V_i·A_i` with `A_i` **fractional**. These are two different effects, both measured:
 
-- **Truncating per input** loses up to 1 sat-day per output. Over 2,622 days:
-  2,320 days with error, maximum **3.33e-3 BTC-days** (rel. 1.77e-9). With **two accumulators**
-  (integer part + remainder; columns `cdd_rem_86400`): 70 days, maximum **1.49e-8** — ≈20× better in
-  relative terms and ≈223,490× in absolute terms.
+- **Truncating per input** loses up to 1 sat-day per output. The *discarded* variant was measured
+  then (historical, not re-run): 2,320 days with error, maximum **3.33e-3 BTC-days** (rel. 1.77e-9).
+  With **two accumulators** (integer part + remainder; columns `cdd_rem_86400`) the residual against
+  the reference is **1 day**, maximum **1e-8 BTC-days** (rel. **2.33e-14**) over the 2,627 days.
 - **Even so it cannot be bit-exact.** With the tolerance derived from the last published decimal
   there remain **1 day** in `cdd_btcxdays` (1E-8 = 1 sat-day) and **111 days / 113 cells** in the wide
   table `cdd_age_band` (1E-12). The 113 cells were checked one by one: they are **exact ties in
   decimal 13**, our figure is the **half-even** rounding of the exact value in **113/113** and
-  OBM's falls one ulp below. The disagreement is on OBM's side and is not generic "floating
+  OBM's differs by one unit of the last decimal, in either direction. The disagreement is on OBM's side and is not generic "floating
   point": it is its rounding convention. The ratios derived from the CDD do come out exact.
 
 ### F3 · Difficulty is READ from the node, not recomputed
 OBM A.6 reads it from the block's `difficulty` field. Reconstructing it from `bits` (15 variants tested)
-differs by **1 ULP of float64 on 2,825 of 6,461 days**. As it is constant within each 2016-block
-epoch, **481 RPC calls** (`getblockheader`) suffice instead of one per block (≈970,000) →
+differs by **1 ULP of float64 on 2,965 of 6,456 days**. As it is constant within each 2016-block
+epoch, **482 RPC calls** (`getblockheader`) suffice instead of one per block (≈970,000) →
 `capa1/difficulty_epochs.parquet`. **Lesson**: protocol state variables are read, not
 recomputed.
 
@@ -138,12 +137,12 @@ reprocessed week twice; with the date as primary key, that is now impossible. Mi
 `verificar_f7_autocuracion.py` (**5/5**, including the cut scenario).
 
 ### F8 · Silent traps in the F7 repair script
-The script that recomputed the 7 days failed several times before producing valid data, for five
+The script that recomputed the 7 days failed several times before producing valid data, for six
 causes **of our own**, all silent: (F8.1) `strftime(to_timestamp(t))` uses the time zone of the DuckDB
 **session**, not UTC → days shifted by 5 h and a phantom day; (F8.2) the bands were written
 **without aggregating** (17,069 rows where 84 belong); (F8.3) in DuckDB `/` is **REAL** division, not integer →
 the CDD stopped being exact (950,272 sat-days of error); (F8.4) **pandas** converts HUGEINT to
-float64 when verifying totals; (F8.5) `n_creados` **excluded the coinbase outputs**, which the indexer does
+float64 when verifying totals; (F8.5) `n_created` **excluded the coinbase outputs**, which the indexer does
 insert as live UTXOs. And (F8.6) the **coverage guard** looked each day up in the parquet of the year
 **of the week** instead of the year **of the day** → 13 false aborts at a year boundary, detected
 just before resuming (the guard had never been exercised because it was added with the indexer already
@@ -179,9 +178,9 @@ publishable data. That they were found is the useful result of the audit.
 | Invariant | What it detects | Command |
 |---|---|---|
 | `COUNT(live_outputs) == Σ n_inserted − Σ n_spent` (phantoms = 0) | lost/duplicated rows in the live UTXO (this is how F5 was found) | `python3 -c "…"` (see README) |
-| Coverage: every week in `weeks_done` has its days in the parquet | the F7 crash window | `check_parquet_cobertura()` at startup |
+| Coverage: every week in `weeks_done` has its days in the parquet | the F7 crash window | `check_parquet_coverage()` at startup |
 | Monotonicity of heights in `layer 1` | the height/time order (F4) | `check_capa1_monotonic()` at startup |
-| Sum of bands = daily aggregate | ungrouped bands / wrongly computed CDD (F8.2, F8.3) | checked **separately**, on the integer columns of the DB (exact); on the **published** values it differs in the last decimal on 272 of 6,461 days (max. 5e-9), because of the rounding of each band |
+| Sum of bands = daily aggregate | ungrouped bands / wrongly computed CDD (F8.2, F8.3) | checked **separately**, on the integer columns of the DB (exact); on the **published** values it differs in the last decimal on **6,189** of 6,461 days (max. 5e-9) and coincides on the remaining **272**, because of the rounding of each band |
 | Cross counts per week (`COUNT(txs)=ΣnTx`, `=Σvin`, `=Σvout`) and uniqueness of `(txid,vout)` | duplicates and overlaps in `layer 1` | `etl/capa1_btccore_parquet.py --validate` |
 | Chain: `previousblockhash` of height *h* = `hash` of *h−1*, and contiguous heights without duplicates | gaps or overlaps between weekly files | checked on all 970,447 heights |
 
@@ -211,4 +210,4 @@ The number-by-number evidence, with the command that regenerates it in each case
 | `layer 4` | price/market | not included (out of scope) |
 
 Construction cost on this machine: `layer 2` ~1 h per week in 2026 (≈50-85 min/week), several
-days in total; `layer 1` 388 GiB of parquet.
+days in total; `layer 1` 387 GiB of parquet.

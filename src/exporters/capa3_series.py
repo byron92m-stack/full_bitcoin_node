@@ -2,7 +2,7 @@
 """capa3 — The 23 OBM v0.1.0 series.
 
 Sources : capa1/blocks  +  capa2/daily_aggregates  +  capa2/age_band_aggregates
-Output  : capa3/obm_<serie>_daily.csv   (exact OBM schema)
+Output  : capa3/obm_<series>_daily.csv   (exact OBM schema)
 
 Schema : date,series_id,value,unit,frequency,release_version
 The 2 age-band tables are WIDE: date,series_id + 12 columns + unit,frequency,release_version.
@@ -10,7 +10,7 @@ The 2 age-band tables are WIDE: date,series_id + 12 columns + unit,frequency,rel
 Decisions (validated against the official reference):
   * issuance = coinbase - fees  (REALIZED issuance, not the protocol subsidy) -> capa2
   * raw_output_value = spent_value - fees   (exact indexer identity)
-  * difficulty = Core float64 derived from bits -> Decimal(repr(...)) with 12 decimals
+  * difficulty = READ from the node per 2016-block epoch (capa1/difficulty_epochs.parquet), 12 decimals
   * Decimal (prec 60) everywhere; 8 decimals for BTC/BTC-days, 12 for ratios/difficulty/hashrate, integers for counts
   * 1 row per UTC day since 2009-01-01, no gaps; NaN (empty) where OBM publishes no value
 

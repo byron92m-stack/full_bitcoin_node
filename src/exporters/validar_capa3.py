@@ -47,7 +47,7 @@ KNOWN = {
     "obm_cdd_age_band_btcxdays_daily":
         "111 days / 113 cells differing by 1 ULP of the last published decimal (1e-12). They are "
         "EXACT ties at the 13th decimal: our figure is the half-even rounding of the exact value "
-        "in all 113 cells (verified) and OBM's is one ULP below.",
+        "in all 113 cells (verified) and OBM's differs by one unit of the last decimal, in either direction.",
     "obm_cdd_per_supply_days_daily":
         "No differences: it inherits the CDD residue, but stays below its last decimal.",
     "obm_dormancy_days_daily":

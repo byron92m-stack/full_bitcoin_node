@@ -14,7 +14,7 @@ reference: `obm_reference/metrics/` (the 23 official CSVs, v0.1.0).
 
 | Series block | Result |
 |---|---|
-| 5 block series (`block_count`, `block_weight_wu`, `tx_count`, `difficulty_eod`, `est7d_hashrate`) | **bit-exact on the 6,461 dates** of the reference |
+| 5 block series (`block_count`, `block_weight_wu`, `tx_count`, `difficulty_eod`, `est7d_hashrate`) | **bit-exact on the dates** of the reference (6,461–6,463 depending on the series) |
 | UTXO and coin-age series | exact over the processed span; `utxo_eod_count` exact with the BIP30 adjustment |
 | `cdd_btcxdays` | **1 day** with a 1 sat-day difference (1E-8) |
 | `cdd_age_band` | **111 days / 113 cells** with 1 ulp (1E-12) of the last published decimal |
@@ -53,18 +53,20 @@ with the coverage at that time).
 **Fact.** OBM: `CDD_i = V_i·A_i` with `A_i = (t_spend−t_create)/86400` **fractional**, stored
 "as satoshi-days" (A.4). Truncating per input (`(V·Δt)//86400`) loses up to 1 sat-day per input.
 
-**Measurement (2,622 days, 2009-01-03 → 2016-03-13):**
+**Measurement (2,627 days, 2009-01-03 → 2016-03-13):**
 
 | | days with difference | max. error (BTC-days) | max. rel. error |
 |---|---|---|---|
-| truncated per input | 2,320 | 3.33e-3 | 1.77e-9 |
-| **exact** (2 accumulators) | **70** | **1.49e-8** | **8.9e-11** |
+| truncated per input *(historical, not re-run)* | 2,320 | 3.33e-3 | 1.77e-9 |
+| **exact** (2 accumulators, measured 2026-10-08) | **1** | **1e-8** | **2.33e-14** |
 
-→ ≈20× less relative error and ≈223,490× less absolute error. Even so it is **not bit-exact**: with the
+The truncated row is a **historical** measurement of the rejected method (re-running it needs a full
+prevout resolution over ~387 GiB); against the reference **today** the exact method leaves **1 day** at
+1e-8 (rel. 2.33e-14). Even so it is **not bit-exact**: with the
 tolerance of the last published decimal there remain **1 day** in `cdd_btcxdays` (1E-8 = 1 sat-day) and
 **111 days / 113 cells** in `cdd_age_band` (1E-12). The 113 cells were checked one by one: they are
 **exact ties at decimal 13**, our figure is the **half-even** rounding of the exact value in
-**113/113** and OBM's is one ulp below — the disagreement is their rounding convention, not
+**113/113** and OBM's differs by one unit of the last decimal, in either direction — the disagreement is their rounding convention, not
 generic "floating point".
 
 **Fix.** Columns `cdd_rem_86400` (+ `cdd_ge155d_rem_86400`, `cdd_ge365d_rem_86400` in daily,
@@ -80,14 +82,15 @@ and `cdd_rem_86400` in bands): exact = `cdd_sat_days + cdd_rem_86400/86400`.
 by Bitcoin Core"*.
 
 **Measurement.** Reconstructing it from `bits` with **15 variants** (including Core's `GetDifficulty`
-loop) differs from the reference by **1 float64 ULP on 2,825 of 6,461 days** (max 0.05).
+loop) differs from the reference by **1 float64 ULP on 2,965 of 6,456 days** (max 0.05).
 Checked against the node: `getblock <h> 1` → `27428630902.25787` = **the reference**; my calculation
 from bits → `27428630902.257874` ✗.
 
-**Fix.** The difficulty is **constant within each 2016-block epoch** → **481 RPC calls**
+**Fix.** The difficulty is **constant within each 2016-block epoch** → **482 RPC calls**
 (`getblockhash`+`getblockheader`) instead of one per block → `capa1/difficulty_epochs.parquet`
-(today it covers epochs 0..480; epoch 481, of `2026-W40`, is missing, and `capa3_series.py` **warns**
-when it finds it instead of silently recalculating: see A3 in the adversarial review).
+(today it covers **482 epochs, 0..481**; the file had got stuck at 480 and was regenerated with the
+node running — see A3 in the adversarial review — and `capa3_series.py` **warns** if an epoch is ever
+missing instead of silently recalculating).
 (`src/exporters/fix_difficulty_rpc.py`).
 **Result**: `difficulty_eod` **and** `est7d_hashrate` become **bit-exact on the 6,461 dates**.
 
@@ -167,7 +170,7 @@ python3 src/exporters/fix_difficulty_rpc.py     # F3 (needs the node; already ge
 python3 src/exporters/capa3_series.py           # 23 series
 python3 src/exporters/validar_capa3.py          # global validation + figures
 # F4: inversions crossing a week boundary in the 970,447 heights (~1 s scan)
-# F5: reparacion ya aplicada (src/exporters/reparar_wrap_2017.py, idempotente)
+# F5: repair already applied (src/exporters/reparar_wrap_2017.py, idempotent)
 ```
 
 ## F7 — The crash window between the commit and the parquet write (OUR bug)
@@ -210,8 +213,8 @@ left layer 3 complete.
 
 Context: `src/exporters/reparar_semana_2022W06.py` (repair of the F7 crash window)
 failed three times before producing valid data. The six causes belong to OUR
-implementation; none involves OBM. They remain documented because they are silent and the
-four would have propagated to layer 3.
+implementation; none involves OBM. They remain documented because they are silent and all
+six would have propagated to layer 3.
 
 ### F8.1 — `strftime(to_timestamp(t))` uses the SESSION time zone
 DuckDB formats in the session zone, not in UTC. With `America/Guayaquil` (UTC-5) each
@@ -240,21 +243,21 @@ by 14 sat-days; with `//` they match exactly.
 Verifying the totals by summing in pandas loses precision (dtype `float64`). Fix:
 verify in SQL (HUGEINT against HUGEINT) over the DataFrames registered in DuckDB.
 
-### F8.5 — `n_creados` excluded the coinbase outputs
+### F8.5 — `n_created` excluded the coinbase outputs
 The condition `cb.txid IS NULL` (inherited from the fee calculation) removed the coinbase
 outputs from the count, which the indexer DOES insert as live UTXOs (STEP B). Result:
 `utxo_eod_count` short by ~1 output per block (140-190/day, cumulative). It was detected
 by comparing against the reference: the daily offset was exactly the number of blocks of the
 day. Fix: count every output that passes the spendability filter, coinbase included.
 `src/exporters/reparar_utxo_eod_w06.py` applies only that column without repeating the
-386 GB scan (idempotent).
+387 GiB scan (idempotent).
 
 ### Final verification of 2022-W06 (7 days, against `obm_reference/metrics`)
 ```
-obm_spent_output_count_daily   0 diferencias
-obm_spent_value_btc_daily      0 diferencias
-obm_fees_btc_daily             0 diferencias
-obm_issuance_btc_daily         0 diferencias
+obm_spent_output_count_daily   0 differences
+obm_spent_value_btc_daily      0 differences
+obm_fees_btc_daily             0 differences
+obm_issuance_btc_daily         0 differences
 obm_utxo_eod_count_daily       -2 constant (F1: BIP30, compensated in layer 3)
 obm_cdd_btcxdays_daily         max 3.7e-09 BTC-days (float residual, rel. 1.9e-16)
 ```
@@ -263,7 +266,7 @@ all of 2022, with no step → the repair introduced no discontinuity. The 7 days
 are in the parquet (verified with the corrected F8.6 guard).
 
 ### F8.6 — The coverage guard looked for the day in the week's year
-`check_parquet_cobertura()` (guard added for F7) resolved each expected day against
+`check_parquet_coverage()` (guard added for F7) resolved each expected day against
 `daily_aggregates_<week-year>.parquet`. But each day is written to the parquet of **its**
 year, and an ISO week can start or end in the adjacent year (F4): the days
 2010-01-01..03 of `2009-W53` live in `daily_aggregates_2010.parquet`. Effect: 13 false

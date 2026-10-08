@@ -30,7 +30,7 @@ point states what it is, why it matters and how it is bounded.
    residue with which OBM accumulates the CDD) and **111 days / 113 cells** in `cdd_age_band` (1E-12 = 1 ulp
    of the last decimal). Those 113 cells were checked one by one: they are **exact ties in
    decimal 13**, our figure is the *half-even* rounding of the exact value in **113/113** and OBM's
-   falls one ulp below. *Bounded*: documented as F2 with the check included; the
+   differs by one unit of the last decimal, in either direction. *Bounded*: documented as F2 with the check included; the
    disagreement is on OBM's side.
 
 5. **The ratios derived from the CDD inherit that bound** (`dormancy`, `cdd_per_supply`, `liveliness`).
@@ -87,7 +87,7 @@ point states what it is, why it matters and how it is bounded.
 
 ## 6 · Cost and shape of the data
 
-15. **Reproducing it is not cheap.** `layer 1` is 388 GiB of parquet and `layer 2` cost **~50-85 min per
+15. **Reproducing it is not cheap.** `layer 1` is 387 GiB of parquet and `layer 2` cost **~50-85 min per
     week** (several days in total) with about 8-11 M insertions and 7-8 M deletions per week.
     A reviewer with fewer compute hours will not be able to redo it in full.
 
@@ -127,3 +127,32 @@ point states what it is, why it matters and how it is bounded.
     chain; the series are autocorrelated and strongly non-stationary. Any use
     of these series to attribute causes or to predict prices requires, separately, the statistical
     treatment that `ROADMAP.md` (Phases 3 and 6) explicitly leaves out of this delivery.
+
+## 10 · Gaps found by the round-2 adversarial review (2026-10-08)
+
+23. **The last 27 days have no reference truth.** `layer 3` extends to **2026-10-08** but the reference
+    ends **2026-09-11** (the comparison is additionally limited to `2026-10-04`). What is published
+    beyond that is produced by the pipeline but **not cross-checked**: it is not part of the "21/23".
+    *Bounded*: a later reference snapshot can validate those days; the pipeline itself is unchanged.
+
+24. **The independence from the authors' code is asserted, not demonstrated.** The pipeline is written
+    from scratch (no line of OBM's code was used), but the repository carries no provenance proof beyond
+    that statement. *Bounded*: the audit is black-box on the data, so a shared mistake would not be
+    detected either way.
+
+25. **The code review that produced the data is not registered in the history.** The repository was
+    reorganised and translated to English **after** the data was built, so the commit trail does not
+    show the review that went with the build; that narrative lives in `AUDITORIA_HALLAZGOS.md`.
+    *Bounded*: the numbers are re-runnable, so the evidence can be reproduced even if the history is
+    not a linear trace.
+
+26. **The tolerance rule has one unexercised edge: a series published with 0 decimals** would get a
+    tolerance of **0.5**. No current series is in that case (the fewest decimals is 8), so it never
+    fires; it is a latent trap if a future reference adds an integer-valued series. *Bounded*: handled
+    by treating `dec = 0` as "exact" (tolerance 0).
+
+27. **The manifest does not cover the whole reference.** `capa3/MANIFEST.sha256` hashes the 23 series,
+    the validation table, the report and `obm_reference/metrics/*/*.csv`, but **not** the paper PDF
+    (`obm_reference/paper/`), the authors' code (`obm_reference/tools/`) nor the figures
+    (`capa3/figures/*.png`). *Bounded*: adding them is a one-line change in `manifiesto.py`; the
+    figures are regenerable from the layer-3 CSV.

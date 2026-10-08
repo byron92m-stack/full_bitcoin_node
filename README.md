@@ -17,7 +17,7 @@ Result: **21 of 23 series bit-exact** against the official snapshot (`obm_refere
 v0.1.0). The two that differ are those of *Coin Days Destroyed*, and in both the discrepancy is **one
 unit of the last published decimal place**: `cdd_btcxdays` at **1 day** (1 sat-day) and the wide
 table `cdd_age_band` at **111 days** (1E-12; these are exact ties at decimal place 13, where our
-value is the *half-even* rounding of the exact value and OBM's falls one ulp below). In the process
+value is the *half-even* rounding of the exact value and OBM's differs by one unit of the last decimal, in either direction). In the process
 **8 findings** were found and fixed (4 OBM conventions to replicate, 4 bugs of our own), all
 measured and with a repro: see [`AUDITORIA.md`](AUDITORIA.md).
 
@@ -39,7 +39,7 @@ reproduction**. If they differ, the discrepancy is information: either it is a *
 has to be replicated (and then it is documented), or it is an **error** on one of the two sides (and
 then it is measured).
 
-Every number in this repository comes from a **re-executable script**. There are no hand-written
+Every number **the pipeline produces** comes out of a **re-executable script**. There are no hand-written
 figures.
 
 ## 2 · Relationship with OBM and with other sources
@@ -60,7 +60,7 @@ figures.
                         │ JSON-RPC (getblock, getblockheader, …)
         ┌───────────────▼───────────────────────────────────────┐
 capa1/  │ etl/capa1_btccore_parquet.py                          │  blocks · txs
- 388 GB │ weekly parquet (zstd), primary key per table          │  inputs · outputs
+ 387 GiB │ weekly parquet (zstd), primary key per table          │  inputs · outputs
         └───────────────┬───────────────────────────────────────┘
         ┌───────────────▼───────────────────────────────────────┐
 capa2/  │ src/indexer.py  (spent-output indexer, paper §3.4)    │  live_outputs.sqlite
@@ -68,8 +68,8 @@ capa2/  │ src/indexer.py  (spent-output indexer, paper §3.4)    │  live_out
         │ commit per week: UTXO + aggregates + weeks_done       │  + derived annual parquet
         └───────────────┬───────────────────────────────────────┘
         ┌───────────────▼───────────────────────────────────────┐
-capa3/  │ src/exporters/capa3_series.py                         │  obm_<serie>_daily.csv ×23
-  13 MB │ 21 long series + 2 wide tables, exact OBM schema      │  VALIDATION.md + figuras/
+capa3/  │ src/exporters/capa3_series.py                         │  obm_<series>_daily.csv ×23
+  13 MB │ 21 long series + 2 wide tables, exact OBM schema      │  VALIDATION.md + figures/
         │ src/exporters/validar_capa3.py                        │
         └───────────────┬───────────────────────────────────────┘
         ┌───────────────▼───────────────────────────────────────┐
@@ -82,8 +82,8 @@ capa4/  │ market (pending)                                      │  daily kli
 
 Bitcoin Core **v26.0.0**, mainnet, `txindex=1`, **no pruning**. The mining difficulty **is read from
 the node** (`getblock`/`getblockheader`), it is not recalculated: reconstructing it from `bits`
-differs by 1 ULP of float64 on 2,825 of 6,461 days (finding **F3**). As it is constant per epoch of
-2016 blocks, **481 RPC calls** are enough for the whole history → `capa1/difficulty_epochs.parquet`.
+differs by 1 ULP of float64 on 2,965 of 6,456 days (finding **F3**). As it is constant per epoch of
+2016 blocks, **482 RPC calls** are enough for the whole history → `capa1/difficulty_epochs.parquet`.
 
 ### 3.3 Time convention and aggregation
 
@@ -91,7 +91,7 @@ differs by 1 ULP of float64 on 2,825 of 6,461 days (finding **F3**). As it is co
 - The **processing order is height**, not time: block timestamps **are not monotonic** (16,119 raw
   inversions in the 970,447 blocks; **2 of them cross a week boundary**). Partitioning by timestamp
   week broke prevout resolution (finding **F4**); the ETL assigns each block to
-  `max(semana_propia, semana_anterior)` and the index scans by height.
+  `max(own_week, week_current)` and the index scans by height.
 - Aggregates are stored **in the smallest unit** (satoshi) and in **Bitcoin days** with two
   accumulators (integer part + remainder) so that the CDD is exact (finding **F2**).
 
@@ -182,7 +182,7 @@ with tolerance = **half the last published decimal place** of each series:
 
 | Series block | Result |
 |---|---|
-| 5 block series | **bit-exact** on the 6,461 dates of the reference |
+| 5 block series | **bit-exact** on the dates of the reference (6,461–6,463 depending on the series) |
 | 12 flow/UTXO series | **bit-exact** |
 | `cdd_per_supply`, `dormancy`, `liveliness` | **bit-exact** |
 | `cdd_btcxdays` | **1 day** with a difference (2010-05-22, 1E-8 BTC-days = 1 sat-day) |
@@ -195,9 +195,10 @@ have to be replicated explicitly:
 - **BIP30**: OBM counts the **two copies** of the two duplicated 2010 coinbases (+1 on 2010-11-14,
   +2 from 2010-11-15). This project keeps `(txid,vout)` uniqueness as Core does and applies the
   adjustment in layer 3 (flag `--no-bip30` for the "real" value).
-- **CDD precision**: with two integer accumulators the relative error falls from 1.77e-9 to 8.9e-11
-  (ratio ≈ 20×) and the maximum absolute error from 3.33e-3 to 1.49e-8 BTC-days (≈ 223,490×) over
-  the measured stretch of 2,622 days; the residue that remains is OBM's.
+- **CDD precision**: with two integer accumulators the residual against the reference is **1 day**
+  (1e-8 BTC-days = 1 sat-day; rel. **2.33e-14**) over the 2,627 days of the measured stretch. The
+  comparison against the truncated variant (2,320 days with error, max 3.33e-3, rel. 1.77e-9) is a
+  historical measurement of the method that was rejected.
 
 ### Validation figures
 
@@ -221,7 +222,7 @@ value the difference is **0 on the 6,456 dates**.
 **Figure 6** — The **114 CDD differences, one by one** (the rest of the days are identical): 1 point
 of `cdd_btcxdays` at 1E-8 and 113 of `cdd_age_band` at 1E-12. In those 113 cells the difference is an
 **exact tie** at decimal place 13: our value is the *half-even* rounding of the exact value —verified
-in 113/113— and OBM's falls one ulp below.
+in 113/113— and OBM's differs by one unit of the last decimal, in either direction (below on 51 cells, above on 62).
 
 ![Validation coverage](capa3/figures/validation_coverage.png)
 
@@ -241,14 +242,14 @@ python3 etl/capa1_btccore_parquet.py
 # 2) layer 2 — indexer layer 1 → layer 2 (option 1 = reset, 2 = continue)
 python3 src/indexer.py
 
-# 3) capa3 — dificultad exacta del nodo (481 RPC, ya generada) y las 23 series
+# 3) capa3 — exact difficulty from the node (482 RPC calls, already generated) and the 23 series
 python3 src/exporters/fix_difficulty_rpc.py
 python3 src/exporters/capa3_series.py
 
 # 4) validación frente a la referencia oficial
-python3 src/exporters/validar_capa3.py        # -> capa3/VALIDATION.md + figuras/
+python3 src/exporters/validar_capa3.py        # -> capa3/VALIDATION.md + figures/
 
-# 5) figuras de presentación (opcional; sólo lee los CSV de capa3)
+# 5) presentation figures (optional; only reads the capa3 CSVs)
 python3 src/exporters/graficos_capa3.py       # -> capa3/figures/*.png
 ```
 
@@ -271,14 +272,14 @@ python3 src/exporters/graficos_capa3.py       # -> capa3/figures/*.png
 
 ## 7 · Limitations
 
-Summary; the honest detail is 22 points in [`LIMITACIONES.md`](LIMITACIONES.md):
+Summary; the honest detail is 27 points in [`LIMITACIONES.md`](LIMITACIONES.md):
 
 - The reference is a **moving snapshot** (v0.1.0) and "exact" means *within half the last published
   decimal place*, not infinite precision.
 - **The CDD cannot be reproduced bit for bit**: in its two series the residue is **one unit of the
   last published decimal place** (`cdd_btcxdays` at 1 day; `cdd_age_band` at 111 days), and in the
   wide table it is verified that they are **exact ties** where our value is the *half-even* rounding
-  of the exact value and OBM's falls one ulp below. The ratios derived from the CDD do come out
+  of the exact value and OBM's differs by one unit of the last decimal, in either direction. The ratios derived from the CDD do come out
   exact.
 - The **difficulty is read from the node**, so the pipeline requires RPC, not only block files.
 - **Layer 4 (price) is not included**: NVT, MVRV, realized price and hashprice are left out.
@@ -301,7 +302,7 @@ The 8 findings with their measurement and their repro are in [`AUDITORIA.md`](AU
 
 | Layer | Content | Status |
 |---|---|---|
-| layer 1 | **970,447 blocks** (0..970,446), 928 weeks × 4 tables, 386 GB | complete; 0 overlaps, 0 duplicates, chain intact |
+| layer 1 | **970,447 blocks** (0..970,446), 928 weeks × 4 tables, 387 GiB | complete; 0 overlaps, 0 duplicates, chain intact |
 | layer 2 | **927 weeks** (`2009-W01`..`2026-W40`), UTXO in SQLite (~20 GiB), daily and per-band aggregates | complete; invariant `rows = Σinserted − Σspent` with 0 ghosts |
 | layer 3 | the 23 daily series, up to `2026-10-08` (27 days beyond the reference) | **21/23 bit-exact** |
 | layer 4 | market (price) | pending |

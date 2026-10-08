@@ -62,12 +62,12 @@ are worth 1 ulp of the last published decimal. When regenerating it after an ext
 | `5 UTXO not found` + `negative fees` in block 293,303 | partitioning by timestamp-week (F4) | monotonic partitioning by height + re-partitioning + merging by sum |
 | `utxo_eod_count` negative on 1,713 days | `total_changes` at 32 bits (F5) | `cursor.rowcount` + `src/exporters/reparar_wrap_2017.py` |
 | `cdd` with a 1.8e-9 error | truncation per input (F2) | `cdd_rem_86400` + `cdd_ge*_rem_86400` columns |
-| Everything in the `10y_plus` band | SECONDS were being passed to a function with DAY boundaries | `get_age_band(age_seconds / SEGUNDOS_DIA)` |
+| Everything in the `10y_plus` band | SECONDS were being passed to a function with DAY boundaries | `get_age_band(age_seconds / SECONDS_PER_DAY)` |
 | Days with spent_value at 0 after a re-partitioning | merge with `keep="last"` on dates split between two weeks | merge by SUMMING flows |
 | `difficulty` off by 1 ULP | recomputed from `bits` (F3) | read the field from the node |
 | Phantom day and dates shifted by ~5 h in DuckDB queries | `strftime(to_timestamp(t))` formats in the SESSION time zone | `SET TimeZone='UTC'` (F8.1) |
 | CDD error of thousands of sat-days in SQL | in DuckDB `/` is REAL division (HUGEINT→DOUBLE) | use `//` and check in SQL (F8.3/F8.4) |
-| `utxo_eod_count` short by ~140-190/day | `n_creados` excluded the coinbase outputs | count them: they are live UTXOs (F8.5) |
+| `utxo_eod_count` short by ~140-190/day | `n_created` excluded the coinbase outputs | count them: they are live UTXOs (F8.5) |
 | 17,000 band rows in a single week | one row per age was being written, not per band | `GROUP BY date, age_band` (F8.2) |
 
 ## Environment
@@ -82,7 +82,7 @@ are worth 1 ulp of the last published decimal. When regenerating it after an ext
 - The logs in `logs/evidencia/` are **evidence** of findings F4/F5: do not delete them.
 
 ## Conventions
-- Documentation and comments in **Spanish**; OBM identifiers in English.
+- Documentation, comments and identifiers in **English** (the OBM schema names are kept as published).
 - `layer 1`-`layer 3` must be reproducible **with the node only** (nothing external).
 - `.bak_*` backups are deleted (the history lives in the audit text).
 
@@ -114,5 +114,5 @@ supply shifted by 6,650 BTC from 2022-02-13 (it was contaminating `supply`, `cdd
   processing); fidelity **36/36 files, 0 differences**.
 - **Verification**: `src/exporters/verificar_f7_autocuracion.py` reproduces the scenario in an
   isolated environment (gap → healing → idempotency → replacement instead of summing): 5/5 OK.
-- `check_parquet_cobertura()` is kept as a check that the rebuild covered every
+- `check_parquet_coverage()` is kept as a check that the rebuild covered every
   week in `weeks_done`.
