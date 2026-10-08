@@ -13,9 +13,11 @@ de un nodo completo. Este proyecto es una **reimplementación independiente** de
 (nodo propio, código propio, cero líneas de los autores) con un objetivo doble: **verificar** que
 son reproducibles desde la cadena y **documentar con números** dónde y por qué difieren.
 
-Resultado: **22 de 23 series bit-exactas** frente al snapshot oficial (`obm_reference/metrics/`,
-v0.1.0). La única diferencia es **1 sat-día en un día de 2010**, consecuencia del redondeo en coma
-flotante que OBM aplica al *Coin Days Destroyed* — no de este pipeline. En el proceso se
+Resultado: **21 de 23 series bit-exactas** frente al snapshot oficial (`obm_reference/metrics/`,
+v0.1.0). Las dos que difieren son las del *Coin Days Destroyed*, y en ambas la discrepancia es **una
+unidad del último decimal publicado**: `cdd_btcxdays` en **1 día** (1 sat-día) y la tabla ancha
+`cdd_age_band` en **111 días** (1E-12; son empates exactos en el decimal 13, donde nuestro valor es
+el redondeo *half-even* del valor exacto y el de OBM queda un ulp por debajo). En el proceso se
 encontraron y corrigieron **8 hallazgos** (4 convenciones de OBM a replicar, 4 bugs propios), todos
 medidos y con repro: ver [`AUDITORIA.md`](AUDITORIA.md).
 
@@ -57,7 +59,7 @@ Todo número de este repositorio sale de un **script re-ejecutable**. No hay cif
                         │ JSON-RPC (getblock, getblockheader, …)
         ┌───────────────▼───────────────────────────────────────┐
 capa1/  │ etl/capa1_btccore_parquet.py                          │  blocks · txs
- 386 GB │ parquet semanal (zstd), clave primaria por tabla      │  inputs · outputs
+ 388 GB │ parquet semanal (zstd), clave primaria por tabla      │  inputs · outputs
         └───────────────┬───────────────────────────────────────┘
         ┌───────────────▼───────────────────────────────────────┐
 capa2/  │ src/indexer.py  (spent-output indexer, §3.4 del paper)│  live_outputs.sqlite
@@ -86,9 +88,10 @@ basta con **481 llamadas RPC** para todo el histórico → `capa1/difficulty_epo
 
 - El **día** es el día **UTC del `time` del bloque** (no `mediantime`).
 - El **orden de procesado es la altura**, no el tiempo: los timestamps de bloque **no son
-  monótonos** (16.060 inversiones crudas; **2 de ellas cruzan una frontera de semana**). Particionar
-  por semana del timestamp rompía la resolución de prevouts (hallazgo **F4**); el ETL asigna cada
-  bloque a `max(semana_propia, semana_anterior)` y el índice escanea por altura.
+  monótonos** (16.119 inversiones crudas en los 970.447 bloques; **2 de ellas cruzan una frontera
+  de semana**). Particionar por semana del timestamp rompía la resolución de prevouts (hallazgo
+  **F4**); el ETL asigna cada bloque a `max(semana_propia, semana_anterior)` y el índice escanea por
+  altura.
 - Los agregados se guardan **en la moneda mínima** (satoshi) y en **días de Bitcoin** con dos
   acumuladores (parte entera + resto) para que el CDD sea exacto (hallazgo **F2**).
 
@@ -182,16 +185,20 @@ con tolerancia = **medio último decimal publicado** de cada serie:
 |---|---|
 | 5 series de bloque | **bit-exactas** en las 6.461 fechas de la referencia |
 | 12 series de flujo/UTXO | **bit-exactas** |
-| 2 tablas anchas de bandas (12 columnas cada una) | **bit-exactas** |
-| `cdd_btcxdays` y sus ratios derivadas | **exactas salvo 1 día** (2010-05-22, 1E-8 BTC-días = 1 sat-día) |
+| `cdd_per_supply`, `dormancy`, `liveliness` | **bit-exactas** |
+| `cdd_btcxdays` | **1 día** con diferencia (2010-05-22, 1E-8 BTC-días = 1 sat-día) |
+| `cdd_age_band` (tabla ancha de 12 columnas) | **111 días / 113 celdas** con 1E-12 = 1 ulp del último decimal publicado |
 
-**22/23 bit-exactas.** Dos convenciones hay que replicarlas explícitamente:
+**21/23 bit-exactas.** La tolerancia no se pone a mano: se deriva de los decimales que **publica la
+referencia** en cada serie y columna (`dec` en `capa3/VALIDACION.md`). Dos convenciones hay que
+replicarlas explícitamente:
 
 - **BIP30**: OBM cuenta las **dos copias** de los dos coinbases duplicados de 2010 (+1 el
   2010-11-14, +2 desde el 2010-11-15). Este proyecto mantiene la unicidad `(txid,vout)` como Core y
   aplica el ajuste en `capa3` (flag `--no-bip30` para el valor "real").
-- **Precisión del CDD**: con dos acumuladores enteros, el error baja de 1,77e-9 (truncar por input)
-  a 8,9e-11 relativo — **223.480× menos**; el residuo restante es el de OBM.
+- **Precisión del CDD**: con dos acumuladores enteros el error relativo baja de 1,77e-9 a 8,9e-11
+  (razón ≈ 20×) y el error absoluto máximo de 3,33e-3 a 1,49e-8 BTC-días (≈ 223.490×) en el tramo
+  medido de 2.622 días; el residuo que queda es el de OBM.
 
 ### Figuras de la validación
 
@@ -199,26 +206,28 @@ Generadas por `validar_capa3.py` en `capa3/figuras/`.
 
 ![Días con diferencia por serie](capa3/figuras/acuerdo_series.png)
 
-**Figura 4** — Días con diferencia por serie (verde = bit-exacta, rojo = difiere). Las 22 verdes
-están a **0 días**; la única roja es `cdd_btcxdays`, con **1 solo día** (invisible a esta escala).
+**Figura 4** — Días con diferencia por serie (verde = bit-exacta, rojo = difiere). **21 verdes** a
+**0 días**; las dos rojas son `cdd_btcxdays` (1 día) y `cdd_age_band` (111 días), prácticamente
+invisibles a esta escala.
 
-![utxo_eod_count: diferencia frente a OBM](capa3/figuras/diff_utxo.png)
+![utxo_eod_count: el escalón BIP30](capa3/figuras/diff_utxo.png)
 
-**Figura 5** — `utxo_eod_count`: diferencia (referencia − capa3) a lo largo del tiempo. El escalón
-plano de **−2 desde 2010-11-15** es exactamente el ajuste BIP30 (las dos copias de los coinbases
-duplicados), no un error: por eso capa3 lo compensa.
+**Figura 5** — `utxo_eod_count`: la diferencia se dibuja contra capa3 **devolviéndole el ajuste**,
+que es la única forma de ver el escalón. El salto plano de **+2 desde 2010-11-15** son las dos
+copias de los coinbases duplicados (BIP30); capa3 lo compensa, así que contra el valor publicado la
+diferencia es **0 en las 6.456 fechas**.
 
-![CDD: error relativo](capa3/figuras/error_cdd.png)
+![Las diferencias del CDD, una a una](capa3/figuras/error_cdd.png)
 
-**Figura 6** — `cdd_btcxdays`: error relativo, escala logarítmica. La mediana está en ~1e-16 (el
-límite del `float64`) y los picos son el **último dígito publicado por OBM**: esta serie **no puede
-ser bit-exacta** porque OBM acumula el CDD en coma flotante (hallazgo F2), mientras que aquí se
-calcula con dos acumuladores enteros.
+**Figura 6** — Las **114 diferencias del CDD, una a una** (el resto de los días son idénticos):
+1 punto de `cdd_btcxdays` en 1E-8 y 113 de `cdd_age_band` en 1E-12. En esas 113 celdas la
+diferencia es un **empate exacto** en el decimal 13: nuestro valor es el redondeo *half-even* del
+valor exacto —verificado en 113/113— y el de OBM queda un ulp por debajo.
 
 ![Cobertura de la validación](capa3/figuras/cobertura.png)
 
 **Figura 7** — Días comparados por serie: entre **6.459 y 6.463**, porque las series de la
-referencia no tienen todas la misma longitud (el denominador del «22/23» se lee por serie).
+referencia no tienen todas la misma longitud (el denominador del «21/23» se lee por serie).
 
 ## 6 · Reproducibilidad
 
@@ -251,7 +260,7 @@ python3 src/exporters/graficos_capa3.py       # -> capa3/graficos/*.png
 | `etl/` | ETL de capa1 y utilidades de reparación de semanas |
 | `src/indexer.py` | indexer de capa2 (UTXO + agregados) |
 | `src/exporters/` | series de capa3, validación y scripts puntuales |
-| `capa1/ … capa4/` | datos (fuera de git salvo `capa3/*.csv`) |
+| `capa1/ … capa4/` | datos (fuera de git; de `capa3/` se versionan el informe, las figuras y `MANIFEST.sha256`) |
 | `obm_reference/` | snapshot oficial de OBM: `metrics/`, `paper/`, `tools/` |
 | `METODOLOGIA.md` | definiciones de las 23 series tomadas del paper |
 | `docs/MAPA_CODIGO.md` | mapa de módulos e invariantes del pipeline |
@@ -260,12 +269,15 @@ python3 src/exporters/graficos_capa3.py       # -> capa3/graficos/*.png
 
 ## 7 · Limitaciones
 
-Resumen; el detalle honesto son 19 puntos en [`LIMITACIONES.md`](LIMITACIONES.md):
+Resumen; el detalle honesto son 22 puntos en [`LIMITACIONES.md`](LIMITACIONES.md):
 
 - La referencia es un **snapshot móvil** (v0.1.0) y "exacta" significa *dentro de medio último
   decimal publicado*, no precisión infinita.
-- El **CDD no se puede reproducir exactamente por construcción** (OBM acumula en coma flotante);
-  las ratios que derivan de él heredan esa cota.
+- **El CDD no se puede reproducir bit a bit**: en sus dos series el residuo es **una unidad del
+  último decimal publicado** (`cdd_btcxdays` en 1 día; `cdd_age_band` en 111 días), y en la tabla
+  ancha está verificado que son **empates exactos** donde nuestro valor es el redondeo *half-even*
+  del valor exacto y el de OBM queda un ulp por debajo. Las ratios que derivan del CDD sí salen
+  exactas.
 - La **dificultad se lee del nodo**, así que el pipeline requiere RPC, no sólo ficheros de bloque.
 - **`capa4` (precio) no está incluida**: quedan fuera NVT, MVRV, realized price y hashprice.
 - La auditoría **mide acuerdo, no verdad**: una interpretación equivocada compartida con OBM no la
@@ -279,9 +291,9 @@ Los 8 hallazgos con su medición y su repro están en [`AUDITORIA.md`](AUDITORIA
 | Convenciones de OBM a replicar | Bugs corregidos de esta implementación |
 |---|---|
 | **F1** BIP30 (conteo de las dos copias) | **F4** orden altura/tiempo en el ETL |
-| **F2** CDD en coma flotante | **F5** desbordamiento de 32 bits del contador |
+| **F2** el CDD no es bit-exacto (empates de redondeo) | **F5** desbordamiento de 32 bits del contador |
 | **F3** la dificultad se lee del nodo | **F7** ventana de crash *commit → parquet* |
-| **F6** fusión al partir una fecha en dos ficheros | **F8** (×5+1) trampas del script de reparación |
+| **F6** fusión al partir una fecha en dos ficheros | **F8** (6 trampas) del script de reparación |
 
 ## 9 · Estado del dataset
 
@@ -289,7 +301,7 @@ Los 8 hallazgos con su medición y su repro están en [`AUDITORIA.md`](AUDITORIA
 |---|---|---|
 | `capa1` | **970.447 bloques** (0..970.446), 928 semanas × 4 tablas, 386 GB | completa; 0 solapes, 0 duplicados, cadena intacta |
 | `capa2` | **927 semanas** (`2009-W01`..`2026-W40`), UTXO en SQLite (~20 GiB), agregados diarios y por banda | completa; invariante `filas = Σinsertadas − Σgastadas` con 0 fantasmas |
-| `capa3` | las 23 series diarias, hasta `2026-10-08` (27 días más allá de la referencia) | **22/23 bit-exactas** |
+| `capa3` | las 23 series diarias, hasta `2026-10-08` (27 días más allá de la referencia) | **21/23 bit-exactas** |
 | `capa4` | mercado (precio) | pendiente |
 
 ## Citación

@@ -16,9 +16,13 @@ comparación: `obm_reference/metrics/` (los 23 CSV oficiales, v0.1.0).
 |---|---|
 | 5 series de bloque (`block_count`, `block_weight_wu`, `tx_count`, `difficulty_eod`, `est7d_hashrate`) | **bit-exactas en las 6.461 fechas** de la referencia |
 | Series de UTXO y coin-age | exactas en el tramo procesado; `utxo_eod_count` exacta con el ajuste BIP30 |
-| `cdd_btcxdays` | ≤**1,5 sat-días** en ~1,5% de los días (redondeo float de OBM) |
+| `cdd_btcxdays` | **1 día** con 1 sat-día de diferencia (1E-8) |
+| `cdd_age_band` | **111 días / 113 celdas** con 1 ulp (1E-12) del último decimal publicado |
 
-Esperado al cerrar capa2: **22/23 bit-exactas** + 1 con residuo de último dígito.
+**Obtenido el 2026-10-08: 21/23 bit-exactas.** Las dos diferencias son del CDD y valen una unidad
+del último decimal publicado. La tolerancia se **deriva del fichero de referencia** (columna a
+columna); antes estaba escrita a mano, decía 8 decimales donde la referencia publica 12 y dejaba
+pasar 113 celdas (hallazgo A1 de la revisión adversarial).
 
 ---
 
@@ -31,15 +35,17 @@ not counted as spent and therefore does not generate spent value or CDD."*
 **Nuestra implementación** usa `INSERT OR IGNORE` (*first-write-wins*), así que `live_outputs`
 mantiene la unicidad `(txid,vout)` como Bitcoin Core.
 
-**Medición.** La serie oficial va **+1 el 2010-11-14** y **+2 desde el 2010-11-15** (1.429 días
-con diff=+2 en el tramo 2009-2014). Coincide exactamente con los dos coinbases duplicados:
+**Medición.** La serie oficial va **+1 el 2010-11-14** y **+2 desde el 2010-11-15** (5.780 días con
+diff=+2 en toda la cobertura de la referencia, 1.508 de ellos en 2009-2014). Coincide exactamente
+con los dos coinbases duplicados:
 `d5d27987…:0` en las alturas 91.812/91.842 y `e3bf3d07…:0` en 91.722/91.880.
 
 **Impacto acotado.** Ninguno de esos dos outputs se gasta **nunca** (verificado buscando inputs
 que los referencien) → la única consecuencia es el **conteo**; ninguna otra métrica se ve afectada.
 
 **Arreglo.** Ajuste explícito y reversible en capa3 (`capa3_series.py`, flag `--no-bip30`) →
-`utxo_eod_count` pasa a ser **exacta en las 4.715 fechas comparadas**.
+`utxo_eod_count` pasa a ser **exacta en las 6.456 fechas comparadas** (4.715 en la primera medición,
+con la cobertura de entonces).
 *Reproducir*: `python3 src/exporters/validar_capa3.py` (días con diff≠0).
 
 ## F2 — Precisión del CDD: truncar por input cuesta 1,8e-9
@@ -54,7 +60,12 @@ que los referencien) → la única consecuencia es el **conteo**; ninguna otra m
 | truncado por input | 2.320 | 3,33e-3 | 1,77e-9 |
 | **exacto** (2 acumuladores) | **70** | **1,49e-8** | **8,9e-11** |
 
-→ **223.480× menos error**; el residuo restante es el redondeo en coma flotante de OBM.
+→ ≈20× menos error relativo y ≈223.490× menos error absoluto. Aun así **no es bit-exacto**: con la
+tolerancia del último decimal publicado quedan **1 día** en `cdd_btcxdays` (1E-8 = 1 sat-día) y
+**111 días / 113 celdas** en `cdd_age_band` (1E-12). Las 113 celdas se comprobaron una a una: son
+**empates exactos en el decimal 13**, nuestra cifra es el redondeo **half-even** del valor exacto en
+**113/113** y la de OBM queda un ulp por debajo — el desacuerdo es su convención de redondeo, no
+"coma flotante" genérica.
 
 **Arreglo.** Columnas `cdd_rem_86400` (+ `cdd_ge155d_rem_86400`, `cdd_ge365d_rem_86400` en daily,
 y `cdd_rem_86400` en bandas): exacto = `cdd_sat_days + cdd_rem_86400/86400`.
@@ -74,7 +85,9 @@ Comprobado contra el nodo: `getblock <h> 1` → `27428630902.25787` = **la refer
 desde bits → `27428630902.257874` ✗.
 
 **Arreglo.** La dificultad es **constante dentro de cada época de 2016 bloques** → **481 llamadas
-RPC** (`getblockhash`+`getblockheader`) en vez de 968.458 → `capa1/difficulty_epochs.parquet`
+RPC** (`getblockhash`+`getblockheader`) en vez de una por bloque → `capa1/difficulty_epochs.parquet`
+(hoy cubre las épocas 0..480; falta la 481, de `2026-W40`, y `capa3_series.py` **avisa** al
+encontrarla en vez de recalcular en silencio: ver A3 en la revisión adversarial).
 (`src/exporters/fix_difficulty_rpc.py`).
 **Resultado**: `difficulty_eod` **y** `est7d_hashrate` pasan a ser **bit-exactas en las 6.461 fechas**.
 
@@ -86,7 +99,8 @@ RPC** (`getblockhash`+`getblockheader`) en vez de 968.458 → `capa1/difficulty_
 **escanea en orden de altura** → OBM no tiene este problema. Nuestro ETL particionaba por semana
 ISO **del timestamp** y el indexer procesaba esas semanas en orden.
 
-**Medición.** Escaneando las **968.458 alturas** hay **exactamente 2 inversiones**:
+**Medición.** Escaneando las **970.447 alturas** hay **16.119 inversiones crudas**, de las que
+**exactamente 2 cruzan una frontera de semana**:
 `h=60.787` (2010-06-14 00:00, W24) vs `h=60.788` (2010-06-13 23:59, W23), y
 `h=293.302` (2014-03-31 00:00, W14) vs `h=293.303` (2014-03-30 23:55, W13).
 
@@ -152,7 +166,7 @@ cd /media/SSD4T/obm
 python3 src/exporters/fix_difficulty_rpc.py     # F3 (necesita el nodo; ya generado)
 python3 src/exporters/capa3_series.py           # 23 series
 python3 src/exporters/validar_capa3.py          # validacion global + figuras
-# F4: inversiones de semana en las 968.458 alturas (escaneo ~1 s sobre capa1/blocks)
+# F4: inversiones que cruzan frontera de semana en las 970.447 alturas (escaneo ~1 s)
 # F5: reparacion ya aplicada (src/reparar_wrap_2017.py, idempotente)
 ```
 
@@ -192,10 +206,10 @@ prevouts resueltos (join de `capa1/inputs` de la semana contra `capa1/outputs`),
 (más `reparar_utxo_eod_w06.py` para `utxo_eod_count`): los 7 días cuadran con la referencia y
 dejaron capa3 completa.
 
-## F8 — Cuatro trampas silenciosas en el script de reparación (bug NUESTRO, corregido)
+## F8 — Seis trampas silenciosas en el script de reparación (bug NUESTRO, corregido)
 
 Contexto: `src/exporters/reparar_semana_2022W06.py` (reparación de la ventana de crash F7)
-falló tres veces antes de producir datos válidos. Las cuatro causas son de NUESTRA
+falló tres veces antes de producir datos válidos. Las seis causas son de NUESTRA
 implementación; ninguna involucra a OBM. Quedan documentadas porque son silenciosas y las
 cuatro se habrían propagado a capa 3.
 
@@ -260,5 +274,6 @@ No lo había ejercitado ningún arranque anterior porque se añadió al código 
 en marcha (el proceso seguía con el módulo antiguo ya importado); se detectó al revisar el
 estado justo antes de reanudar.
 Arreglo: resolver cada día contra el parquet de su propio año. Verificación: 0 huecos sobre
-las 792 semanas de `weeks_done`, y test negativo con un parquet truncado (sin 2012-06-15) →
-el guard lo detecta.
+las **927** semanas de `weeks_done` (se comprobó primero con las 792 que había entonces y
+después con 886, 904, 925 y 927, siempre 0), y test negativo con un parquet truncado
+(sin 2012-06-15) → el guard lo detecta.

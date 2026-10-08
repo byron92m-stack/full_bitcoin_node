@@ -143,6 +143,7 @@ def cargar_capa1_bloques():
     y difficulty del bloque de MAYOR ALTURA (difficulty_eod)."""
     por_dia = {}
     dif_ep = cargar_difficulty_epochs()
+    faltan_ep = set()
     for f in sorted(glob.glob(f"{CAPA1}/blocks/blocks_*.parquet")):
         t = pq.read_table(f, columns=["height", "time", "nTx", "weight", "bits"]).to_pydict()
         for h, ts, ntx, w, bits in zip(t["height"], t["time"], t["nTx"], t["weight"], t["bits"]):
@@ -150,7 +151,17 @@ def cargar_capa1_bloques():
             d = datetime.datetime.fromtimestamp(ts, datetime.timezone.utc).date()
             r = por_dia.get(d)
             _e = int(h) // 2016
-            df = dif_ep[_e] if _e in dif_ep else Decimal(repr(difficulty_core(bits)))
+            if _e in dif_ep:
+                df = dif_ep[_e]
+            else:
+                # F3: la dificultad se LEE del nodo; recalcularla desde bits difiere en 1 ULP.
+                # Que falte una epoca significa que difficulty_epochs.parquet se quedo atras.
+                df = Decimal(repr(difficulty_core(bits)))
+                if _e not in faltan_ep:
+                    faltan_ep.add(_e)
+                    print(f"AVISO: falta la epoca {_e} de dificultad en difficulty_epochs.parquet "
+                          f"(altura {int(h)}); se usa difficulty_core(bits), que F3 prohibe. "
+                          f"Relanza src/exporters/fix_difficulty_rpc.py con el nodo encendido.")
             if r is None:
                 por_dia[d] = {"n": 1, "ntx": int(ntx or 0), "w": int(w or 0), "diff": df,
                               "tmin": ts, "tmax": ts, "hmax": int(h), "deod": df}

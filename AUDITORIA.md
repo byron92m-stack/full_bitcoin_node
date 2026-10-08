@@ -1,7 +1,7 @@
 # Auditoría de reproducibilidad de OBM v0.1.0
 
 **Qué es esto.** Una reimplementación independiente del dataset *Open Bitcoin Metrics*
-(arXiv:2607.02424v1) partiendo **sólo de un nodo completo propio, Bitcoin Core v26.0.0**
+(arXiv:2607.03124v1) partiendo **sólo de un nodo completo propio, Bitcoin Core v26.0.0**
 (`txindex=1`, sin poda). El objetivo no es publicar métricas nuevas, sino comprobar si las de
 OBM se pueden **re-derivar de la cadena** y documentar con números **dónde y por qué** difieren.
 
@@ -40,13 +40,16 @@ y de **caja blanca sobre la metodología publicada** (paper + `APÉNDICE A` + `M
 |---|---|
 | 5 series de bloque (`block_count`, `block_weight_wu`, `tx_count`, `difficulty_eod`, `est7d_hashrate`) | **bit-exactas** en las 6.461 fechas de la referencia |
 | 12 series de flujo y de UTXO (`spent_output_count`, `spent_value` y sus umbrales 155d/365d, `fees`, `issuance`, `miner_revenue`, `raw_output_value`, `supply`, `utxo_eod_count`, `fee_share`) | **bit-exactas** |
-| 2 tablas anchas de bandas de edad (12 columnas cada una: valor gastado y CDD) | **bit-exactas** |
-| `cdd_btcxdays` y las ratios que derivan de él (`dormancy`, `cdd_per_supply`, `liveliness`) | **exactas salvo 1 día** (2010-05-22, 1E-8 BTC-días = 1 sat-día) |
+| `spent_value_age_band` (tabla ancha de 12 columnas) | **bit-exacta** |
+| `cdd_btcxdays` | **1 día** con diferencia (2010-05-22, 1E-8 BTC-días = 1 sat-día) |
+| `cdd_age_band` (tabla ancha de 12 columnas) | **111 días / 113 celdas** con 1E-12 = 1 ulp del último decimal publicado |
+| ratios derivadas del CDD (`dormancy`, `cdd_per_supply`, `liveliness`) | **bit-exactas** |
 
-**22 de 23 series bit-exactas**; la única diferencia es un sat-día en un día de 2010, y procede del
-redondeo en coma flotante **de OBM** (ver F2), no de este pipeline. Se compara **toda la
-referencia** (sus 23 series tienen entre 6.459 y 6.463 fechas), y capa3 se extiende 27 días más
-allá de su final (hasta 2026-10-08).
+**21 de 23 series bit-exactas**; las dos que difieren son las del CDD y lo hacen en **una unidad
+del último decimal publicado** (1 sat-día en un día de 2010; 1 ulp en 111 días de la tabla ancha),
+donde está verificado que nuestro valor es el redondeo *half-even* exacto y el de OBM queda por
+debajo (F2). Se compara **toda la referencia** (sus 23 series tienen entre 6.459 y 6.463 fechas), y
+capa3 se extiende 27 días más allá de su final (hasta 2026-10-08).
 
 ---
 
@@ -59,19 +62,32 @@ implementación usa `INSERT OR IGNORE` (unicidad `(txid,vout)` como Core) → la
 así que la única consecuencia es el **conteo**; se compensa con un ajuste explícito en capa3
 (flag `--no-bip30`) y `utxo_eod_count` pasa a ser exacta.
 
-### F2 · Precisión del CDD: truncar por input cuesta 1,8e-9
-OBM define `CDD_i = V_i·A_i` con `A_i` **fraccionario**. Truncar por input pierde hasta 1 sat-día.
-Medido en 2.622 días: truncado → 2.320 días con error (máx. 3,33e-3 BTC-días); con **dos
-acumuladores** (parte entera + resto) → 70 días (máx. 1,49e-8). **223.480× menos error**; el
-residuo restante es el redondeo float de OBM y es la causa de la única serie no bit-exacta.
-Columnas `cdd_rem_86400` en `daily` y `age_band`.
+### F2 · El CDD no es bit-exacto: empates de redondeo en el último decimal
+OBM define `CDD_i = V_i·A_i` con `A_i` **fraccionario**. Son dos efectos distintos, los dos medidos:
+
+- **Truncar por input** pierde hasta 1 sat-día por output. En 2.622 días:
+  2.320 días con error, máximo **3,33e-3 BTC-días** (rel. 1,77e-9). Con **dos acumuladores**
+  (parte entera + resto; columnas `cdd_rem_86400`): 70 días, máximo **1,49e-8** — ≈20× mejor en
+  relativo y ≈223.490× en absoluto.
+- **Aun así no puede ser bit-exacto.** Con la tolerancia derivada del último decimal publicado
+  quedan **1 día** en `cdd_btcxdays` (1E-8 = 1 sat-día) y **111 días / 113 celdas** en la tabla
+  ancha `cdd_age_band` (1E-12). Las 113 celdas se comprobaron una a una: son **empates exactos en
+  el decimal 13**, nuestra cifra es el redondeo **half-even** del valor exacto en **113/113** y la
+  de OBM queda un ulp por debajo. El desacuerdo está del lado de OBM y no es "coma flotante"
+  genérica: es su convención de redondeo. Las ratios que derivan del CDD sí salen exactas.
 
 ### F3 · La dificultad se LEE del nodo, no se recalcula
 OBM A.6 la lee del campo `difficulty` del bloque. Reconstruirla desde `bits` (15 variantes probadas)
 difiere en **1 ULP de float64 en 2.825 de 6.461 días**. Como es constante en cada época de 2016
-bloques, basta con **481 llamadas RPC** (`getblockheader`) en vez de 968.458 →
+bloques, basta con **481 llamadas RPC** (`getblockheader`) en vez de una por bloque (≈970.000) →
 `capa1/difficulty_epochs.parquet`. **Lección**: las variables de estado del protocolo se leen, no se
 recalculan.
+
+*(Aviso 2026-10-08: ese fichero cubre hasta la **época 480**; la **481**, que empieza en los
+bloques de `2026-W40`, falta, porque se generó con el tip anterior. `capa3_series.py` ya **avisa**
+por pantalla en vez de recalcular en silencio —`AVISO: falta la epoca 481…`— y la solución es
+relanzar `fix_difficulty_rpc.py` con el nodo encendido. Esas fechas quedan más allá del final de la
+referencia, así que no entran en la validación.)*
 
 ### F6 · Fusión cuando una fecha cae en dos ficheros semanales
 Consecuencia de particionar por semana ISO: una fecha puede aparecer en dos semanas (F4). La
@@ -87,7 +103,7 @@ construcción, y se documentan porque **ninguno se detecta mirando una sola seri
 propagan a capa3).
 
 ### F4 · El orden altura/tiempo (ETL)
-Los timestamps de bloque **no son monótonos** (hay 16.060 inversiones crudas en 970.447 alturas);
+Los timestamps de bloque **no son monótonos** (16.119 inversiones crudas en los 970.447 bloques);
 el índice de OBM escanea **por altura** (§3.4) y nosotros particionábamos por semana del timestamp.
 De esas inversiones, **exactamente 2 cruzan una frontera de semana** y son las que rompían el
 particionado: h=60.787 vs 60.788 (2010-06) y h=293.302 vs 293.303 (2014-03). Impacto medido en ese
@@ -101,7 +117,8 @@ segundo bloque: 5 inputs irresolubles, `spent_value` de ese día corto en **8.71
 `n_inserted` quedó en **−4.290.243.423** (real 4.723.873) y `utxo_eod_count` desplazado **exactamente
 2³²** durante **1.713 días** (2017-03-29 → 2021-12-05). **Lo detectó el invariante de conteo**.
 Reparación exacta (`src/reparar_wrap_2017.py`) y arreglo de fondo: contar con `cursor.rowcount`
-acotado al tamaño del lote.
+acotado al tamaño del lote. *(Los valores de este párrafo son el estado **histórico** de la avería;
+en la DB actual esas filas están reparadas.)*
 
 ### F7 · La ventana de crash entre el commit y el parquet
 El orden por semana era *commit DB → parquet → estado*: un corte entre los dos primeros deja la
@@ -149,7 +166,7 @@ BIP30; `cdd` con residuo 3,7e-09 (rel. 1,9e-16). El offset se mantiene constante
 | F5 desbordamiento 32 bits | **Nuestra instrumentación de progreso** |
 | F6 fusión multi-fichero | **Nuestra partición en ficheros** (consecuencia de F4) |
 | F7 ventana de crash | **Nuestro orden de escritura** |
-| F8 (×5) trampas de la reparación | **Nuestro script de reparación** |
+| F8 (6 trampas) de la reparación | **Nuestro script de reparación** |
 
 Los cinco primeros hallazgos de "nuestra" columna no son cosméticos: los cinco llegaron a corregir
 datos publicables. Que se encontraran es el resultado útil de la auditoría.
@@ -163,7 +180,7 @@ datos publicables. Que se encontraran es el resultado útil de la auditoría.
 | `COUNT(live_outputs) == Σ n_inserted − Σ n_spent` (fantasmas = 0) | filas perdidas/duplicadas en el UTXO vivo (así se encontró F5) | `python3 -c "…"` (ver README) |
 | Cobertura: cada semana de `weeks_done` tiene sus días en el parquet | la ventana de crash de F7 | `check_parquet_cobertura()` al arrancar |
 | Monotonía de alturas en `capa1` | el orden altura/tiempo (F4) | `check_capa1_monotonic()` al arrancar |
-| Suma de bandas = agregado diario | bandas sin agrupar / CDD mal calculado (F8.2, F8.3) | incluido en la validación |
+| Suma de bandas = agregado diario | bandas sin agrupar / CDD mal calculado (F8.2, F8.3) | comprobado **aparte**, sobre las columnas enteras de la DB (exacto); sobre los valores **publicados** difiere en el último decimal en 272 de 6.461 días (máx. 5e-9), por el redondeo de cada banda |
 | Conteos cruzados por semana (`COUNT(txs)=ΣnTx`, `=Σvin`, `=Σvout`) y unicidad de `(txid,vout)` | duplicados y solapes en `capa1` | `etl/capa1_btccore_parquet.py --validate` |
 | Cadena: `previousblockhash` de la altura *h* = `hash` de *h−1*, y alturas contiguas sin duplicados | huecos o solapes entre ficheros semanales | comprobado en las 970.447 alturas |
 
@@ -189,8 +206,8 @@ La evidencia número a número, con el comando que la regenera en cada caso, est
 |---|---|---|
 | `capa1` | 970.447 bloques (0..970.446), 928 semanas × 4 tablas, parquet | completa y validada |
 | `capa2` | 927 semanas (`2009-W01`..`2026-W40`); UTXO vivo en SQLite (~20 GiB); agregados diarios y por banda de edad | completa; invariante 0 fantasmas |
-| `capa3` | las 23 series diarias | 22/23 bit-exactas |
+| `capa3` | las 23 series diarias | **21/23** bit-exactas |
 | `capa4` | precio/mercado | no incluida (fuera de alcance) |
 
 Coste de construcción en este equipo: `capa2` ~1 h por semana en 2026 (≈50-85 min/semana), varios
-días en total; `capa1` 386 GB de parquet.
+días en total; `capa1` 388 GiB de parquet.

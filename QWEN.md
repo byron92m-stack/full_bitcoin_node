@@ -12,9 +12,9 @@ reproducibilidad). Ver `README.md` (arquitectura de 4 capas) y `AUDITORIA_HALLAZ
 ## Estado
 | Capa | Estado |
 |---|---|
-| capa1 | **COMPLETA y validada**: 968.458 bloques (0..968.457), 0 huecos, 926 semanas × 4 tablas. `python3 etl/capa1_btccore_parquet.py --validate` ✓ |
-| capa2 | **COMPLETA**: 925 semanas (2009-W01..2026-W38), invariante `COUNT = Σins−Σspent` con 0 fantasmas. Reanudable: `python3 src/indexer.py` → opción **2** (NUNCA 1, borra `capa2/`) |
-| capa3 | **VALIDADA: 22/23 series bit-exactas** contra `obm_reference/metrics` (única diferencia: `cdd_btcxdays`, 1 día con 1E-8 = 1 sat-día, redondeo float de OBM). Ver `capa3/VALIDACION.md` |
+| capa1 | **COMPLETA y validada**: 970.447 bloques (0..970.446), 0 huecos, 928 semanas × 4 tablas. `python3 etl/capa1_btccore_parquet.py --validate` ✓ |
+| capa2 | **COMPLETA**: 927 semanas (2009-W01..2026-W40), invariante `COUNT = Σins−Σspent` con 0 fantasmas. Reanudable: `python3 src/indexer.py` → opción **2** (NUNCA 1, borra `capa2/`) |
+| capa3 | **VALIDADA: 21/23 series bit-exactas** contra `obm_reference/metrics`, con la tolerancia derivada de los decimales que publica la referencia. Las dos diferencias son del CDD: `cdd_btcxdays` (1 día, 1E-8 = 1 sat-día) y `cdd_age_band` (111 días / 113 celdas, 1E-12 = 1 ulp; empates exactos donde redondeamos half-even). Ver `capa3/VALIDACION.md` |
 | capa4 | vacía (precio/mercado, pendiente — ver `ROADMAP.md`) |
 
 ## Cómo consultar el estado en vivo
@@ -37,8 +37,8 @@ python3 src/exporters/capa3_series.py      # 23 series -> capa3/
 python3 src/exporters/validar_capa3.py     # -> capa3/VALIDACION.md + figuras/
 grep -cE "UTXO no encontrado|fees negativas|issuance negativa" logs/indexer.log   # debe ser 0
 ```
-Obtenido el 2026-10-08: **22/23 bit-exactas**; `cdd_btcxdays` con 1 día difiriendo 1E-8
-(1 sat-día, redondeo float de OBM). Al regenerarlo tras una extensión, si sale otra cosa,
+Obtenido el 2026-10-08: **21/23 bit-exactas** (ver el `Estado`); las dos diferencias son del CDD y
+valen 1 ulp del último decimal publicado. Al regenerarlo tras una extensión, si sale otra cosa,
 **parar y avisar**.
 
 ## Reglas NO negociables (cada una costó un bug real)
@@ -110,7 +110,8 @@ oferta desplazada 6.650 BTC desde 2022-02-13 (contaminaba `supply`, `cdd_per_sup
   desaparece el riesgo de doble conteo de la antigua fusión por SUMA (F4), que fue el motivo de
   descartar invertir el orden a parquet→commit.
 - **Migración** (ejecutada el 8-oct): `src/exporters/migrar_agregados_a_db.py` — 6.465 filas
-  diarias y 60.792 de bandas; fidelidad **36/36 ficheros, 0 diferencias**.
+  diarias y 60.792 de bandas *en el momento de migrar* (la DB tiene hoy más, porque capa2 siguió
+  procesando); fidelidad **36/36 ficheros, 0 diferencias**.
 - **Verificación**: `src/exporters/verificar_f7_autocuracion.py` reproduce el escenario en un
   entorno aislado (hueco → curación → idempotencia → reemplazo en vez de suma): 5/5 OK.
 - `check_parquet_cobertura()` se mantiene como comprobación de que la reconstrucción cubrió todas
