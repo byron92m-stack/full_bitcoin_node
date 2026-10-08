@@ -27,14 +27,14 @@ import pandas as pd
 
 BASE = "/media/SSD4T/obm"
 C1, C2 = f"{BASE}/capa1", f"{BASE}/capa2"
-SEM, ANIO = "2022-W06", "2022"
-BANDAS = [("0d_1d", 0, 1), ("1d_1w", 1, 7), ("1w_1m", 7, 30), ("1m_3m", 30, 90),
+WEEK, YEAR = "2022-W06", "2022"
+BANDS = [("0d_1d", 0, 1), ("1d_1w", 1, 7), ("1w_1m", 7, 30), ("1m_3m", 30, 90),
           ("3m_6m", 90, 180), ("6m_1y", 180, 365), ("1y_2y", 365, 730),
           ("2y_3y", 730, 1095), ("3y_5y", 1095, 1825), ("5y_7y", 1825, 2555),
           ("7y_10y", 2555, 3650), ("10y_plus", 3650, 10**9)]
-CASO_BANDA = "CASE " + " ".join(
-    f"WHEN edad_dias >= {lo} AND edad_dias < {hi} THEN '{nom}'"
-    for nom, lo, hi in BANDAS) + " END"
+BAND_CASE = "CASE " + " ".join(
+    f"WHEN age_days >= {lo} AND age_days < {hi} THEN '{name}'"
+    for name, lo, hi in BANDS) + " END"
 
 os.makedirs(f"{BASE}/tmp/repair", exist_ok=True)
 con = duckdb.connect()
@@ -48,19 +48,19 @@ except Exception as e:
     print(f"  warning: could not fix the join order ({e})")
 
 # (2) UTC days of the week, according to capa1's own blocks
-DIAS = [r[0] for r in con.execute(
+DAYS = [r[0] for r in con.execute(
     f"SELECT DISTINCT strftime(to_timestamp(time),'%Y-%m-%d') d "
-    f"FROM read_parquet('{C1}/blocks/blocks_{SEM}.parquet') ORDER BY 1").fetchall()]
-FILTRO = "(" + ",".join(f"'{d}'" for d in DIAS) + ")"
-print(f"  UTC days of {SEM}: {DIAS[0]} .. {DIAS[-1]}  ({len(DIAS)} days)")
-if len(DIAS) != 7:
-    sys.exit(f"ABORTED: {SEM} should have 7 UTC days and has {len(DIAS)}")
-EN_DIAS = f"strftime(to_timestamp(t_spend),'%Y-%m-%d') IN {FILTRO}"
+    f"FROM read_parquet('{C1}/blocks/blocks_{WEEK}.parquet') ORDER BY 1").fetchall()]
+FILTER = "(" + ",".join(f"'{d}'" for d in DAYS) + ")"
+print(f"  UTC days of {WEEK}: {DAYS[0]} .. {DAYS[-1]}  ({len(DAYS)} days)")
+if len(DAYS) != 7:
+    sys.exit(f"ABORTED: {WEEK} should have 7 UTC days and has {len(DAYS)}")
+IN_DAYS = f"strftime(to_timestamp(t_spend),'%Y-%m-%d') IN {FILTER}"
 
 for t, sql in (
-    ("inp", f"SELECT height,txid,prev_txid,prev_vout FROM read_parquet('{C1}/inputs/inputs_{SEM}.parquet') WHERE is_coinbase=false"),
-    ("inp_cb", f"SELECT DISTINCT height,txid FROM read_parquet('{C1}/inputs/inputs_{SEM}.parquet') WHERE is_coinbase=true"),
-    ("outw", f"SELECT height,txid,vout,value_sats,script_type,script_hex FROM read_parquet('{C1}/outputs/outputs_{SEM}.parquet')"),
+    ("inp", f"SELECT height,txid,prev_txid,prev_vout FROM read_parquet('{C1}/inputs/inputs_{WEEK}.parquet') WHERE is_coinbase=false"),
+    ("inp_cb", f"SELECT DISTINCT height,txid FROM read_parquet('{C1}/inputs/inputs_{WEEK}.parquet') WHERE is_coinbase=true"),
+    ("outw", f"SELECT height,txid,vout,value_sats,script_type,script_hex FROM read_parquet('{C1}/outputs/outputs_{WEEK}.parquet')"),
     ("blk", f"SELECT height,time FROM read_parquet('{C1}/blocks/blocks_*.parquet')"),
 ):
     con.execute(f"CREATE TABLE {t} AS {sql}")
@@ -89,7 +89,7 @@ if n != tot:
     sys.exit("ABORTED: not all inputs were resolved; nothing is written")
 
 # ---- daily aggregate (only the 7 UTC days of the week) ----
-dia = con.execute(f"""
+daily = con.execute(f"""
 SELECT strftime(to_timestamp(t_spend),'%Y-%m-%d') date,
        CAST(SUM((CAST(value_sats AS HUGEINT)*age) // 86400) AS BIGINT) cdd_sat_days,
        CAST(SUM((CAST(value_sats AS HUGEINT)*age) % 86400) AS BIGINT) cdd_rem_86400,
@@ -101,39 +101,39 @@ SELECT strftime(to_timestamp(t_spend),'%Y-%m-%d') date,
        CAST(SUM(CASE WHEN age>=365*86400 THEN value_sats ELSE 0 END) AS BIGINT) ge365_v,
        CAST(SUM(CASE WHEN age>=365*86400 THEN (CAST(value_sats AS HUGEINT)*age) // 86400 ELSE 0 END) AS BIGINT) ge365_c,
        CAST(SUM(CASE WHEN age>=365*86400 THEN (CAST(value_sats AS HUGEINT)*age) % 86400 ELSE 0 END) AS BIGINT) ge365_r
-FROM res WHERE {EN_DIAS} GROUP BY 1 ORDER BY 1""").df()
+FROM res WHERE {IN_DAYS} GROUP BY 1 ORDER BY 1""").df()
 b = con.execute(f"""
 SELECT strftime(to_timestamp(b.time),'%Y-%m-%d') date,
        CAST(SUM(o.value_sats) AS BIGINT) out_all,
        CAST(SUM(CASE WHEN cb.txid IS NOT NULL THEN o.value_sats ELSE 0 END) AS BIGINT) cb_sats,
        CAST(SUM(CASE WHEN COALESCE(o.script_type,'')<>'nulldata'
                       AND NOT COALESCE(o.script_hex,'') LIKE '6a%'
-                      AND length(COALESCE(o.script_hex,''))<=20000 THEN 1 ELSE 0 END) AS BIGINT) n_creados
+                      AND length(COALESCE(o.script_hex,''))<=20000 THEN 1 ELSE 0 END) AS BIGINT) n_created
 FROM outw o JOIN blk b ON b.height=o.height
 LEFT JOIN inp_cb cb ON cb.height=o.height AND cb.txid=o.txid
-WHERE strftime(to_timestamp(b.time),'%Y-%m-%d') IN {FILTRO}
+WHERE strftime(to_timestamp(b.time),'%Y-%m-%d') IN {FILTER}
 GROUP BY 1 ORDER BY 1""").df()
-m = dia.merge(b, on="date", how="left")
-if set(m["date"]) != set(DIAS):
-    sys.exit(f"ABORTED: recomputed days {sorted(m['date'])} != UTC days {DIAS}")
+m = daily.merge(b, on="date", how="left")
+if set(m["date"]) != set(DAYS):
+    sys.exit(f"ABORTED: recomputed days {sorted(m['date'])} != UTC days {DAYS}")
 
 # utxo_eod_count base: last day with data BEFORE the week
-prev = pd.read_parquet(f"{C2}/daily_aggregates_{ANIO}.parquet")
+prev = pd.read_parquet(f"{C2}/daily_aggregates_{YEAR}.parquet")
 prev["date"] = prev["date"].astype(str)
-ant = prev[prev["date"] < DIAS[0]]
-DIA0 = ant["date"].max()
-base = int(ant.loc[ant["date"] == DIA0, "utxo_eod_count"].iloc[0])
-print(f"  utxo_eod_count base: {DIA0} = {base:,}")
+before_df = prev[prev["date"] < DAYS[0]]
+BASE_DAY = before_df["date"].max()
+base = int(before_df.loc[before_df["date"] == BASE_DAY, "utxo_eod_count"].iloc[0])
+print(f"  utxo_eod_count base: {BASE_DAY} = {base:,}")
 m["fees_sats"] = m.spent_value_sats - (m.out_all - m.cb_sats)
 m["coinbase_output_sats"] = m.cb_sats
 m["issuance_sats"] = m.cb_sats - m.fees_sats
-acum = base
+accum = base
 eod = []
 for _, r in m.iterrows():
-    acum += int(r.n_creados) - int(r.spent_output_count)
-    eod.append(acum)
+    accum += int(r.n_created) - int(r.spent_output_count)
+    eod.append(accum)
 m["utxo_eod_count"] = eod
-m["last_height"] = [con.execute(f"SELECT max(h_spend) FROM res WHERE {EN_DIAS} AND strftime(to_timestamp(t_spend),'%Y-%m-%d')=?",
+m["last_height"] = [con.execute(f"SELECT max(h_spend) FROM res WHERE {IN_DAYS} AND strftime(to_timestamp(t_spend),'%Y-%m-%d')=?",
                                 [d]).fetchone()[0] for d in m.date]
 COLS = ["date","last_height","spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400",
         "fees_sats","coinbase_output_sats","issuance_sats","utxo_eod_count","spent_value_ge155d_sats",
@@ -148,10 +148,10 @@ print("\n  recomputed rows:"); print(m.to_string(index=False))
 bd = con.execute(f"""
 WITH r AS (
   SELECT strftime(to_timestamp(t_spend),'%Y-%m-%d') date, value_sats, age,
-         CAST(age // 86400 AS INT) edad_dias
-  FROM res WHERE {EN_DIAS}
+         CAST(age // 86400 AS INT) age_days
+  FROM res WHERE {IN_DAYS}
 )
-SELECT date, {CASO_BANDA} age_band,
+SELECT date, {BAND_CASE} age_band,
        CAST(SUM(value_sats) AS BIGINT) spent_value_sats,
        COUNT(*) spent_output_count,
        CAST(SUM((CAST(value_sats AS HUGEINT)*age) // 86400) AS BIGINT) cdd_sat_days,
@@ -160,7 +160,7 @@ FROM r GROUP BY 1.2 ORDER BY 1.2""").df()
 print(f"\n  band rows: {len(bd)} (expected maximum {7*12})")
 
 # ---- verification: the sum of bands must equal the daily aggregate ----
-for d in DIAS:
+for d in DAYS:
     s = bd[bd["date"] == d][["spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400"]].sum()
     r0 = m[m["date"] == d].iloc[0]
     for c in ("spent_value_sats","spent_output_count","cdd_sat_days","cdd_rem_86400"):
@@ -180,24 +180,24 @@ SELECT count(*) FROM (SELECT date, CAST(SUM(spent_value_sats) AS HUGEINT) sv,
 JOIN dia_df d USING (date)
 WHERE x.sv<>d.spent_value_sats OR x.n<>d.spent_output_count
    OR x.cdd<>d.cdd_sat_days OR x.rem<>d.cdd_rem_86400"""
-mal = con.execute(CHK).fetchone()[0]
-print(f"  SQL verification (sum of bands == daily aggregate): {mal} discrepancies")
-if mal:
+bad_rows = con.execute(CHK).fetchone()[0]
+print(f"  SQL verification (sum of bands == daily aggregate): {bad_rows} discrepancies")
+if bad_rows:
     sys.exit("ABORTED: the daily aggregate does not match the sum of its bands")
 
 # ---- write with backup ----
-for ruta, nuevo, clave in ((f"{C2}/daily_aggregates_{ANIO}.parquet", m, ["date"]),
-                           (f"{C2}/age_band_aggregates_{ANIO}.parquet", bd, ["date","age_band"])):
-    viejo = pd.read_parquet(ruta)
-    viejo["date"] = viejo["date"].astype(str)
-    shutil.copy2(ruta, ruta + ".bak_w06")
-    limpio = viejo[~viejo["date"].isin(nuevo["date"])]
-    out = pd.concat([limpio, nuevo], ignore_index=True).sort_values(clave).reset_index(drop=True)
-    for c in viejo.columns:
+for path, new_rows, key in ((f"{C2}/daily_aggregates_{YEAR}.parquet", m, ["date"]),
+                           (f"{C2}/age_band_aggregates_{YEAR}.parquet", bd, ["date","age_band"])):
+    old_rows = pd.read_parquet(path)
+    old_rows["date"] = old_rows["date"].astype(str)
+    shutil.copy2(path, path + ".bak_w06")
+    clean_rows = old_rows[~old_rows["date"].isin(new_rows["date"])]
+    out = pd.concat([clean_rows, new_rows], ignore_index=True).sort_values(key).reset_index(drop=True)
+    for c in old_rows.columns:
         if c in out.columns:
-            out[c] = out[c].astype(viejo[c].dtype)
-    out.to_parquet(ruta + ".tmp", index=False, compression="zstd")
-    os.replace(ruta + ".tmp", ruta)
-    print(f"  {os.path.basename(ruta)}: {len(viejo)} -> {len(out)} rows (backup .bak_w06)")
+            out[c] = out[c].astype(old_rows[c].dtype)
+    out.to_parquet(path + ".tmp", index=False, compression="zstd")
+    os.replace(path + ".tmp", path)
+    print(f"  {os.path.basename(path)}: {len(old_rows)} -> {len(out)} rows (backup .bak_w06)")
 con.close()
 print("\nREPAIRED")

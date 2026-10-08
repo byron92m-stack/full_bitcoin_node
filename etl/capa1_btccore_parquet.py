@@ -286,13 +286,13 @@ def _normalize_none(col_list, arrow_type):
         ]
     return col_list
 
-def _dicts_to_arrow(filas: List[Dict], table: str) -> pa.Table:
+def _dicts_to_arrow(rows: List[Dict], table: str) -> pa.Table:
     """Converts a list of dicts into a pa.Table with an explicit schema.
     Much more compact in memory than a pandas DataFrame."""
     schema = SCHEMAS[table]
     arrays = {}
     for field in schema:
-        col = _normalize_none([r.get(field.name) for r in filas], field.type)
+        col = _normalize_none([r.get(field.name) for r in rows], field.type)
         arrays[field.name] = pa.array(col, type=field.type)
     return pa.table(arrays, schema=schema)
 
@@ -473,12 +473,12 @@ def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
     os.makedirs(TMP_DIR, exist_ok=True)
 
     for table in ["blocks", "txs", "inputs", "outputs"]:
-        tablas = accum[table]
-        if not tablas:
+        tables = accum[table]
+        if not tables:
             continue
 
         # Concatenate Arrow tables (no pandas, no intra-week duplicates)
-        nueva = tablas[0] if len(tablas) == 1 else pa.concat_tables(tablas)
+        new_table = tables[0] if len(tables) == 1 else pa.concat_tables(tables)
 
         path = DIRS[table]
         os.makedirs(path, exist_ok=True)
@@ -486,10 +486,10 @@ def write_week(week: str, accum: Dict[str, List[pa.Table]]) -> Tuple[int, str]:
 
         tmp_new = os.path.join(TMP_DIR, f"{table}_{week}_new.parquet")
         tmp_tmp = tmp_new + ".tmp"
-        pq.write_table(nueva, tmp_tmp, compression="zstd", compression_level=6)
+        pq.write_table(new_table, tmp_tmp, compression="zstd", compression_level=6)
         os.replace(tmp_tmp, tmp_new)
 
-        n_new = nueva.num_rows
+        n_new = new_table.num_rows
 
         if os.path.exists(final):
             con = duckdb.connect()
@@ -667,13 +667,13 @@ def repair_range(start_h: int, end_h: int):
 
     ensure_dirs()
     accums: Dict[str, Dict[str, List[pa.Table]]] = {}
-    week_actual = None
+    week_current = None
     if start_h > 0:                      # week of the block before the range
         try:
             _prev = get_block(get_block_hash(start_h - 1))
-            week_actual = timestamp_to_week(int(_prev["time"]))
+            week_current = timestamp_to_week(int(_prev["time"]))
         except Exception:
-            week_actual = None
+            week_current = None
 
     for h in tqdm(range(start_h, end_h + 1), desc=f"Repairing {start_h}-{end_h}"):
         try:
@@ -683,9 +683,9 @@ def repair_range(start_h: int, end_h: int):
             if ts is None:
                 raise ValueError(f"block {h} without timestamp")
             own_week = timestamp_to_week(int(ts))
-            if week_actual is None or week_to_int(own_week) > week_to_int(week_actual):
-                week_actual = own_week
-            week = week_actual
+            if week_current is None or week_to_int(own_week) > week_to_int(week_current):
+                week_current = own_week
+            week = week_current
 
             if week not in accums:
                 accums[week] = new_accumulator()
@@ -743,7 +743,7 @@ def ingest_normal():
     # increasing (allowed by consensus) and partitioning by the ISO week of the
     # timestamp made a block land in a file for an EARLIER week,
     # being processed out of height order (=> phantom UTXOs and lost spends).
-    week_actual = state.get("last_processed_week") if start_height > 0 else None
+    week_current = state.get("last_processed_week") if start_height > 0 else None
 
     for h in tqdm(range(start_height, tip + 1), desc="Blocks", unit="blk"):
         try:
@@ -754,9 +754,9 @@ def ingest_normal():
             if ts is None:
                 raise ValueError(f"block {h} without timestamp")
             own_week = timestamp_to_week(int(ts))
-            if week_actual is None or week_to_int(own_week) > week_to_int(week_actual):
-                week_actual = own_week
-            week = week_actual
+            if week_current is None or week_to_int(own_week) > week_to_int(week_current):
+                week_current = own_week
+            week = week_current
 
             if week not in accums:
                 accums[week] = new_accumulator()

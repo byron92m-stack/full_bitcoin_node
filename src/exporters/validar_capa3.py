@@ -216,11 +216,11 @@ def main():
     # 2) utxo_eod_count: layer 3 publishes the value ALREADY adjusted (BIP30), so (ref - layer3)
     #    is 0 on every date. To show the step the adjustment has to be given back.
     if "obm_utxo_eod_count_daily" in long_series:
-        from capa3_series import ajuste_bip30
+        from capa3_series import bip30_adjustment
         a, b = long_series["obm_utxo_eod_count_daily"]
         ds = sorted(set(a) & set(b))
         xs = [datetime.date.fromisoformat(d) for d in ds]
-        ys = [float(a[d] - (b[d] - ajuste_bip30(datetime.date.fromisoformat(d))))
+        ys = [float(a[d] - (b[d] - bip30_adjustment(datetime.date.fromisoformat(d))))
               if (a[d] is not None and b[d] is not None) else float("nan") for d in ds]
         fig, ax = plt.subplots(figsize=(11, 4))
         ax.plot(xs, ys, lw=0.8, color="#1565c0")
@@ -233,11 +233,11 @@ def main():
 
     # 3) the CDD differences, one by one (every other day is identical)
     pts = []
-    for serie in ("obm_cdd_btcxdays_daily", "obm_cdd_age_band_btcxdays_daily"):
-        pr, pc = f"{REF}/{serie}/{serie}.csv", f"{CAPA3}/{serie}.csv"
+    for series_id in ("obm_cdd_btcxdays_daily", "obm_cdd_age_band_btcxdays_daily"):
+        pr, pc = f"{REF}/{series_id}/{series_id}.csv", f"{CAPA3}/{series_id}.csv"
         if not (os.path.exists(pr) and os.path.exists(pc)):
             continue
-        cols = WIDE.get(serie)
+        cols = WIDE.get(series_id)
         a, b = read(pr, cols), read(pc, cols)
         for d in sorted(set(a) & set(b)):
             if limit is not None and d > limit:
@@ -246,20 +246,20 @@ def main():
                 for i in range(len(cols)):
                     x, y = a[d][i], b[d][i]
                     if x is not None and y is not None and x != y:
-                        pts.append((datetime.date.fromisoformat(d), serie, abs(float(x - y))))
+                        pts.append((datetime.date.fromisoformat(d), series_id, abs(float(x - y))))
             else:
                 x, y = a[d], b[d]
                 if x is not None and y is not None and x != y:
-                    pts.append((datetime.date.fromisoformat(d), serie, abs(float(x - y))))
+                    pts.append((datetime.date.fromisoformat(d), series_id, abs(float(x - y))))
     if pts:
         fig, ax = plt.subplots(figsize=(11, 4))
-        for serie, col, mk in (("obm_cdd_btcxdays_daily", "#6a1b9a", "o"),
+        for series_id, col, mk in (("obm_cdd_btcxdays_daily", "#6a1b9a", "o"),
                                ("obm_cdd_age_band_btcxdays_daily", "#00897b", "s")):
-            xs = [p[0] for p in pts if p[1] == serie]
-            ys = [p[2] for p in pts if p[1] == serie]
+            xs = [p[0] for p in pts if p[1] == series_id]
+            ys = [p[2] for p in pts if p[1] == series_id]
             if xs:
                 ax.semilogy(xs, ys, mk, ms=4, ls="none", color=col,
-                            label=serie.replace("obm_", "").replace("_daily", ""))
+                            label=series_id.replace("obm_", "").replace("_daily", ""))
         ax.set_ylabel("|reference − capa3|")
         ax.set_title(f"The CDD differences, one by one (the rest are 0): {len(pts)} points")
         ax.legend(frameon=False)

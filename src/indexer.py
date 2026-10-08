@@ -70,10 +70,10 @@ TMP_DIR = os.path.join(OBM_ROOT, "tmp", "indexer")
 DB_PATH = os.path.join(CAPA2, "live_outputs.sqlite")
 
 SATOSHI = 100_000_000
-SEGUNDOS_DIA = 86400
+SECONDS_PER_DAY = 86400
 
 # Age bands (paper §3.4)
-BANDAS = [
+BANDS = [
     (0, 1, "0d_1d"),
     (1, 7, "1d_1w"),
     (7, 30, "1w_1m"),
@@ -88,8 +88,8 @@ BANDAS = [
     (3650, float("inf"), "10y_plus"),
 ]
 
-THRESHOLD_155D = 155 * SEGUNDOS_DIA
-THRESHOLD_365D = 365 * SEGUNDOS_DIA
+THRESHOLD_155D = 155 * SECONDS_PER_DAY
+THRESHOLD_365D = 365 * SECONDS_PER_DAY
 
 # ============================================================
 # EXPLICIT DTYPES
@@ -265,17 +265,17 @@ def list_available_weeks() -> List[str]:
     blocks_dir = os.path.join(CAPA1, "blocks")
     if not os.path.exists(blocks_dir):
         return []
-    semanas = []
+    week_list = []
     for fname in os.listdir(blocks_dir):
         if fname.startswith("blocks_") and fname.endswith(".parquet"):
             week = fname[len("blocks_"):-len(".parquet")]
-            semanas.append(week)
-    return sorted(semanas)
+            week_list.append(week)
+    return sorted(week_list)
 
 def check_capa1_monotonic(weeks: List[str]) -> bool:
     """Checks that the capa1 week files are ordered by height.
     Uses the parquet statistics (min/max of 'height'): cost ~milliseconds."""
-    prev_max, prev_week, malas = -1, None, []
+    prev_max, prev_week, bad_weeks = -1, None, []
     for w in weeks:
         p = os.path.join(CAPA1, "blocks", f"blocks_{w}.parquet")
         pf = pq.ParquetFile(p)
@@ -292,10 +292,10 @@ def check_capa1_monotonic(weeks: List[str]) -> bool:
             col = pq.read_table(p, columns=["height"])["height"].to_pylist()
             mn, mx = min(col), max(col)
         if mn <= prev_max:
-            malas.append((prev_week, w, mn, prev_max))
+            bad_weeks.append((prev_week, w, mn, prev_max))
         prev_max, prev_week = mx, w
-    if malas:
-        for pw, w, mn, pm in malas:
+    if bad_weeks:
+        for pw, w, mn, pm in bad_weeks:
             logger.error(f"capa1 NOT monotonic in height: {w} starts at {mn:,} "
                          f"but {pw} reaches {pm:,}")
         print("\nERROR: capa1 has weeks out of order by height "
@@ -306,7 +306,7 @@ def check_capa1_monotonic(weeks: List[str]) -> bool:
         return False
     return True
 
-def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
+def check_parquet_coverage(done_weeks) -> List[Tuple[str, List[str]]]:
     """Detects weeks in weeks_done whose days are NOT in the yearly aggregates parquet.
 
     Known cause (finding F7): the parquet write is AFTER the commit, so
@@ -317,32 +317,32 @@ def check_parquet_cobertura(done_weeks) -> List[Tuple[str, List[str]]]:
     startup (rebuild_all_from_db), so this cut can no longer happen: this guard is
     the check that the rebuild has covered all the weeks in weeks_done.
     """
-    por_anio = {}
+    by_year = {}
 
-    def dias_del_anio(y):
-        if y not in por_anio:
+    def days_of_year(y):
+        if y not in by_year:
             p = os.path.join(CAPA2, f"daily_aggregates_{y}.parquet")
-            por_anio[y] = (set(pd.read_parquet(p, columns=["date"])["date"].astype(str))
+            by_year[y] = (set(pd.read_parquet(p, columns=["date"])["date"].astype(str))
                            if os.path.exists(p) else None)
-        return por_anio[y]
+        return by_year[y]
 
-    faltan = []
+    missing = []
     for w in sorted(done_weeks):
         try:
             t = pq.read_table(os.path.join(CAPA1, "blocks", f"blocks_{w}.parquet"),
                               columns=["time"])
-            esperados = {utc_date_from_timestamp(int(x)) for x in t["time"].to_pylist()}
+            expected = {utc_date_from_timestamp(int(x)) for x in t["time"].to_pylist()}
         except Exception:
             continue
         # F8.6: each day is written to the parquet of ITS year, not to that of the week. A
         # week can start or end in the adjacent year (2009-W53 -> 2010-01-01..03
         # lives in daily_aggregates_2010.parquet), so it must be looked up by the year of
         # the day itself. Looking it up in the one for w[:4] caused 13 false aborts at year boundaries.
-        f = sorted(d for d in esperados
-                   if dias_del_anio(d[:4]) is None or d not in dias_del_anio(d[:4]))
+        f = sorted(d for d in expected
+                   if days_of_year(d[:4]) is None or d not in days_of_year(d[:4]))
         if f:
-            faltan.append((w, f))
-    return faltan
+            missing.append((w, f))
+    return missing
 
 
 def week_to_int(week: str) -> int:
@@ -366,8 +366,8 @@ def utc_date_from_timestamp(ts: int) -> str:
     return dt.strftime("%Y-%m-%d")
 
 def get_age_band(age_days: float) -> Optional[str]:
-    """Paper's age band (SS3.4). The BANDAS boundaries are in DAYS."""
-    for lo, hi, name in BANDAS:
+    """Paper's age band (SS3.4). The BANDS boundaries are in DAYS."""
+    for lo, hi, name in BANDS:
         if lo <= age_days < hi:
             return name
     return None
@@ -423,8 +423,8 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
 
     logger.info(f"  UTXO count at the start of the week: {utxo_count:,}")
 
-    alturas = sorted(blocks_by_height.keys())
-    for h in alturas:
+    heights = sorted(blocks_by_height.keys())
+    for h in heights:
         block = blocks_by_height[h]
         block_time = int(block.time)
         date = utc_date_from_timestamp(block_time)
@@ -508,7 +508,7 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
             # EXACT CDD: integer part and remainder numerator separately.
             # Truncating per input (//86400) introduced up to 1 sat-day of error per input
             # (~1e-9 relative in the daily aggregate).
-            cdd_sat_days, cdd_rem = divmod(value_sats * age_seconds, SEGUNDOS_DIA)
+            cdd_sat_days, cdd_rem = divmod(value_sats * age_seconds, SECONDS_PER_DAY)
 
             daily[date]["spent_value_sats"] += value_sats
             daily[date]["spent_output_count"] += 1
@@ -525,9 +525,9 @@ def process_week(con: sqlite3.Connection, week: str, utxo_count: int) -> Optiona
                 daily[date]["cdd_ge365d_sat_days"] += cdd_sat_days
                 daily[date]["cdd_ge365d_rem_86400"] += cdd_rem
 
-            # NOTE: the BANDAS boundaries are in DAYS -> the age must be passed
+            # NOTE: the BANDS boundaries are in DAYS -> the age must be passed
             # in days. It used to be passed in SECONDS and almost everything fell into '10y_plus'.
-            band = get_age_band(age_seconds / SEGUNDOS_DIA)
+            band = get_age_band(age_seconds / SECONDS_PER_DAY)
             if band is not None:
                 key_band = (date, band)
                 if key_band not in age_bands:
@@ -677,11 +677,11 @@ def rebuild_year_from_db(con: sqlite3.Connection, year: str) -> None:
 
 def rebuild_all_from_db(con: sqlite3.Connection) -> int:
     """Rebuilds the yearly files for all the years present in the DB."""
-    anios = [r[0] for r in con.execute(
+    years = [r[0] for r in con.execute(
         "SELECT DISTINCT substr(date, 1, 4) FROM daily_agg ORDER BY 1")]
-    for y in anios:
+    for y in years:
         rebuild_year_from_db(con, y)
-    return len(anios)
+    return len(years)
 
 # ============================================================
 # MAIN
@@ -781,11 +781,11 @@ def main():
         # at startup. That repairs by itself an earlier cut between the commit and the
         # parquet write; the guard that follows checks that the rebuild
         # has covered all the weeks in weeks_done.
-        n_anios = rebuild_all_from_db(con)
-        logger.info(f"yearly parquet rebuilt from the DB ({n_anios} years)")
-        faltan = check_parquet_cobertura(done_weeks)
-        if faltan:
-            for w, ds in faltan[:5]:
+        n_years = rebuild_all_from_db(con)
+        logger.info(f"yearly parquet rebuilt from the DB ({n_years} years)")
+        missing = check_parquet_coverage(done_weeks)
+        if missing:
+            for w, ds in missing[:5]:
                 logger.error(f"aggregates missing for {w}: {len(ds)} days (e.g. {ds[:3]})")
             print("\nERROR: there are weeks in weeks_done WITHOUT their aggregates in the yearly parquet.")
             print("Known cause (F7): cut between the commit and the parquet write.")

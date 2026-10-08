@@ -36,11 +36,11 @@ CAPA2 = os.path.join(OBM, "capa2")
 CAPA3 = os.path.join(OBM, "capa3")
 VERSION = "OBM v0.1.0"
 SATS = Decimal(10 ** 8)
-SEG_DIA = Decimal(86400)
-DOS32 = Decimal(2) ** 32
+SECONDS_PER_DAY = Decimal(86400)
+TWO32 = Decimal(2) ** 32
 E18 = Decimal(10) ** 18
-INICIO = datetime.date(2009, 1, 1)
-BANDAS = ["0d_1d", "1d_1w", "1w_1m", "1m_3m", "3m_6m", "6m_1y",
+START = datetime.date(2009, 1, 1)
+BANDS = ["0d_1d", "1d_1w", "1w_1m", "1m_3m", "3m_6m", "6m_1y",
           "1y_2y", "2y_3y", "3y_5y", "5y_7y", "7y_10y", "10y_plus"]
 
 # --- OBM compatibility adjustment for BIP30 -----------------------------------
@@ -53,8 +53,8 @@ BIP30_D1 = datetime.date(2010, 11, 14)
 BIP30_D2 = datetime.date(2010, 11, 15)
 
 
-def ajuste_bip30(f, activo=True):
-    if not activo:
+def bip30_adjustment(f, enabled=True):
+    if not enabled:
         return 0
     if f >= BIP30_D2:
         return 2
@@ -64,7 +64,7 @@ def ajuste_bip30(f, activo=True):
 
 
 # ------------------------- OBM formatters -------------------------
-def ent(x):
+def fmt_int(x):
     return "NaN" if x is None else str(int(x))
 
 
@@ -78,8 +78,8 @@ def btc(sats, dec=8):                      # satoshis -> BTC
     return "NaN" if sats is None else _q(Decimal(int(sats)) / SATS, dec)
 
 
-def btc_dias(sat_dias, dec=8):             # SATOSHI-DAYS (capa2) -> BTC-days
-    return "NaN" if sat_dias is None else _q(Decimal(int(sat_dias)) / SATS, dec)
+def btc_days(sat_days, dec=8):             # SATOSHI-DAYS (capa2) -> BTC-days
+    return "NaN" if sat_days is None else _q(Decimal(int(sat_days)) / SATS, dec)
 
 
 def ratio(a, b, dec=12):
@@ -88,33 +88,33 @@ def ratio(a, b, dec=12):
     return _q(Decimal(a) / Decimal(b), dec)
 
 
-def escribir(serie, filas, unidad):
-    with open(f"{CAPA3}/{serie}.csv", "w", newline="") as fh:
+def write_series(series_id, rows, unit):
+    with open(f"{CAPA3}/{series_id}.csv", "w", newline="") as fh:
         fh.write("date,series_id,value,unit,frequency,release_version\n")
-        for f, v in filas:
-            fh.write(f"{f},{serie},{v},{unidad},daily,{VERSION}\n")
-    print(f"  {serie:<44} {len(filas):>6} rows  [{unidad}]")
+        for f, v in rows:
+            fh.write(f"{f},{series_id},{v},{unit},daily,{VERSION}\n")
+    print(f"  {series_id:<44} {len(rows):>6} rows  [{unit}]")
 
 
-def escribir_ancha(serie, filas, cols, unidad):
-    with open(f"{CAPA3}/{serie}.csv", "w", newline="") as fh:
+def write_wide(series_id, rows, cols, unit):
+    with open(f"{CAPA3}/{series_id}.csv", "w", newline="") as fh:
         fh.write(",".join(["date", "series_id"] + cols + ["unit", "frequency", "release_version"]) + "\n")
-        for f, vals in filas:
-            fh.write(",".join([str(f), serie] + vals + [unidad, "daily", VERSION]) + "\n")
-    print(f"  {serie:<44} {len(filas):>6} rows  [{unidad}] wide {len(cols)} col")
+        for f, vals in rows:
+            fh.write(",".join([str(f), series_id] + vals + [unit, "daily", VERSION]) + "\n")
+    print(f"  {series_id:<44} {len(rows):>6} rows  [{unit}] wide {len(cols)} col")
 
 
 # ------------------------------ reads ------------------------------
-def cargar_capa2_diario():
-    dias = {}
+def load_capa2_daily():
+    days = {}
     for f in sorted(glob.glob(f"{CAPA2}/daily_aggregates_*.parquet")):
         t = pq.read_table(f).to_pydict()
         for i, d in enumerate(t["date"]):
-            dias[datetime.date.fromisoformat(str(d))] = {k: t[k][i] for k in t}
-    return dias
+            days[datetime.date.fromisoformat(str(d))] = {k: t[k][i] for k in t}
+    return days
 
 
-def cargar_capa2_bandas():
+def load_capa2_bands():
     out = {}
     for f in sorted(glob.glob(f"{CAPA2}/age_band_aggregates_*.parquet")):
         t = pq.read_table(f).to_pydict()
@@ -125,7 +125,7 @@ def cargar_capa2_bandas():
     return out
 
 
-def cargar_difficulty_epochs():
+def load_difficulty_epochs():
     """EXACT Core difficulty per 2016-block epoch, read from the RPC field.
 
     OBM reads 'difficulty' from getblock (Appendix A.6); recomputing it from 'bits' differs
@@ -138,18 +138,18 @@ def cargar_difficulty_epochs():
     return {int(k): Decimal(repr(v)) for k, v in zip(t["epoch"], t["difficulty"])}
 
 
-def cargar_capa1_bloques():
+def load_capa1_blocks():
     """Per UTC day: n, Sum(nTx), Sum(weight), Sum(difficulty), tmin/tmax,
     and difficulty of the HIGHEST block (difficulty_eod)."""
-    por_dia = {}
-    dif_ep = cargar_difficulty_epochs()
-    faltan_ep = set()
+    by_day = {}
+    dif_ep = load_difficulty_epochs()
+    missing_epochs = set()
     for f in sorted(glob.glob(f"{CAPA1}/blocks/blocks_*.parquet")):
         t = pq.read_table(f, columns=["height", "time", "nTx", "weight", "bits"]).to_pydict()
         for h, ts, ntx, w, bits in zip(t["height"], t["time"], t["nTx"], t["weight"], t["bits"]):
             ts = int(ts)
             d = datetime.datetime.fromtimestamp(ts, datetime.timezone.utc).date()
-            r = por_dia.get(d)
+            r = by_day.get(d)
             _e = int(h) // 2016
             if _e in dif_ep:
                 df = dif_ep[_e]
@@ -157,13 +157,13 @@ def cargar_capa1_bloques():
                 # F3: difficulty is READ from the node; recomputing it from bits differs by 1 ULP.
                 # A missing epoch means difficulty_epochs.parquet fell behind.
                 df = Decimal(repr(difficulty_core(bits)))
-                if _e not in faltan_ep:
-                    faltan_ep.add(_e)
+                if _e not in missing_epochs:
+                    missing_epochs.add(_e)
                     print(f"WARNING: missing difficulty epoch {_e} in difficulty_epochs.parquet "
                           f"(height {int(h)}); difficulty_core(bits) is used, which F3 forbids. "
                           f"Rerun src/exporters/fix_difficulty_rpc.py with the node running.")
             if r is None:
-                por_dia[d] = {"n": 1, "ntx": int(ntx or 0), "w": int(w or 0), "diff": df,
+                by_day[d] = {"n": 1, "ntx": int(ntx or 0), "w": int(w or 0), "diff": df,
                               "tmin": ts, "tmax": ts, "hmax": int(h), "deod": df}
             else:
                 r["n"] += 1
@@ -175,7 +175,7 @@ def cargar_capa1_bloques():
                 if int(h) > r["hmax"]:
                     r["hmax"] = int(h)
                     r["deod"] = df
-    return por_dia
+    return by_day
 
 
 # -------------------------------- main --------------------------------
@@ -183,23 +183,23 @@ def main():
     BIP30 = "--no-bip30" not in sys.argv
     os.makedirs(CAPA3, exist_ok=True)
     print(f"=== capa3 — 23 OBM v0.1.0 series ===  (BIP30 adjustment: {'ON' if BIP30 else 'OFF'})")
-    d2 = cargar_capa2_diario()
-    bandas = cargar_capa2_bandas()
-    b1 = cargar_capa1_bloques()
+    d2 = load_capa2_daily()
+    bands = load_capa2_bands()
+    b1 = load_capa1_blocks()
     if not d2:
         sys.exit("ERROR: capa2/daily_aggregates_*.parquet is empty")
     if not b1:
         sys.exit("ERROR: capa1/blocks is empty")
-    primer = min(b1)
-    ultimo = max(list(d2) + list(b1))
-    cal, f = [], INICIO
-    while f <= ultimo:
+    first_day = min(b1)
+    last_day = max(list(d2) + list(b1))
+    cal, f = [], START
+    while f <= last_day:
         cal.append(f)
         f += datetime.timedelta(days=1)
-    desde = [f for f in cal if f >= primer]
+    since = [f for f in cal if f >= first_day]
     idx = {f: i for i, f in enumerate(cal)}
     print(f"capa2: {len(d2)} days | capa1: {len(b1)} days with blocks | "
-          f"calendar {cal[0]}..{cal[-1]} ({len(cal)} days) | first block {primer}\n")
+          f"calendar {cal[0]}..{cal[-1]} ({len(cal)} days) | first block {first_day}\n")
 
     def V(f, k):
         r = d2.get(f)
@@ -211,98 +211,98 @@ def main():
         if r is None:
             return None
         return (Decimal(int(r.get("cdd_sat_days") or 0))
-                + Decimal(int(r.get("cdd_rem_86400") or 0)) / SEG_DIA)
+                + Decimal(int(r.get("cdd_rem_86400") or 0)) / SECONDS_PER_DAY)
 
     def CDD_BTC(f):
         x = CDD_SAT(f)
         return None if x is None else x / SATS
 
     # ---- 1-5: from capa1/blocks ----
-    escribir("obm_block_count_daily", [(f, ent(b1[f]["n"] if f in b1 else 0)) for f in cal], "blocks")
-    escribir("obm_tx_count_daily", [(f, ent(b1[f]["ntx"] if f in b1 else 0)) for f in cal], "transactions")
-    escribir("obm_block_weight_wu_daily", [(f, ent(b1[f]["w"] if f in b1 else 0)) for f in desde], "WU")
-    escribir("obm_difficulty_eod_daily",
-             [(f, _q(b1[f]["deod"], 12) if f in b1 else "NaN") for f in desde], "difficulty")
+    write_series("obm_block_count_daily", [(f, fmt_int(b1[f]["n"] if f in b1 else 0)) for f in cal], "blocks")
+    write_series("obm_tx_count_daily", [(f, fmt_int(b1[f]["ntx"] if f in b1 else 0)) for f in cal], "transactions")
+    write_series("obm_block_weight_wu_daily", [(f, fmt_int(b1[f]["w"] if f in b1 else 0)) for f in since], "WU")
+    write_series("obm_difficulty_eod_daily",
+             [(f, _q(b1[f]["deod"], 12) if f in b1 else "NaN") for f in since], "difficulty")
     hr = []
-    for f in desde:
+    for f in since:
         i = idx[f]
-        ventana = [cal[j] for j in range(max(0, i - 6), i + 1) if cal[j] in b1]
-        if not ventana:
+        window = [cal[j] for j in range(max(0, i - 6), i + 1) if cal[j] in b1]
+        if not window:
             hr.append((f, "NaN")); continue
-        dsum = sum((b1[x]["diff"] for x in ventana), Decimal(0))
-        tmin = min(b1[x]["tmin"] for x in ventana)
-        tmax = max(b1[x]["tmax"] for x in ventana)
+        dsum = sum((b1[x]["diff"] for x in window), Decimal(0))
+        tmin = min(b1[x]["tmin"] for x in window)
+        tmax = max(b1[x]["tmax"] for x in window)
         if tmax - tmin <= 0:
             hr.append((f, "NaN")); continue
-        hr.append((f, _q((dsum * DOS32) / Decimal(tmax - tmin) / E18, 12)))
-    escribir("obm_est7d_hashrate_ehs_daily", hr, "EH/s")
+        hr.append((f, _q((dsum * TWO32) / Decimal(tmax - tmin) / E18, 12)))
+    write_series("obm_est7d_hashrate_ehs_daily", hr, "EH/s")
 
     # ---- 6-10: issuance / fees / revenue / fee share / supply ----
-    escribir("obm_issuance_btc_daily", [(f, btc(V(f, "issuance_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
-    escribir("obm_fees_btc_daily", [(f, btc(V(f, "fees_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
-    escribir("obm_miner_revenue_btc_daily",
+    write_series("obm_issuance_btc_daily", [(f, btc(V(f, "issuance_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
+    write_series("obm_fees_btc_daily", [(f, btc(V(f, "fees_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
+    write_series("obm_miner_revenue_btc_daily",
              [(f, btc(V(f, "coinbase_output_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
     # fee_share = fees/coinbase; with no coinbase (day without blocks) the field is EMPTY
-    escribir("obm_fee_share_revenue_ratio_daily",
+    write_series("obm_fee_share_revenue_ratio_daily",
              [(f, "" if (not f in d2 or not V(f, "coinbase_output_sats"))
                else ratio(V(f, "fees_sats"), V(f, "coinbase_output_sats"))) for f in cal], "ratio")
-    acum, filas = Decimal(0), []
+    accum, rows = Decimal(0), []
     for f in cal:
-        acum += Decimal(btc(V(f, "issuance_sats")) if f in d2 else "0")
-        filas.append((f, _q(acum, 8)))
-    escribir("obm_supply_btc_daily", filas, "BTC")
-    sup_dia = dict(filas)                      # date -> supply in BTC (str, 8 dec)
+        accum += Decimal(btc(V(f, "issuance_sats")) if f in d2 else "0")
+        rows.append((f, _q(accum, 8)))
+    write_series("obm_supply_btc_daily", rows, "BTC")
+    supply_by_day = dict(rows)                      # date -> supply in BTC (str, 8 dec)
 
     # ---- 11-21: UTXO and coin-age ----
-    escribir("obm_raw_output_value_btc_daily",
-             [(f, btc(V(f, "spent_value_sats") - V(f, "fees_sats")) if f in d2 else btc(0)) for f in desde], "BTC")
-    escribir("obm_spent_output_count_daily",
-             [(f, ent(V(f, "spent_output_count")) if f in d2 else "0") for f in cal], "outputs")
-    escribir("obm_spent_value_btc_daily",
+    write_series("obm_raw_output_value_btc_daily",
+             [(f, btc(V(f, "spent_value_sats") - V(f, "fees_sats")) if f in d2 else btc(0)) for f in since], "BTC")
+    write_series("obm_spent_output_count_daily",
+             [(f, fmt_int(V(f, "spent_output_count")) if f in d2 else "0") for f in cal], "outputs")
+    write_series("obm_spent_value_btc_daily",
              [(f, btc(V(f, "spent_value_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
-    escribir("obm_cdd_btcxdays_daily",
-             [(f, _q(CDD_BTC(f), 8) if f in d2 else btc_dias(0)) for f in desde], "BTC-days")
+    write_series("obm_cdd_btcxdays_daily",
+             [(f, _q(CDD_BTC(f), 8) if f in d2 else btc_days(0)) for f in since], "BTC-days")
     # dormancy = CDD/spent_value in DAYS -> sat-days / satoshis (same units)
-    escribir("obm_dormancy_days_daily",
+    write_series("obm_dormancy_days_daily",
              [(f, ratio(CDD_SAT(f), V(f, "spent_value_sats")) if f in d2 else "NaN")
               for f in cal], "days")
-    escribir("obm_cdd_per_supply_days_daily",
-             [(f, ratio(CDD_BTC(f) if f in d2 else Decimal(0), sup_dia[f])
-               if Decimal(sup_dia[f]) != 0 else "NaN") for f in desde], "days")
-    escribir("obm_spent_value_ge155d_btc_daily",
+    write_series("obm_cdd_per_supply_days_daily",
+             [(f, ratio(CDD_BTC(f) if f in d2 else Decimal(0), supply_by_day[f])
+               if Decimal(supply_by_day[f]) != 0 else "NaN") for f in since], "days")
+    write_series("obm_spent_value_ge155d_btc_daily",
              [(f, btc(V(f, "spent_value_ge155d_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
-    escribir("obm_spent_value_ge365d_btc_daily",
+    write_series("obm_spent_value_ge365d_btc_daily",
              [(f, btc(V(f, "spent_value_ge365d_sats")) if f in d2 else btc(0)) for f in cal], "BTC")
-    filas = []
+    rows = []
     for f in cal:
         if f in d2:
             dif = V(f, "spent_value_sats") - V(f, "spent_value_ge155d_sats")
-            filas.append((f, "0" if abs(dif) < 1000 else btc(dif)))
+            rows.append((f, "0" if abs(dif) < 1000 else btc(dif)))
         else:
-            filas.append((f, "0"))
-    escribir("obm_spent_value_lt155d_btc_daily", filas, "BTC")
+            rows.append((f, "0"))
+    write_series("obm_spent_value_lt155d_btc_daily", rows, "BTC")
     # OBM publishes NaN on days without blocks, no forward-fill
-    escribir("obm_utxo_eod_count_daily",
-             [(f, ent(V(f, "utxo_eod_count") + ajuste_bip30(f, BIP30)) if f in d2 else "NaN")
-              for f in desde], "outputs")
+    write_series("obm_utxo_eod_count_daily",
+             [(f, fmt_int(V(f, "utxo_eod_count") + bip30_adjustment(f, BIP30)) if f in d2 else "NaN")
+              for f in since], "outputs")
     # liveliness = cumsum(CDD) / cumsum(supply), accumulated since the first block
-    acum_cdd, acum_sup, filas = Decimal(0), Decimal(0), []
-    for f in desde:
+    accum_cdd, accum_supply, rows = Decimal(0), Decimal(0), []
+    for f in since:
         if f in d2:
-            acum_cdd += CDD_BTC(f)
-        acum_sup += Decimal(sup_dia[f])
-        filas.append((f, ratio(acum_cdd, acum_sup)))
-    escribir("obm_liveliness_ratio_daily", filas, "ratio")
+            accum_cdd += CDD_BTC(f)
+        accum_supply += Decimal(supply_by_day[f])
+        rows.append((f, ratio(accum_cdd, accum_supply)))
+    write_series("obm_liveliness_ratio_daily", rows, "ratio")
 
     # ---- 22-23: wide age-band tables ----
-    escribir_ancha("obm_spent_value_age_band_btc_daily",
-                   [(f, [btc(bandas[f][b][0]) if (f in bandas and b in bandas[f]) else btc(0) for b in BANDAS])
-                    for f in cal], [f"spent_value_{b}_btc" for b in BANDAS], "BTC")
-    escribir_ancha("obm_cdd_age_band_btcxdays_daily",
-                   [(f, [_q((Decimal(bandas[f][b][1]) + Decimal(bandas[f][b][2]) / SEG_DIA) / SATS, 12)
-                         if (f in bandas and b in bandas[f]) else btc_dias(0, 12)
-                         for b in BANDAS]) for f in cal],
-                   [f"cdd_{b}_btcxdays" for b in BANDAS], "BTC-days")
+    write_wide("obm_spent_value_age_band_btc_daily",
+                   [(f, [btc(bands[f][b][0]) if (f in bands and b in bands[f]) else btc(0) for b in BANDS])
+                    for f in cal], [f"spent_value_{b}_btc" for b in BANDS], "BTC")
+    write_wide("obm_cdd_age_band_btcxdays_daily",
+                   [(f, [_q((Decimal(bands[f][b][1]) + Decimal(bands[f][b][2]) / SECONDS_PER_DAY) / SATS, 12)
+                         if (f in bands and b in bands[f]) else btc_days(0, 12)
+                         for b in BANDS]) for f in cal],
+                   [f"cdd_{b}_btcxdays" for b in BANDS], "BTC-days")
 
 
 if __name__ == "__main__":

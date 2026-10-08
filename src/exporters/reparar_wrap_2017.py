@@ -12,17 +12,17 @@ import glob, os, sqlite3, sys, shutil
 import pandas as pd
 
 WRAP = 2 ** 32
-DIA = "2017-03-29"          # first affected day (the wrap occurs inside 2017-W13)
-SEMANA = "2017-W13"
+FIRST_AFFECTED_DAY = "2017-03-29"          # first affected day (the wrap occurs inside 2017-W13)
+WEEK = "2017-W13"
 DB = "/media/SSD4T/obm/capa2/live_outputs.sqlite"
 
 # 1) weeks_done ------------------------------------------------------------
 con = sqlite3.connect(DB, timeout=60)
 con.execute("PRAGMA busy_timeout=60000")
-ins, sp = con.execute("SELECT n_inserted, n_spent FROM weeks_done WHERE week=?", (SEMANA,)).fetchone()
-print(f"weeks_done[{SEMANA}]: n_inserted={ins:,}  n_spent={sp:,}")
+ins, sp = con.execute("SELECT n_inserted, n_spent FROM weeks_done WHERE week=?", (WEEK,)).fetchone()
+print(f"weeks_done[{WEEK}]: n_inserted={ins:,}  n_spent={sp:,}")
 if ins < 0:
-    con.execute("UPDATE weeks_done SET n_inserted = n_inserted + ? WHERE week = ?", (WRAP, SEMANA))
+    con.execute("UPDATE weeks_done SET n_inserted = n_inserted + ? WHERE week = ?", (WRAP, WEEK))
     con.commit()
     print(f"  -> repaired to n_inserted={ins+WRAP:,}")
 else:
@@ -32,16 +32,16 @@ print(f"weeks_done: weeks={n}  SUM(ins)={i:,}  SUM(spent)={s:,}  -> derived utxo
 con.close()
 
 # 2) parquet ---------------------------------------------------------------
-print(f"\nutxo_eod_count: adding {WRAP:,} to the dates >= {DIA}")
+print(f"\nutxo_eod_count: adding {WRAP:,} to the dates >= {FIRST_AFFECTED_DAY}")
 for f in sorted(glob.glob("/media/SSD4T/obm/capa2/daily_aggregates_*.parquet")):
     d = pd.read_parquet(f)
     d["date"] = d["date"].astype(str)
-    m = d["date"] >= DIA
+    m = d["date"] >= FIRST_AFFECTED_DAY
     if not m.any():
         continue
     neg = int((d.loc[m, "utxo_eod_count"] < 0).sum())
     if neg == 0:
-        print(f"  {os.path.basename(f)}: already repaired ({int(m.sum())} days >= {DIA})")
+        print(f"  {os.path.basename(f)}: already repaired ({int(m.sum())} days >= {FIRST_AFFECTED_DAY})")
         continue
     shutil.copy2(f, f + ".bak_wrap")
     d.loc[m, "utxo_eod_count"] = d.loc[m, "utxo_eod_count"].astype("int64") + WRAP
