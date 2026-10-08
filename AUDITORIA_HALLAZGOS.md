@@ -124,7 +124,7 @@ era 4.723.873) y `utxo_eod_count` quedó desplazado en **exactamente 2³²** dur
 (2017-03-29 → 2021-12-05). Se detectó con el invariante
 `filas(live_outputs) == SUM(n_inserted) − SUM(n_spent)`.
 
-**Reparación exacta** (`src/reparar_wrap_2017.py`): +2³² a la semana 2017-W13 y a las fechas
+**Reparación exacta** (`src/exporters/reparar_wrap_2017.py`): +2³² a la semana 2017-W13 y a las fechas
 ≥ 2017-03-29 → verificado `COUNT == derivado == 77.000.836` y `FANTASMAS=0`.
 
 **Arreglo de fondo.** `inserted = max(cursor.rowcount, 0)` (acotado al tamaño del lote) + una
@@ -167,7 +167,7 @@ python3 src/exporters/fix_difficulty_rpc.py     # F3 (necesita el nodo; ya gener
 python3 src/exporters/capa3_series.py           # 23 series
 python3 src/exporters/validar_capa3.py          # validacion global + figuras
 # F4: inversiones que cruzan frontera de semana en las 970.447 alturas (escaneo ~1 s)
-# F5: reparacion ya aplicada (src/reparar_wrap_2017.py, idempotente)
+# F5: reparacion ya aplicada (src/exporters/reparar_wrap_2017.py, idempotente)
 ```
 
 ## F7 — La ventana de crash entre el commit y la escritura del parquet (bug NUESTRO)

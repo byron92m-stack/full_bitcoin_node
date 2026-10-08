@@ -262,10 +262,13 @@ python3 src/exporters/graficos_capa3.py       # -> capa3/graficos/*.png
 | `src/exporters/` | series de capa3, validación y scripts puntuales |
 | `capa1/ … capa4/` | datos (fuera de git; de `capa3/` se versionan el informe, las figuras y `MANIFEST.sha256`) |
 | `obm_reference/` | snapshot oficial de OBM: `metrics/`, `paper/`, `tools/` |
+| `logs/` | logs de ejecución (fuera de git salvo `logs/evidencia/`, la evidencia archivada) |
+| `_historico/` | **primera tentativa del pipeline (sep-2026), archivada**: se versionan sus 3 documentos (`BITACORA.md`, `CONTRATO_REPLICA_OLD.md`, `INFORME_PIPELINE_VIEJO.md`), no sus datos. No forma parte del artefacto |
 | `METODOLOGIA.md` | definiciones de las 23 series tomadas del paper |
 | `docs/MAPA_CODIGO.md` | mapa de módulos e invariantes del pipeline |
 | `AUDITORIA.md`, `AUDITORIA_HALLAZGOS.md`, `LIMITACIONES.md` | Paquete A (auditoría) |
 | `QWEN.md` | traspaso técnico para agentes de código |
+| `AGENTS.md` | punto de entrada de agentes: solo apunta a `QWEN.md` |
 
 ## 7 · Limitaciones
 

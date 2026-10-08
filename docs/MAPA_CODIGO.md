@@ -66,25 +66,29 @@ python3 src/exporters/graficos_capa3.py       # figuras (opcional)
 ```
 
 Scripts de una sola vez (ya ejecutados, se conservan como evidencia):
-`src/exporters/fix_difficulty_rpc.py`, `src/reparar_wrap_2017.py`,
-`src/exporters/reparar_semana_2022W06.py`,
-`src/exporters/reparar_utxo_eod_w06.py`.
+`src/exporters/fix_difficulty_rpc.py`, `src/exporters/reparar_wrap_2017.py`,
+`src/exporters/reparar_semana_2022W06.py`, `src/exporters/reparar_utxo_eod_w06.py`,
+`src/exporters/migrar_agregados_a_db.py`, `src/exporters/verificar_f7_autocuracion.py` y
+`src/exporters/manifiesto.py`. Los `.bak_*` que crean son **temporales**: se borran tras verificar
+(convención del repo; `.gitignore` los excluye).
 
 ## 3. Módulos
 
 | Módulo | Rol | Entrada | Salida | Estado |
 |---|---|---|---|---|
 | `etl/capa1_btccore_parquet.py` | ETL capa1: 1 semana ISO por archivo, 4 tablas | RPC `getblock` | `capa1/**/*_YYYY-Www.parquet` | completo (970.447 bloques) |
-| `etl/reparticionar_semanas.py` | Mueve bloques 60788 y 293303 a su semana por timestamp | capa1 | capa1 reescrito + `.bak_rep` | aplicado |
+| `etl/reparticionar_semanas.py` | Mueve bloques 60788 y 293303 a su semana por timestamp | capa1 | capa1 reescrito | aplicado |
 | `src/bitcoin_math.py` | `bits_to_target`, `bits_to_difficulty`, `target_to_bits`, `difficulty_core` | bits hex | float/int | estable |
 | `src/indexer.py` | capa2: gasta UTXOs, agrega por día UTC y banda de edad | capa1 | SQLite + parquet anual + state | completa (927 semanas) |
-| `src/reparar_wrap_2017.py` | Arregla el wrap de 32 bits en 2017-W13 (2³²) | state/parquet | parquet corregido | aplicado |
+| `src/exporters/reparar_wrap_2017.py` | Arregla el wrap de 32 bits en 2017-W13 (2³²) | state/parquet | parquet corregido | aplicado |
 | `src/exporters/capa3_series.py` | Construye las 23 series OBM con formato exacto | capa1 + capa2 | `capa3/*.csv` | completo |
-| `src/exporters/validar_capa3.py` | Diff serie a serie vs OBM + figuras de auditoría | capa3 + referencia | `VALIDACION.md`, `figuras/` | completo |
-| `src/exporters/comparar_capa3.py` | Comparador anterior (más simple) | capa3 + referencia | stdout | legacy útil |
-| `src/exporters/fix_difficulty_rpc.py` | Extrae las 481 épocas de dificultad desde el nodo | RPC | `capa1/difficulty_epochs.parquet` | aplicado |
-| `src/exporters/reparar_semana_2022W06.py` | Recomputa 2022-W06 desde capa1 (ventana de crash F7) | capa1 | parquet 2022 + `.bak_w06` | aplicado |
-| `src/exporters/reparar_utxo_eod_w06.py` | Corrige `utxo_eod_count` de 2022-W06 (incluye coinbase) sin re-escanear | capa1 semana | parquet 2022 + `.bak_utxo` | aplicado |
+| `src/exporters/validar_capa3.py` | Diff serie a serie vs OBM (tolerancia derivada de la referencia) + figuras | capa3 + referencia | `VALIDACION.md`, `figuras/` | completo |
+| `src/exporters/manifiesto.py` | SHA-256 de los bytes validados y de la referencia | capa3 + `obm_reference/` | `capa3/MANIFEST.sha256` | completo |
+| `src/exporters/migrar_agregados_a_db.py` | Rellena `daily_agg`/`age_band_agg` desde los parquet anuales (una vez) | capa2 parquet | DB + parquet reconstruido | aplicado |
+| `src/exporters/verificar_f7_autocuracion.py` | Test negativo de la autocuración de F7 (entorno aislado) | — | stdout (5 pasos) | test |
+| `src/exporters/fix_difficulty_rpc.py` | Extrae las épocas de dificultad desde el nodo (482: 0..481) | RPC | `capa1/difficulty_epochs.parquet` | aplicado |
+| `src/exporters/reparar_semana_2022W06.py` | Recomputa 2022-W06 desde capa1 (ventana de crash F7) | capa1 | parquet 2022 | aplicado |
+| `src/exporters/reparar_utxo_eod_w06.py` | Corrige `utxo_eod_count` de 2022-W06 (incluye coinbase) sin re-escanear | capa1 semana | parquet 2022 | aplicado |
 | `src/exporters/graficos_capa3.py` | Figuras de presentación (dashboard + bandas) | capa3 | `capa3/graficos/*.png` | utilitario |
 
 ## 4. Invariantes que no se tocan

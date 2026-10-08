@@ -117,7 +117,7 @@ segundo bloque: 5 inputs irresolubles, `spent_value` de ese día corto en **8.71
 `sqlite3_total_changes()` devuelve un `int` de 32 bits y da la vuelta. En **2017-W13**
 `n_inserted` quedó en **−4.290.243.423** (real 4.723.873) y `utxo_eod_count` desplazado **exactamente
 2³²** durante **1.713 días** (2017-03-29 → 2021-12-05). **Lo detectó el invariante de conteo**.
-Reparación exacta (`src/reparar_wrap_2017.py`) y arreglo de fondo: contar con `cursor.rowcount`
+Reparación exacta (`src/exporters/reparar_wrap_2017.py`) y arreglo de fondo: contar con `cursor.rowcount`
 acotado al tamaño del lote. *(Los valores de este párrafo son el estado **histórico** de la avería;
 en la DB actual esas filas están reparadas.)*
 

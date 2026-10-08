@@ -60,7 +60,7 @@ valen 1 ulp del último decimal publicado. Al regenerarlo tras una extensión, s
 | Síntoma | Causa | Arreglo |
 |---|---|---|
 | `5 UTXO no encontrado` + `fees negativas` en el bloque 293.303 | particionado por semana-del-timestamp (F4) | partición monótona en altura + re-particionado + fusión por suma |
-| `utxo_eod_count` negativo en 1.713 días | `total_changes` a 32 bits (F5) | `cursor.rowcount` + `src/reparar_wrap_2017.py` |
+| `utxo_eod_count` negativo en 1.713 días | `total_changes` a 32 bits (F5) | `cursor.rowcount` + `src/exporters/reparar_wrap_2017.py` |
 | `cdd` con error 1,8e-9 | truncado por input (F2) | columnas `cdd_rem_86400` + `cdd_ge*_rem_86400` |
 | Todo en la banda `10y_plus` | se pasaban SEGUNDOS a una función con fronteras en DÍAS | `get_age_band(age_seconds / SEGUNDOS_DIA)` |
 | Días con spent_value a 0 tras un re-particionado | fusión con `keep="last"` en fechas repartidas entre dos semanas | fusionar SUMANDO flujos |
