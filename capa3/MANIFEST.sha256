@@ -1,5 +1,5 @@
 # SHA-256 of the validated bytes (layer 3) and of the frozen OBM reference.
-# Generated: 2026-10-08 11:45
+# Generated: 2026-10-08 12:48
 # Regenerate: python3 src/exporters/manifiesto.py
 
 ed6dc7c4351f8a4f8e7399dfe7c70ad8179602c5a4f3bad5de2518a2a7cc0d44  capa3/obm_block_count_daily.csv
